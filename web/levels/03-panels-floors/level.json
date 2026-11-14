@@ -1,8 +1,7 @@
 {
   "id": 3,
   "title": "Panels & Floors",
-  "placeholder": true,
-  "objective": "Slice the twisted mass into floors and cut its facade into panels.",
+  "objective": "Turn the tower mass into floors: slice it level by level and give every floor a solid slab.",
   "learn": "Panelization: contouring a solid into floors and subdividing a surface by its UV domain.",
   "monster": "voronoi",
   "health": 4,
@@ -330,5 +329,62 @@
         "draft": true
       }
     }
-  ]
+  ],
+  "difficulties": [
+    {
+      "id": "C01",
+      "name": "Hopper Hatchling",
+      "description": "Method C01.",
+      "file": "C01.json",
+      "guidance": "guided",
+      "health": 5,
+      "hand": 3,
+      "attacks": 0,
+      "lifesavers": {
+        "hint": 3,
+        "potion": 2,
+        "fifty": 2,
+        "clear": 1,
+        "shield": 2,
+        "second": 2
+      }
+    },
+    {
+      "id": "C02",
+      "name": "Shape Scout",
+      "description": "Method C02.",
+      "file": "C02.json",
+      "guidance": "guided",
+      "health": 4,
+      "hand": 4,
+      "attacks": 0,
+      "lifesavers": {
+        "hint": 3,
+        "potion": 1,
+        "fifty": 1,
+        "clear": 1,
+        "shield": 1,
+        "second": 1
+      }
+    },
+    {
+      "id": "C03",
+      "name": "Pattern Pouncer",
+      "description": "Method C03.",
+      "file": "C03.json",
+      "guidance": "standard",
+      "health": 4,
+      "hand": 5,
+      "attacks": 1,
+      "lifesavers": {
+        "hint": 2,
+        "potion": 1,
+        "fifty": 1,
+        "clear": 1,
+        "shield": 1,
+        "second": 1
+      }
+    }
+  ],
+  "difficulties_source": "GameLevels/LevelC/*.ghx via godot/tools/ghx_to_level.py (converted for the web build)"
 }

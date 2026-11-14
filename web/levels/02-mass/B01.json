@@ -1,0 +1,522 @@
+{
+ "source": "GameLevels/LevelB/B01.ghx",
+ "method": "B01",
+ "params": [
+  {
+   "key": "s1",
+   "label": "Sides",
+   "min": 3.0,
+   "max": 12.0,
+   "step": 1,
+   "value": 4.0
+  },
+  {
+   "key": "s2",
+   "label": "Base fillet (ft)",
+   "min": 0.0,
+   "max": 15.0,
+   "step": 0.1,
+   "value": 6.0
+  },
+  {
+   "key": "s3",
+   "label": "Base radius (ft)",
+   "min": 30.0,
+   "max": 120.0,
+   "step": 0.1,
+   "value": 60.0
+  },
+  {
+   "key": "s4",
+   "label": "Floors",
+   "min": 5.0,
+   "max": 80.0,
+   "step": 1,
+   "value": 30.0
+  },
+  {
+   "key": "s5",
+   "label": "Top fillet (ft)",
+   "min": 0.0,
+   "max": 15.0,
+   "step": 0.1,
+   "value": 6.0
+  },
+  {
+   "key": "s6",
+   "label": "Top radius (ft)",
+   "min": 30.0,
+   "max": 120.0,
+   "step": 0.1,
+   "value": 45.0
+  },
+  {
+   "key": "s7",
+   "label": "Floor-to-floor (ft)",
+   "min": 10.0,
+   "max": 18.0,
+   "step": 0.1,
+   "value": 13.0
+  },
+  {
+   "key": "s8",
+   "label": "Total twist (deg)",
+   "min": -180.0,
+   "max": 180.0,
+   "step": 1,
+   "value": 90.0
+  }
+ ],
+ "nodes": [
+  {
+   "id": "capHoles",
+   "comp": "capHoles",
+   "open": true,
+   "x": 2190,
+   "y": 9,
+   "question": "B01_Q05",
+   "need": "a component that turns Brep into Brep",
+   "hint": "Look in Surface › Util.",
+   "correct": "Cap Holes is the component this method uses here. Closes the planar openings of a brep.",
+   "distractors": [
+    "boundary",
+    "brepJoin",
+    "mergeFaces",
+    "flip",
+    "deconstructBrep",
+    "brepEdges",
+    "solidUnion",
+    "solidDifference",
+    "solidIntersection",
+    "offsetSurface",
+    "brepWireframe",
+    "untrim"
+   ],
+   "draft": true,
+   "stage": "Close the open top and bottom to make a solid tower mass.",
+   "stage_draft": true
+  },
+  {
+   "id": "constructP",
+   "comp": "constructPoint",
+   "open": false,
+   "x": 0,
+   "y": 22,
+   "set": {
+    "X": 0.0,
+    "Y": 0.0,
+    "Z": 0.0
+   }
+  },
+  {
+   "id": "data",
+   "comp": "dataParam",
+   "open": false,
+   "x": 984,
+   "y": 52,
+   "label": "Outline"
+  },
+  {
+   "id": "data2",
+   "comp": "dataParam",
+   "open": false,
+   "x": 984,
+   "y": 0,
+   "label": "Value"
+  },
+  {
+   "id": "data3",
+   "comp": "dataParam",
+   "open": false,
+   "x": 1359,
+   "y": 0,
+   "label": "Lifted top"
+  },
+  {
+   "id": "data4",
+   "comp": "dataParam",
+   "open": false,
+   "x": 1788,
+   "y": 0,
+   "label": "Outline"
+  },
+  {
+   "id": "data5",
+   "comp": "dataParam",
+   "open": false,
+   "x": 1808,
+   "y": 52,
+   "label": "Twisted outlines"
+  },
+  {
+   "id": "data6",
+   "comp": "dataParam",
+   "open": false,
+   "x": 2083,
+   "y": 0,
+   "label": "Skin"
+  },
+  {
+   "id": "loft",
+   "comp": "loft",
+   "open": true,
+   "x": 1936,
+   "y": 12,
+   "set": {
+    "O": false
+   },
+   "question": "B01_Q04",
+   "need": "a component that turns Curves and Options into Loft",
+   "hint": "Look in Surface › Freeform.",
+   "correct": "Loft is the component this method uses here. Skins a surface through a list of curves.",
+   "distractors": [
+    "sweep1",
+    "sweep2",
+    "extrude",
+    "edgeSurface",
+    "networkSurface",
+    "boundary",
+    "surfaceFromPoints",
+    "pipe",
+    "revolution",
+    "railRevolution",
+    "patch",
+    "extrudeLinear"
+   ],
+   "draft": true,
+   "stage": "Skin a surface from the base plate up to the twisted top.",
+   "stage_draft": true
+  },
+  {
+   "id": "move",
+   "comp": "move",
+   "open": false,
+   "x": 1206,
+   "y": 15
+  },
+  {
+   "id": "multiplica",
+   "comp": "multiplication",
+   "open": true,
+   "x": 834,
+   "y": 124,
+   "question": "B01_Q01",
+   "need": "a component that turns A and B into Result",
+   "hint": "Look in Maths › Operators.",
+   "correct": "Multiplication is the component this method uses here. Multiplies two values.",
+   "distractors": [
+    "addition",
+    "subtraction",
+    "power",
+    "modulus",
+    "maximum",
+    "minimum",
+    "massAddition",
+    "average",
+    "absolute",
+    "squareRoot",
+    "logarithm",
+    "cosine"
+   ],
+   "draft": true,
+   "stage": "Work out how tall the tower is: number of floors × floor-to-floor height.",
+   "stage_draft": true
+  },
+  {
+   "id": "number",
+   "comp": "numberParam",
+   "open": false,
+   "x": 561,
+   "y": 52
+  },
+  {
+   "id": "point",
+   "comp": "pointParam",
+   "open": false,
+   "x": 149,
+   "y": 0
+  },
+  {
+   "id": "point2",
+   "comp": "pointParam",
+   "open": false,
+   "x": 561,
+   "y": 0
+  },
+  {
+   "id": "point3",
+   "comp": "pointParam",
+   "open": false,
+   "x": 1354,
+   "y": 52
+  },
+  {
+   "id": "polygon",
+   "comp": "polygon",
+   "open": false,
+   "x": 412,
+   "y": 32
+  },
+  {
+   "id": "polygon2",
+   "comp": "polygon",
+   "open": false,
+   "x": 836,
+   "y": 32
+  },
+  {
+   "id": "rotate",
+   "comp": "rotate",
+   "open": true,
+   "x": 1632,
+   "y": 22,
+   "degrees": true,
+   "question": "B01_Q03",
+   "need": "a component that turns Geometry, Angle and Plane into Geometry",
+   "hint": "Look in Transform › Euclidean.",
+   "correct": "Rotate is the component this method uses here. Turns geometry around a plane.",
+   "distractors": [
+    "rotatePlane",
+    "mirror",
+    "scale",
+    "move",
+    "scaleNU",
+    "shear",
+    "shearAngle",
+    "orient",
+    "orientDirection",
+    "flipPlane",
+    "alignPlane",
+    "polarArray"
+   ],
+   "draft": true,
+   "stage": "Twist the lifted top plate around the tower's axis by the total twist angle.",
+   "stage_draft": true
+  },
+  {
+   "id": "slider",
+   "comp": "slider",
+   "open": false,
+   "x": 204,
+   "y": 48,
+   "param": "s1",
+   "label": "Sides"
+  },
+  {
+   "id": "slider2",
+   "comp": "slider",
+   "open": false,
+   "x": 222,
+   "y": 144,
+   "param": "s2",
+   "label": "Base fillet (ft)"
+  },
+  {
+   "id": "slider3",
+   "comp": "slider",
+   "open": false,
+   "x": 226,
+   "y": 96,
+   "param": "s3",
+   "label": "Base radius (ft)"
+  },
+  {
+   "id": "slider4",
+   "comp": "slider",
+   "open": false,
+   "x": 617,
+   "y": 192,
+   "param": "s4",
+   "label": "Floors"
+  },
+  {
+   "id": "slider5",
+   "comp": "slider",
+   "open": false,
+   "x": 632,
+   "y": 144,
+   "param": "s5",
+   "label": "Top fillet (ft)"
+  },
+  {
+   "id": "slider6",
+   "comp": "slider",
+   "open": false,
+   "x": 636,
+   "y": 96,
+   "param": "s6",
+   "label": "Top radius (ft)"
+  },
+  {
+   "id": "slider7",
+   "comp": "slider",
+   "open": false,
+   "x": 644,
+   "y": 240,
+   "param": "s7",
+   "label": "Floor-to-floor (ft)"
+  },
+  {
+   "id": "slider8",
+   "comp": "slider",
+   "open": false,
+   "x": 1434,
+   "y": 96,
+   "param": "s8",
+   "label": "Total twist (deg)"
+  },
+  {
+   "id": "unitZ",
+   "comp": "unitZ",
+   "open": true,
+   "x": 1090,
+   "y": 4,
+   "question": "B01_Q02",
+   "need": "a component that turns Factor into Vector",
+   "hint": "Look in Vector › Vector.",
+   "correct": "Unit Z is the component this method uses here. Makes a vector pointing up the Z axis.",
+   "distractors": [
+    "unitX",
+    "unitY",
+    "vectorXYZ",
+    "amplitude",
+    "vector2pt",
+    "reverse",
+    "vectorLength",
+    "deconstructVector",
+    "crossProduct",
+    "dotProduct",
+    "angle",
+    "unitVector"
+   ],
+   "draft": true,
+   "stage": "Turn that height into an upward vector, ready to lift a copy of the floor plate to the top.",
+   "stage_draft": true
+  }
+ ],
+ "wires": [
+  {
+   "from": "point.Pt",
+   "to": "polygon.P"
+  },
+  {
+   "from": "slider3.N",
+   "to": "polygon.R"
+  },
+  {
+   "from": "slider.N",
+   "to": "polygon.S"
+  },
+  {
+   "from": "slider2.N",
+   "to": "polygon.Rf"
+  },
+  {
+   "from": "point2.Pt",
+   "to": "polygon2.P"
+  },
+  {
+   "from": "slider6.N",
+   "to": "polygon2.R"
+  },
+  {
+   "from": "number.N",
+   "to": "polygon2.S"
+  },
+  {
+   "from": "slider5.N",
+   "to": "polygon2.Rf"
+  },
+  {
+   "from": "slider4.N",
+   "to": "multiplica.A"
+  },
+  {
+   "from": "slider7.N",
+   "to": "multiplica.B"
+  },
+  {
+   "from": "data2.D",
+   "to": "unitZ.F"
+  },
+  {
+   "from": "data.D",
+   "to": "move.G"
+  },
+  {
+   "from": "unitZ.V",
+   "to": "move.T"
+  },
+  {
+   "from": "data3.D",
+   "to": "rotate.G"
+  },
+  {
+   "from": "slider8.N",
+   "to": "rotate.A"
+  },
+  {
+   "from": "point3.Pt",
+   "to": "rotate.P"
+  },
+  {
+   "from": "data4.D",
+   "to": "loft.C"
+  },
+  {
+   "from": "data5.D",
+   "to": "loft.C"
+  },
+  {
+   "from": "data6.D",
+   "to": "capHoles.B"
+  },
+  {
+   "from": "constructP.Pt",
+   "to": "point.Pt"
+  },
+  {
+   "from": "constructP.Pt",
+   "to": "point2.Pt"
+  },
+  {
+   "from": "slider.N",
+   "to": "number.N"
+  },
+  {
+   "from": "multiplica.R",
+   "to": "data2.D"
+  },
+  {
+   "from": "polygon2.P",
+   "to": "data.D"
+  },
+  {
+   "from": "move.G",
+   "to": "data3.D"
+  },
+  {
+   "from": "constructP.Pt",
+   "to": "point3.Pt"
+  },
+  {
+   "from": "polygon.P",
+   "to": "data4.D"
+  },
+  {
+   "from": "rotate.G",
+   "to": "data5.D"
+  },
+  {
+   "from": "loft.L",
+   "to": "data6.D"
+  }
+ ],
+ "order": [
+  "multiplica",
+  "unitZ",
+  "rotate",
+  "loft",
+  "capHoles"
+ ]
+}

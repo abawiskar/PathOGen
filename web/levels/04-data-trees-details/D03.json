@@ -1,0 +1,1091 @@
+{
+ "source": "GameLevels/LevelD/D03.ghx",
+ "method": "D03",
+ "params": [
+  {
+   "key": "s1",
+   "label": "Floors",
+   "min": 5.0,
+   "max": 80.0,
+   "step": 1,
+   "value": 30.0
+  },
+  {
+   "key": "s2",
+   "label": "Panels / mullions around",
+   "min": 8.0,
+   "max": 120.0,
+   "step": 1,
+   "value": 32.0
+  },
+  {
+   "key": "s3",
+   "label": "Mullion radius (ft)",
+   "min": 0.1,
+   "max": 1.0,
+   "step": 0.01,
+   "value": 0.25
+  },
+  {
+   "key": "s4",
+   "label": "Bulge at mid-height (ft)",
+   "min": -30.0,
+   "max": 30.0,
+   "step": 0.1,
+   "value": 10.0
+  },
+  {
+   "key": "s5",
+   "label": "Floor-to-floor (ft)",
+   "min": 10.0,
+   "max": 18.0,
+   "step": 0.1,
+   "value": 13.0
+  },
+  {
+   "key": "s6",
+   "label": "Top fillet (ft)",
+   "min": 0.0,
+   "max": 15.0,
+   "step": 0.1,
+   "value": 12.0
+  },
+  {
+   "key": "s7",
+   "label": "Base fillet (ft)",
+   "min": 0.0,
+   "max": 15.0,
+   "step": 0.1,
+   "value": 6.0
+  },
+  {
+   "key": "s8",
+   "label": "Top radius (ft)",
+   "min": 30.0,
+   "max": 120.0,
+   "step": 0.1,
+   "value": 45.0
+  },
+  {
+   "key": "s9",
+   "label": "Base radius (ft)",
+   "min": 30.0,
+   "max": 120.0,
+   "step": 0.1,
+   "value": 60.0
+  },
+  {
+   "key": "s10",
+   "label": "Sides",
+   "min": 3.0,
+   "max": 12.0,
+   "step": 1,
+   "value": 4.0
+  },
+  {
+   "key": "s11",
+   "label": "Total twist (deg)",
+   "min": -180.0,
+   "max": 180.0,
+   "step": 1,
+   "value": 90.0
+  }
+ ],
+ "nodes": [
+  {
+   "id": "addition",
+   "comp": "addition",
+   "open": false,
+   "x": 1996,
+   "y": 12
+  },
+  {
+   "id": "addition2",
+   "comp": "addition",
+   "open": false,
+   "x": 1996,
+   "y": 84
+  },
+  {
+   "id": "addition3",
+   "comp": "addition",
+   "open": false,
+   "x": 2110,
+   "y": 12
+  },
+  {
+   "id": "capHoles",
+   "comp": "capHoles",
+   "open": false,
+   "x": 4060,
+   "y": 9
+  },
+  {
+   "id": "constructP",
+   "comp": "constructPoint",
+   "open": false,
+   "x": 1469,
+   "y": 22,
+   "set": {
+    "X": 0.0,
+    "Y": 0.0
+   }
+  },
+  {
+   "id": "data",
+   "comp": "dataParam",
+   "open": false,
+   "x": 1618,
+   "y": 104,
+   "label": "Value"
+  },
+  {
+   "id": "data10",
+   "comp": "dataParam",
+   "open": false,
+   "x": 4207,
+   "y": 0,
+   "label": "Skin"
+  },
+  {
+   "id": "data11",
+   "comp": "dataParam",
+   "open": false,
+   "x": 4665,
+   "y": 0,
+   "label": "Skin"
+  },
+  {
+   "id": "data12",
+   "comp": "dataParam",
+   "open": false,
+   "x": 4668,
+   "y": 52,
+   "label": "Domains"
+  },
+  {
+   "id": "data13",
+   "comp": "dataParam",
+   "open": false,
+   "x": 4946,
+   "y": 0,
+   "label": "Twisted outlines"
+  },
+  {
+   "id": "data14",
+   "comp": "dataParam",
+   "open": false,
+   "x": 5272,
+   "y": 0,
+   "label": "Points {i}(j)"
+  },
+  {
+   "id": "data15",
+   "comp": "dataParam",
+   "open": false,
+   "x": 5550,
+   "y": 0,
+   "label": "Columns {j}(i)"
+  },
+  {
+   "id": "data16",
+   "comp": "dataParam",
+   "open": false,
+   "x": 5837,
+   "y": 0,
+   "label": "Mullion curves"
+  },
+  {
+   "id": "data17",
+   "comp": "dataParam",
+   "open": false,
+   "x": 5840,
+   "y": 52,
+   "label": "Twisted outlines"
+  },
+  {
+   "id": "data2",
+   "comp": "dataParam",
+   "open": false,
+   "x": 2258,
+   "y": 0,
+   "label": "Point"
+  },
+  {
+   "id": "data3",
+   "comp": "dataParam",
+   "open": false,
+   "x": 2258,
+   "y": 104,
+   "label": "Value"
+  },
+  {
+   "id": "data4",
+   "comp": "dataParam",
+   "open": false,
+   "x": 2258,
+   "y": 52,
+   "label": "Value"
+  },
+  {
+   "id": "data5",
+   "comp": "dataParam",
+   "open": false,
+   "x": 3110,
+   "y": 52,
+   "label": "Outline"
+  },
+  {
+   "id": "data6",
+   "comp": "dataParam",
+   "open": false,
+   "x": 3110,
+   "y": 104,
+   "label": "Point"
+  },
+  {
+   "id": "data7",
+   "comp": "dataParam",
+   "open": false,
+   "x": 3110,
+   "y": 0,
+   "label": "Value"
+  },
+  {
+   "id": "data8",
+   "comp": "dataParam",
+   "open": false,
+   "x": 3680,
+   "y": 0,
+   "label": "Twisted outlines"
+  },
+  {
+   "id": "data9",
+   "comp": "dataParam",
+   "open": false,
+   "x": 3954,
+   "y": 0,
+   "label": "Skin"
+  },
+  {
+   "id": "divideCurv",
+   "comp": "divideCurve",
+   "open": true,
+   "x": 5116,
+   "y": 22,
+   "set": {
+    "K": false
+   },
+   "question": "D03_Q03",
+   "need": "a component that turns Curve, Count and Kinks into Points",
+   "hint": "Look in Curve › Division.",
+   "correct": "Divide Curve is the component this method uses here. Splits a curve into N equal-length parts.",
+   "distractors": [
+    "divideLength",
+    "divideDistance",
+    "divideByDeviation",
+    "evaluateLength",
+    "curveFrames",
+    "perpFrames",
+    "shatter",
+    "dashPattern",
+    "curveContour",
+    "horizontalFrames",
+    "evaluateCurve",
+    "curveMiddle"
+   ],
+   "draft": true,
+   "stage": "Place the same number of points around every floor: one branch of points per floor.",
+   "stage_draft": true
+  },
+  {
+   "id": "divideDoma",
+   "comp": "divDomain2",
+   "open": true,
+   "x": 4518,
+   "y": 22,
+   "question": "D03_Q01",
+   "need": "a component that turns Domain, U Count and V Count into Segments",
+   "hint": "Look in Maths › Domain.",
+   "correct": "Divide Domain² is the component this method uses here. Splits a 2D domain into a U×V grid.",
+   "distractors": [
+    "divideDomain",
+    "constructDomainUV",
+    "deconstructDomain",
+    "bounds2D",
+    "divideSurface",
+    "surfaceFrames",
+    "dimensions",
+    "consecutiveDomains",
+    "findDomain",
+    "includes",
+    "constructDomain"
+   ],
+   "draft": true,
+   "stage": "Plan the facade grid: split the tower skin into panels around and up.",
+   "stage_draft": true
+  },
+  {
+   "id": "flipMatrix",
+   "comp": "flipMatrix",
+   "open": true,
+   "x": 5388,
+   "y": 8,
+   "question": "D03_Q04",
+   "need": "a component that turns Data into Data",
+   "hint": "Look in Sets › Tree.",
+   "correct": "Flip Matrix is the component this method uses here. Swaps rows and columns of a data tree.",
+   "distractors": [
+    "flatten",
+    "graft",
+    "simplifyTree",
+    "trimTree",
+    "shiftPaths",
+    "explodeTree",
+    "pruneTree",
+    "splitTree",
+    "treeBranch",
+    "reverseList",
+    "shiftList",
+    "partitionList"
+   ],
+   "draft": true,
+   "stage": "Regroup the points so each branch holds one column: the same position on every floor.",
+   "stage_draft": true
+  },
+  {
+   "id": "graphMappe",
+   "comp": "graphMapper",
+   "open": false,
+   "x": 659,
+   "y": 65,
+   "graph": {
+    "type": "bezier",
+    "cp": [
+     [
+      0.0,
+      0.0
+     ],
+     [
+      0.3,
+      1.0
+     ],
+     [
+      0.7,
+      1.0
+     ],
+     [
+      1.0,
+      0.0
+     ]
+    ]
+   }
+  },
+  {
+   "id": "interpolat",
+   "comp": "interpolate",
+   "open": true,
+   "x": 5672,
+   "y": 32,
+   "set": {
+    "D": 3.0,
+    "P": false,
+    "K": 1.0
+   },
+   "question": "D03_Q05",
+   "need": "a component that turns Vertices, Degree, Periodic and Knot style into Curve",
+   "hint": "Look in Curve › Spline.",
+   "correct": "Interpolate is the component this method uses here. Draws a smooth curve through points.",
+   "distractors": [
+    "divideCurve",
+    "fitLine",
+    "circle3Pt",
+    "polygon",
+    "circleFit",
+    "line",
+    "arc3Pt",
+    "bezierSpan",
+    "tangentArcs",
+    "catenary",
+    "blendCurve",
+    "connectCurves"
+   ],
+   "draft": true,
+   "stage": "Draw a smooth curve up each column: the vertical mullions follow the twist and the bulge.",
+   "stage_draft": true
+  },
+  {
+   "id": "isotrim",
+   "comp": "isotrim",
+   "open": true,
+   "x": 4778,
+   "y": 18,
+   "question": "D03_Q02",
+   "need": "a component that turns Surface and Domain into Surface",
+   "hint": "Look in Surface › Util.",
+   "correct": "Isotrim is the component this method uses here. Cuts a surface into pieces by UV domains.",
+   "distractors": [
+    "divideSurface",
+    "surfaceSplit",
+    "copyTrim",
+    "retrim",
+    "untrim",
+    "surfaceFrames",
+    "isoCurve",
+    "evaluateSurface",
+    "subCurve",
+    "dimensions",
+    "brepEdges",
+    "deconstructBrep"
+   ],
+   "draft": true,
+   "stage": "Cut the tower skin into panels along that grid.",
+   "stage_draft": true
+  },
+  {
+   "id": "loft",
+   "comp": "loft",
+   "open": false,
+   "x": 3807,
+   "y": 12,
+   "set": {
+    "O": false
+   }
+  },
+  {
+   "id": "multiplica",
+   "comp": "multiplication",
+   "open": false,
+   "x": 816,
+   "y": 12
+  },
+  {
+   "id": "multiplica10",
+   "comp": "multiplication",
+   "open": false,
+   "x": 3378,
+   "y": 12
+  },
+  {
+   "id": "multiplica2",
+   "comp": "multiplication",
+   "open": false,
+   "x": 1238,
+   "y": 12
+  },
+  {
+   "id": "multiplica3",
+   "comp": "multiplication",
+   "open": false,
+   "x": 1352,
+   "y": 12
+  },
+  {
+   "id": "multiplica4",
+   "comp": "multiplication",
+   "open": false,
+   "x": 1880,
+   "y": 228
+  },
+  {
+   "id": "multiplica5",
+   "comp": "multiplication",
+   "open": false,
+   "x": 1880,
+   "y": 84
+  },
+  {
+   "id": "multiplica6",
+   "comp": "multiplication",
+   "open": false,
+   "x": 1880,
+   "y": 156
+  },
+  {
+   "id": "multiplica7",
+   "comp": "multiplication",
+   "open": false,
+   "x": 1880,
+   "y": 12
+  },
+  {
+   "id": "multiplica8",
+   "comp": "multiplication",
+   "open": false,
+   "x": 2736,
+   "y": 12,
+   "set": {
+    "B": 1.5707963267948966
+   }
+  },
+  {
+   "id": "multiplica9",
+   "comp": "multiplication",
+   "open": false,
+   "x": 2962,
+   "y": 12
+  },
+  {
+   "id": "number",
+   "comp": "numberParam",
+   "open": false,
+   "x": 314,
+   "y": 0
+  },
+  {
+   "id": "number2",
+   "comp": "numberParam",
+   "open": false,
+   "x": 964,
+   "y": 0
+  },
+  {
+   "id": "number3",
+   "comp": "numberParam",
+   "open": false,
+   "x": 966,
+   "y": 52
+  },
+  {
+   "id": "number4",
+   "comp": "numberParam",
+   "open": false,
+   "x": 1618,
+   "y": 0
+  },
+  {
+   "id": "number5",
+   "comp": "numberParam",
+   "open": false,
+   "x": 1620,
+   "y": 52
+  },
+  {
+   "id": "number6",
+   "comp": "numberParam",
+   "open": false,
+   "x": 2627,
+   "y": 0
+  },
+  {
+   "id": "number7",
+   "comp": "numberParam",
+   "open": false,
+   "x": 4207,
+   "y": 52
+  },
+  {
+   "id": "number8",
+   "comp": "numberParam",
+   "open": false,
+   "x": 4968,
+   "y": 52
+  },
+  {
+   "id": "pipe",
+   "comp": "pipe",
+   "open": true,
+   "x": 6096,
+   "y": 114,
+   "set": {
+    "E": 0.0
+   },
+   "question": "D03_Q06",
+   "need": "a component that turns Curve, Radius and Caps into Pipe",
+   "hint": "Look in Surface › Freeform.",
+   "correct": "Pipe is the component this method uses here. Gives a curve solid thickness.",
+   "distractors": [
+    "sweep1",
+    "sweep2",
+    "extrude",
+    "loft",
+    "offset",
+    "fillet",
+    "rebuildCurve",
+    "revolution",
+    "railRevolution",
+    "patch",
+    "boundary",
+    "extrudePoint"
+   ],
+   "draft": true,
+   "stage": "Give the mullions real thickness.",
+   "stage_draft": true
+  },
+  {
+   "id": "pipe2",
+   "comp": "pipe",
+   "open": false,
+   "x": 6096,
+   "y": 22,
+   "set": {
+    "E": 0.0
+   }
+  },
+  {
+   "id": "polygon",
+   "comp": "polygon",
+   "open": false,
+   "x": 2476,
+   "y": 32
+  },
+  {
+   "id": "range",
+   "comp": "range",
+   "open": false,
+   "x": 164,
+   "y": 110,
+   "set": {
+    "D": [
+     1.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "id": "range2",
+   "comp": "range",
+   "open": false,
+   "x": 164,
+   "y": 25,
+   "set": {
+    "D": [
+     0.0,
+     1.0
+    ]
+   }
+  },
+  {
+   "id": "rotate",
+   "comp": "rotate",
+   "open": false,
+   "x": 3502,
+   "y": 22,
+   "degrees": true
+  },
+  {
+   "id": "sine",
+   "comp": "sine",
+   "open": false,
+   "x": 2850,
+   "y": 7
+  },
+  {
+   "id": "slider",
+   "comp": "slider",
+   "open": false,
+   "x": 0,
+   "y": 0,
+   "param": "s1",
+   "label": "Floors"
+  },
+  {
+   "id": "slider10",
+   "comp": "slider",
+   "open": false,
+   "x": 4308,
+   "y": 96,
+   "param": "s2",
+   "label": "Panels / mullions around"
+  },
+  {
+   "id": "slider11",
+   "comp": "slider",
+   "open": false,
+   "x": 5904,
+   "y": 96,
+   "param": "s3",
+   "label": "Mullion radius (ft)"
+  },
+  {
+   "id": "slider2",
+   "comp": "slider",
+   "open": false,
+   "x": 410,
+   "y": 48,
+   "param": "s4",
+   "label": "Bulge at mid-height (ft)"
+  },
+  {
+   "id": "slider3",
+   "comp": "slider",
+   "open": false,
+   "x": 1047,
+   "y": 96,
+   "param": "s5",
+   "label": "Floor-to-floor (ft)"
+  },
+  {
+   "id": "slider4",
+   "comp": "slider",
+   "open": false,
+   "x": 1689,
+   "y": 288,
+   "param": "s6",
+   "label": "Top fillet (ft)"
+  },
+  {
+   "id": "slider5",
+   "comp": "slider",
+   "open": false,
+   "x": 1691,
+   "y": 240,
+   "param": "s7",
+   "label": "Base fillet (ft)"
+  },
+  {
+   "id": "slider6",
+   "comp": "slider",
+   "open": false,
+   "x": 1694,
+   "y": 192,
+   "param": "s8",
+   "label": "Top radius (ft)"
+  },
+  {
+   "id": "slider7",
+   "comp": "slider",
+   "open": false,
+   "x": 1696,
+   "y": 147,
+   "param": "s9",
+   "label": "Base radius (ft)"
+  },
+  {
+   "id": "slider8",
+   "comp": "slider",
+   "open": false,
+   "x": 2313,
+   "y": 147,
+   "param": "s10",
+   "label": "Sides"
+  },
+  {
+   "id": "slider9",
+   "comp": "slider",
+   "open": false,
+   "x": 3190,
+   "y": 147,
+   "param": "s11",
+   "label": "Total twist (deg)"
+  }
+ ],
+ "wires": [
+  {
+   "from": "slider.N",
+   "to": "range2.N"
+  },
+  {
+   "from": "slider.N",
+   "to": "range.N"
+  },
+  {
+   "from": "number.N",
+   "to": "graphMappe.x"
+  },
+  {
+   "from": "graphMappe.y",
+   "to": "multiplica.A"
+  },
+  {
+   "from": "slider2.N",
+   "to": "multiplica.B"
+  },
+  {
+   "from": "number2.N",
+   "to": "multiplica2.A"
+  },
+  {
+   "from": "slider3.N",
+   "to": "multiplica2.B"
+  },
+  {
+   "from": "number3.N",
+   "to": "multiplica3.A"
+  },
+  {
+   "from": "multiplica2.R",
+   "to": "multiplica3.B"
+  },
+  {
+   "from": "multiplica3.R",
+   "to": "constructP.Z"
+  },
+  {
+   "from": "number4.N",
+   "to": "multiplica7.A"
+  },
+  {
+   "from": "slider7.N",
+   "to": "multiplica7.B"
+  },
+  {
+   "from": "number5.N",
+   "to": "multiplica5.A"
+  },
+  {
+   "from": "slider6.N",
+   "to": "multiplica5.B"
+  },
+  {
+   "from": "multiplica7.R",
+   "to": "addition.A"
+  },
+  {
+   "from": "multiplica5.R",
+   "to": "addition.B"
+  },
+  {
+   "from": "addition.R",
+   "to": "addition3.A"
+  },
+  {
+   "from": "data.D",
+   "to": "addition3.B"
+  },
+  {
+   "from": "number4.N",
+   "to": "multiplica6.A"
+  },
+  {
+   "from": "slider5.N",
+   "to": "multiplica6.B"
+  },
+  {
+   "from": "number5.N",
+   "to": "multiplica4.A"
+  },
+  {
+   "from": "slider4.N",
+   "to": "multiplica4.B"
+  },
+  {
+   "from": "multiplica6.R",
+   "to": "addition2.A"
+  },
+  {
+   "from": "multiplica4.R",
+   "to": "addition2.B"
+  },
+  {
+   "from": "data2.D",
+   "to": "polygon.P"
+  },
+  {
+   "from": "data4.D",
+   "to": "polygon.R"
+  },
+  {
+   "from": "slider8.N",
+   "to": "polygon.S"
+  },
+  {
+   "from": "data3.D",
+   "to": "polygon.Rf"
+  },
+  {
+   "from": "number6.N",
+   "to": "multiplica8.A"
+  },
+  {
+   "from": "multiplica8.R",
+   "to": "sine.x"
+  },
+  {
+   "from": "sine.y",
+   "to": "multiplica9.A"
+  },
+  {
+   "from": "sine.y",
+   "to": "multiplica9.B"
+  },
+  {
+   "from": "data7.D",
+   "to": "multiplica10.A"
+  },
+  {
+   "from": "slider9.N",
+   "to": "multiplica10.B"
+  },
+  {
+   "from": "data5.D",
+   "to": "rotate.G"
+  },
+  {
+   "from": "multiplica10.R",
+   "to": "rotate.A"
+  },
+  {
+   "from": "data6.D",
+   "to": "rotate.P"
+  },
+  {
+   "from": "data8.D",
+   "to": "loft.C"
+  },
+  {
+   "from": "data9.D",
+   "to": "capHoles.B"
+  },
+  {
+   "from": "data10.D",
+   "to": "divideDoma.I"
+  },
+  {
+   "from": "slider10.N",
+   "to": "divideDoma.U"
+  },
+  {
+   "from": "number7.N",
+   "to": "divideDoma.V"
+  },
+  {
+   "from": "data11.D",
+   "to": "isotrim.S"
+  },
+  {
+   "from": "data12.D",
+   "to": "isotrim.D"
+  },
+  {
+   "from": "data13.D",
+   "to": "divideCurv.C"
+  },
+  {
+   "from": "number8.N",
+   "to": "divideCurv.N"
+  },
+  {
+   "from": "data14.D",
+   "to": "flipMatrix.D"
+  },
+  {
+   "from": "data15.D",
+   "to": "interpolat.V"
+  },
+  {
+   "from": "data16.D",
+   "to": "pipe2.C"
+  },
+  {
+   "from": "slider11.N",
+   "to": "pipe2.R"
+  },
+  {
+   "from": "data17.D",
+   "to": "pipe.C"
+  },
+  {
+   "from": "slider11.N",
+   "to": "pipe.R"
+  },
+  {
+   "from": "range2.R",
+   "to": "number.N"
+  },
+  {
+   "from": "slider.N",
+   "to": "number2.N"
+  },
+  {
+   "from": "range2.R",
+   "to": "number3.N"
+  },
+  {
+   "from": "range.R",
+   "to": "number4.N"
+  },
+  {
+   "from": "range2.R",
+   "to": "number5.N"
+  },
+  {
+   "from": "multiplica.R",
+   "to": "data.D"
+  },
+  {
+   "from": "constructP.Pt",
+   "to": "data2.D"
+  },
+  {
+   "from": "addition3.R",
+   "to": "data4.D"
+  },
+  {
+   "from": "addition2.R",
+   "to": "data3.D"
+  },
+  {
+   "from": "range2.R",
+   "to": "number6.N"
+  },
+  {
+   "from": "multiplica9.R",
+   "to": "data7.D"
+  },
+  {
+   "from": "polygon.P",
+   "to": "data5.D"
+  },
+  {
+   "from": "constructP.Pt",
+   "to": "data6.D"
+  },
+  {
+   "from": "rotate.G",
+   "to": "data8.D"
+  },
+  {
+   "from": "loft.L",
+   "to": "data9.D"
+  },
+  {
+   "from": "loft.L",
+   "to": "data10.D"
+  },
+  {
+   "from": "slider.N",
+   "to": "number7.N"
+  },
+  {
+   "from": "loft.L",
+   "to": "data11.D"
+  },
+  {
+   "from": "divideDoma.S",
+   "to": "data12.D"
+  },
+  {
+   "from": "rotate.G",
+   "to": "data13.D"
+  },
+  {
+   "from": "slider10.N",
+   "to": "number8.N"
+  },
+  {
+   "from": "divideCurv.P",
+   "to": "data14.D"
+  },
+  {
+   "from": "flipMatrix.D",
+   "to": "data15.D"
+  },
+  {
+   "from": "interpolat.C",
+   "to": "data16.D"
+  },
+  {
+   "from": "rotate.G",
+   "to": "data17.D"
+  }
+ ],
+ "order": [
+  "divideDoma",
+  "isotrim",
+  "divideCurv",
+  "flipMatrix",
+  "interpolat",
+  "pipe"
+ ]
+}

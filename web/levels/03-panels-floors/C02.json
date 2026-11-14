@@ -1,0 +1,847 @@
+{
+ "source": "GameLevels/LevelC/C02.ghx",
+ "method": "C02",
+ "params": [
+  {
+   "key": "s1",
+   "label": "Floors",
+   "min": 5.0,
+   "max": 80.0,
+   "step": 1,
+   "value": 30.0
+  },
+  {
+   "key": "s2",
+   "label": "Slab thickness (ft)",
+   "min": 0.5,
+   "max": 2.0,
+   "step": 0.01,
+   "value": 1.0
+  },
+  {
+   "key": "s3",
+   "label": "Floor-to-floor (ft)",
+   "min": 10.0,
+   "max": 18.0,
+   "step": 0.1,
+   "value": 13.0
+  },
+  {
+   "key": "s4",
+   "label": "Top fillet (ft)",
+   "min": 0.0,
+   "max": 15.0,
+   "step": 0.1,
+   "value": 6.0
+  },
+  {
+   "key": "s5",
+   "label": "Base fillet (ft)",
+   "min": 0.0,
+   "max": 15.0,
+   "step": 0.1,
+   "value": 6.0
+  },
+  {
+   "key": "s6",
+   "label": "Top radius (ft)",
+   "min": 30.0,
+   "max": 120.0,
+   "step": 0.1,
+   "value": 45.0
+  },
+  {
+   "key": "s7",
+   "label": "Base radius (ft)",
+   "min": 30.0,
+   "max": 120.0,
+   "step": 0.1,
+   "value": 60.0
+  },
+  {
+   "key": "s8",
+   "label": "Sides",
+   "min": 3.0,
+   "max": 12.0,
+   "step": 1,
+   "value": 4.0
+  },
+  {
+   "key": "s9",
+   "label": "Total twist (deg)",
+   "min": -180.0,
+   "max": 180.0,
+   "step": 1,
+   "value": 90.0
+  },
+  {
+   "key": "s10",
+   "label": "Slab scale (setback)",
+   "min": 0.9,
+   "max": 1.0,
+   "step": 0.001,
+   "value": 0.98
+  }
+ ],
+ "nodes": [
+  {
+   "id": "addition",
+   "comp": "addition",
+   "open": false,
+   "x": 1344,
+   "y": 12
+  },
+  {
+   "id": "addition2",
+   "comp": "addition",
+   "open": false,
+   "x": 1344,
+   "y": 84
+  },
+  {
+   "id": "area",
+   "comp": "area",
+   "open": true,
+   "x": 4602,
+   "y": 12,
+   "question": "C02_Q05",
+   "need": "a component that turns Geometry into Area",
+   "hint": "Look in Surface › Analysis.",
+   "correct": "Area is the component this method uses here. Measures area and finds the centroid.",
+   "distractors": [
+    "volume",
+    "length",
+    "dimensions",
+    "boundingBox",
+    "curveMiddle",
+    "evaluateCurve",
+    "closed",
+    "curveClosestPoint",
+    "polygonCenter",
+    "segmentLengths",
+    "planar",
+    "boxProperties"
+   ],
+   "draft": true,
+   "stage": "Measure each slab: its floor area and its centre point.",
+   "stage_draft": true
+  },
+  {
+   "id": "capHoles",
+   "comp": "capHoles",
+   "open": false,
+   "x": 2808,
+   "y": 9
+  },
+  {
+   "id": "capHoles2",
+   "comp": "capHoles",
+   "open": true,
+   "x": 4322,
+   "y": 9,
+   "question": "C02_Q04",
+   "need": "a component that turns Brep into Brep",
+   "hint": "Look in Surface › Util.",
+   "correct": "Cap Holes is the component this method uses here. Closes the planar openings of a brep.",
+   "distractors": [
+    "boundary",
+    "brepJoin",
+    "mergeFaces",
+    "flip",
+    "deconstructBrep",
+    "brepEdges",
+    "solidUnion",
+    "solidDifference",
+    "solidIntersection",
+    "offsetSurface",
+    "brepWireframe",
+    "untrim"
+   ],
+   "draft": true,
+   "stage": "Close each slab top and bottom so every floor is a solid slab.",
+   "stage_draft": true
+  },
+  {
+   "id": "constructP",
+   "comp": "constructPoint",
+   "open": false,
+   "x": 817,
+   "y": 22,
+   "set": {
+    "X": 0.0,
+    "Y": 0.0
+   }
+  },
+  {
+   "id": "data",
+   "comp": "dataParam",
+   "open": false,
+   "x": 1491,
+   "y": 52,
+   "label": "Value"
+  },
+  {
+   "id": "data10",
+   "comp": "dataParam",
+   "open": false,
+   "x": 3925,
+   "y": 52,
+   "label": "Vector"
+  },
+  {
+   "id": "data11",
+   "comp": "dataParam",
+   "open": false,
+   "x": 3938,
+   "y": 0,
+   "label": "Slab outlines"
+  },
+  {
+   "id": "data12",
+   "comp": "dataParam",
+   "open": false,
+   "x": 4210,
+   "y": 0,
+   "label": "Slab sides"
+  },
+  {
+   "id": "data13",
+   "comp": "dataParam",
+   "open": false,
+   "x": 4482,
+   "y": 0,
+   "label": "Slab outlines"
+  },
+  {
+   "id": "data2",
+   "comp": "dataParam",
+   "open": false,
+   "x": 1491,
+   "y": 104,
+   "label": "Value"
+  },
+  {
+   "id": "data3",
+   "comp": "dataParam",
+   "open": false,
+   "x": 1491,
+   "y": 0,
+   "label": "Point"
+  },
+  {
+   "id": "data4",
+   "comp": "dataParam",
+   "open": false,
+   "x": 1858,
+   "y": 52,
+   "label": "Outline"
+  },
+  {
+   "id": "data5",
+   "comp": "dataParam",
+   "open": false,
+   "x": 1858,
+   "y": 104,
+   "label": "Point"
+  },
+  {
+   "id": "data6",
+   "comp": "dataParam",
+   "open": false,
+   "x": 2428,
+   "y": 0,
+   "label": "Twisted outlines"
+  },
+  {
+   "id": "data7",
+   "comp": "dataParam",
+   "open": false,
+   "x": 2702,
+   "y": 0,
+   "label": "Skin"
+  },
+  {
+   "id": "data8",
+   "comp": "dataParam",
+   "open": false,
+   "x": 2955,
+   "y": 52,
+   "label": "Point"
+  },
+  {
+   "id": "data9",
+   "comp": "dataParam",
+   "open": false,
+   "x": 2976,
+   "y": 0,
+   "label": "Twisted outlines"
+  },
+  {
+   "id": "extrude",
+   "comp": "extrude",
+   "open": true,
+   "x": 4058,
+   "y": 12,
+   "question": "C02_Q03",
+   "need": "a component that turns Base and Direction into Extrusion",
+   "hint": "Look in Surface › Freeform.",
+   "correct": "Extrude is the component this method uses here. Pushes a profile along a vector.",
+   "distractors": [
+    "extrudePoint",
+    "extrudeAlong",
+    "extrudeLinear",
+    "sweep1",
+    "pipe",
+    "loft",
+    "boundary",
+    "revolution",
+    "move",
+    "offset",
+    "patch",
+    "fragmentPatch"
+   ],
+   "draft": true,
+   "stage": "Push every slab outline up by that thickness.",
+   "stage_draft": true
+  },
+  {
+   "id": "loft",
+   "comp": "loft",
+   "open": false,
+   "x": 2555,
+   "y": 12,
+   "set": {
+    "O": false
+   }
+  },
+  {
+   "id": "multiplica",
+   "comp": "multiplication",
+   "open": false,
+   "x": 586,
+   "y": 12
+  },
+  {
+   "id": "multiplica2",
+   "comp": "multiplication",
+   "open": false,
+   "x": 700,
+   "y": 12
+  },
+  {
+   "id": "multiplica3",
+   "comp": "multiplication",
+   "open": false,
+   "x": 1228,
+   "y": 228
+  },
+  {
+   "id": "multiplica4",
+   "comp": "multiplication",
+   "open": false,
+   "x": 1228,
+   "y": 12
+  },
+  {
+   "id": "multiplica5",
+   "comp": "multiplication",
+   "open": false,
+   "x": 1228,
+   "y": 84
+  },
+  {
+   "id": "multiplica6",
+   "comp": "multiplication",
+   "open": false,
+   "x": 1228,
+   "y": 156
+  },
+  {
+   "id": "multiplica7",
+   "comp": "multiplication",
+   "open": false,
+   "x": 2126,
+   "y": 12
+  },
+  {
+   "id": "multiplica8",
+   "comp": "multiplication",
+   "open": true,
+   "x": 3664,
+   "y": 12,
+   "set": {
+    "B": -1.0
+   },
+   "question": "C02_Q02",
+   "need": "a component that turns A and B into Result",
+   "hint": "Look in Maths › Operators.",
+   "correct": "Multiplication is the component this method uses here. Multiplies two values.",
+   "distractors": [
+    "addition",
+    "subtraction",
+    "power",
+    "modulus",
+    "maximum",
+    "minimum",
+    "massAddition",
+    "average",
+    "absolute",
+    "squareRoot",
+    "logarithm",
+    "cosine"
+   ],
+   "draft": true,
+   "stage": "Set the slab thickness as an upward distance.",
+   "stage_draft": true
+  },
+  {
+   "id": "number",
+   "comp": "numberParam",
+   "open": false,
+   "x": 312,
+   "y": 0
+  },
+  {
+   "id": "number2",
+   "comp": "numberParam",
+   "open": false,
+   "x": 314,
+   "y": 52
+  },
+  {
+   "id": "number3",
+   "comp": "numberParam",
+   "open": false,
+   "x": 966,
+   "y": 0
+  },
+  {
+   "id": "number4",
+   "comp": "numberParam",
+   "open": false,
+   "x": 968,
+   "y": 52
+  },
+  {
+   "id": "number5",
+   "comp": "numberParam",
+   "open": false,
+   "x": 1860,
+   "y": 0
+  },
+  {
+   "id": "panel",
+   "comp": "panel",
+   "open": false,
+   "x": 4755,
+   "y": 50
+  },
+  {
+   "id": "polygon",
+   "comp": "polygon",
+   "open": false,
+   "x": 1710,
+   "y": 32
+  },
+  {
+   "id": "range",
+   "comp": "range",
+   "open": false,
+   "x": 164,
+   "y": 110,
+   "set": {
+    "D": [
+     1.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "id": "range2",
+   "comp": "range",
+   "open": false,
+   "x": 164,
+   "y": 25,
+   "set": {
+    "D": [
+     0.0,
+     1.0
+    ]
+   }
+  },
+  {
+   "id": "rotate",
+   "comp": "rotate",
+   "open": false,
+   "x": 2250,
+   "y": 22,
+   "degrees": true
+  },
+  {
+   "id": "scale",
+   "comp": "scale",
+   "open": true,
+   "x": 3240,
+   "y": 22,
+   "question": "C02_Q01",
+   "need": "a component that turns Geometry, Centre and Factor into Geometry",
+   "hint": "Look in Transform › Affine.",
+   "correct": "Scale is the component this method uses here. Resizes geometry around a centre point.",
+   "distractors": [
+    "scaleNU",
+    "mirror",
+    "rotate",
+    "move",
+    "shear",
+    "shearAngle",
+    "orient",
+    "orientDirection",
+    "rotateAxis",
+    "moveAwayFrom",
+    "project",
+    "linearArray"
+   ],
+   "draft": true,
+   "stage": "Pull each floor outline in slightly from the facade: the slab setback.",
+   "stage_draft": true
+  },
+  {
+   "id": "slider",
+   "comp": "slider",
+   "open": false,
+   "x": 0,
+   "y": 0,
+   "param": "s1",
+   "label": "Floors"
+  },
+  {
+   "id": "slider10",
+   "comp": "slider",
+   "open": false,
+   "x": 3473,
+   "y": 0,
+   "param": "s2",
+   "label": "Slab thickness (ft)"
+  },
+  {
+   "id": "slider2",
+   "comp": "slider",
+   "open": false,
+   "x": 395,
+   "y": 96,
+   "param": "s3",
+   "label": "Floor-to-floor (ft)"
+  },
+  {
+   "id": "slider3",
+   "comp": "slider",
+   "open": false,
+   "x": 1037,
+   "y": 240,
+   "param": "s4",
+   "label": "Top fillet (ft)"
+  },
+  {
+   "id": "slider4",
+   "comp": "slider",
+   "open": false,
+   "x": 1039,
+   "y": 192,
+   "param": "s5",
+   "label": "Base fillet (ft)"
+  },
+  {
+   "id": "slider5",
+   "comp": "slider",
+   "open": false,
+   "x": 1042,
+   "y": 144,
+   "param": "s6",
+   "label": "Top radius (ft)"
+  },
+  {
+   "id": "slider6",
+   "comp": "slider",
+   "open": false,
+   "x": 1044,
+   "y": 96,
+   "param": "s7",
+   "label": "Base radius (ft)"
+  },
+  {
+   "id": "slider7",
+   "comp": "slider",
+   "open": false,
+   "x": 1546,
+   "y": 147,
+   "param": "s8",
+   "label": "Sides"
+  },
+  {
+   "id": "slider8",
+   "comp": "slider",
+   "open": false,
+   "x": 1938,
+   "y": 147,
+   "param": "s9",
+   "label": "Total twist (deg)"
+  },
+  {
+   "id": "slider9",
+   "comp": "slider",
+   "open": false,
+   "x": 3044,
+   "y": 96,
+   "param": "s10",
+   "label": "Slab scale (setback)"
+  },
+  {
+   "id": "unitZ",
+   "comp": "unitZ",
+   "open": false,
+   "x": 3778,
+   "y": 4
+  }
+ ],
+ "wires": [
+  {
+   "from": "slider.N",
+   "to": "range2.N"
+  },
+  {
+   "from": "slider.N",
+   "to": "range.N"
+  },
+  {
+   "from": "number.N",
+   "to": "multiplica.A"
+  },
+  {
+   "from": "slider2.N",
+   "to": "multiplica.B"
+  },
+  {
+   "from": "number2.N",
+   "to": "multiplica2.A"
+  },
+  {
+   "from": "multiplica.R",
+   "to": "multiplica2.B"
+  },
+  {
+   "from": "multiplica2.R",
+   "to": "constructP.Z"
+  },
+  {
+   "from": "number3.N",
+   "to": "multiplica4.A"
+  },
+  {
+   "from": "slider6.N",
+   "to": "multiplica4.B"
+  },
+  {
+   "from": "number4.N",
+   "to": "multiplica5.A"
+  },
+  {
+   "from": "slider5.N",
+   "to": "multiplica5.B"
+  },
+  {
+   "from": "multiplica4.R",
+   "to": "addition.A"
+  },
+  {
+   "from": "multiplica5.R",
+   "to": "addition.B"
+  },
+  {
+   "from": "number3.N",
+   "to": "multiplica6.A"
+  },
+  {
+   "from": "slider4.N",
+   "to": "multiplica6.B"
+  },
+  {
+   "from": "number4.N",
+   "to": "multiplica3.A"
+  },
+  {
+   "from": "slider3.N",
+   "to": "multiplica3.B"
+  },
+  {
+   "from": "multiplica6.R",
+   "to": "addition2.A"
+  },
+  {
+   "from": "multiplica3.R",
+   "to": "addition2.B"
+  },
+  {
+   "from": "data3.D",
+   "to": "polygon.P"
+  },
+  {
+   "from": "data.D",
+   "to": "polygon.R"
+  },
+  {
+   "from": "slider7.N",
+   "to": "polygon.S"
+  },
+  {
+   "from": "data2.D",
+   "to": "polygon.Rf"
+  },
+  {
+   "from": "number5.N",
+   "to": "multiplica7.A"
+  },
+  {
+   "from": "slider8.N",
+   "to": "multiplica7.B"
+  },
+  {
+   "from": "data4.D",
+   "to": "rotate.G"
+  },
+  {
+   "from": "multiplica7.R",
+   "to": "rotate.A"
+  },
+  {
+   "from": "data5.D",
+   "to": "rotate.P"
+  },
+  {
+   "from": "data6.D",
+   "to": "loft.C"
+  },
+  {
+   "from": "data7.D",
+   "to": "capHoles.B"
+  },
+  {
+   "from": "data9.D",
+   "to": "scale.G"
+  },
+  {
+   "from": "data8.D",
+   "to": "scale.C"
+  },
+  {
+   "from": "slider9.N",
+   "to": "scale.F"
+  },
+  {
+   "from": "slider10.N",
+   "to": "multiplica8.A"
+  },
+  {
+   "from": "multiplica8.R",
+   "to": "unitZ.F"
+  },
+  {
+   "from": "data11.D",
+   "to": "extrude.B"
+  },
+  {
+   "from": "data10.D",
+   "to": "extrude.D"
+  },
+  {
+   "from": "data12.D",
+   "to": "capHoles2.B"
+  },
+  {
+   "from": "data13.D",
+   "to": "area.G"
+  },
+  {
+   "from": "area.A",
+   "to": "panel.in"
+  },
+  {
+   "from": "slider.N",
+   "to": "number.N"
+  },
+  {
+   "from": "range2.R",
+   "to": "number2.N"
+  },
+  {
+   "from": "range.R",
+   "to": "number3.N"
+  },
+  {
+   "from": "range2.R",
+   "to": "number4.N"
+  },
+  {
+   "from": "constructP.Pt",
+   "to": "data3.D"
+  },
+  {
+   "from": "addition.R",
+   "to": "data.D"
+  },
+  {
+   "from": "addition2.R",
+   "to": "data2.D"
+  },
+  {
+   "from": "range2.R",
+   "to": "number5.N"
+  },
+  {
+   "from": "polygon.P",
+   "to": "data4.D"
+  },
+  {
+   "from": "constructP.Pt",
+   "to": "data5.D"
+  },
+  {
+   "from": "rotate.G",
+   "to": "data6.D"
+  },
+  {
+   "from": "loft.L",
+   "to": "data7.D"
+  },
+  {
+   "from": "rotate.G",
+   "to": "data9.D"
+  },
+  {
+   "from": "constructP.Pt",
+   "to": "data8.D"
+  },
+  {
+   "from": "scale.G",
+   "to": "data11.D"
+  },
+  {
+   "from": "unitZ.V",
+   "to": "data10.D"
+  },
+  {
+   "from": "extrude.E",
+   "to": "data12.D"
+  },
+  {
+   "from": "scale.G",
+   "to": "data13.D"
+  }
+ ],
+ "order": [
+  "scale",
+  "multiplica8",
+  "extrude",
+  "capHoles2",
+  "area"
+ ]
+}

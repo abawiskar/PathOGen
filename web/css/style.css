@@ -188,7 +188,8 @@ button { font-family: inherit; cursor: pointer; }
 .view-menu button:hover { background: #c7d6ea; }
 .params { position: relative; width: 196px; background: rgba(240,243,244,.82); border: 1px solid rgba(80,95,100,.35); border-radius: 4px; padding: 6px 9px 4px; z-index: 2; }
 .params .ph { font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: #4a5a5e; font-weight: 700; margin-bottom: 2px; }
-.param { display: grid; grid-template-columns: 62px 1fr 30px; align-items: center; gap: 6px; font-size: 11px; color: #263235; font-weight: 600; height: 21px; }
+.param { display: grid; grid-template-columns: 70px 1fr 30px; align-items: center; gap: 6px; font-size: 11px; color: #263235; font-weight: 600; min-height: 21px; padding: 1px 0; }
+.param > span { font-size: 10px; line-height: 1.12; overflow-wrap: anywhere; }
 .param input { width: 100%; accent-color: #2f6d52; height: 14px; }
 .param b { text-align: right; font-variant-numeric: tabular-nums; }
 .preview-foot { position: absolute; left: 18px; bottom: 16px; font-size: 13px; color: #56676b; z-index: 2; max-width: 300px; }

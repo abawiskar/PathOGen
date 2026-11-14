@@ -1,0 +1,693 @@
+{
+ "source": "GameLevels/LevelB/B02.ghx",
+ "method": "B02",
+ "params": [
+  {
+   "key": "s1",
+   "label": "Floors",
+   "min": 5.0,
+   "max": 80.0,
+   "step": 1,
+   "value": 30.0
+  },
+  {
+   "key": "s2",
+   "label": "Floor-to-floor (ft)",
+   "min": 10.0,
+   "max": 18.0,
+   "step": 0.1,
+   "value": 13.0
+  },
+  {
+   "key": "s3",
+   "label": "Top fillet (ft)",
+   "min": 0.0,
+   "max": 15.0,
+   "step": 0.1,
+   "value": 6.0
+  },
+  {
+   "key": "s4",
+   "label": "Base fillet (ft)",
+   "min": 0.0,
+   "max": 15.0,
+   "step": 0.1,
+   "value": 6.0
+  },
+  {
+   "key": "s5",
+   "label": "Top radius (ft)",
+   "min": 30.0,
+   "max": 120.0,
+   "step": 0.1,
+   "value": 45.0
+  },
+  {
+   "key": "s6",
+   "label": "Base radius (ft)",
+   "min": 30.0,
+   "max": 120.0,
+   "step": 0.1,
+   "value": 60.0
+  },
+  {
+   "key": "s7",
+   "label": "Sides",
+   "min": 3.0,
+   "max": 12.0,
+   "step": 1,
+   "value": 4.0
+  },
+  {
+   "key": "s8",
+   "label": "Total twist (deg)",
+   "min": -180.0,
+   "max": 180.0,
+   "step": 1,
+   "value": 90.0
+  }
+ ],
+ "nodes": [
+  {
+   "id": "addition",
+   "comp": "addition",
+   "open": true,
+   "x": 1344,
+   "y": 84,
+   "question": "B02_Q03",
+   "need": "a component that turns A and B into Result",
+   "hint": "Look in Maths › Operators.",
+   "correct": "Addition is the component this method uses here. Adds two values.",
+   "distractors": [
+    "subtraction",
+    "division",
+    "multiplication",
+    "power",
+    "modulus",
+    "integerDivision",
+    "maximum",
+    "minimum",
+    "massAddition",
+    "average",
+    "absolute",
+    "negative"
+   ],
+   "draft": true,
+   "stage": "Blend the base and top sizes: each floor gets a mix of the two, depending on how high it is.",
+   "stage_draft": true
+  },
+  {
+   "id": "addition2",
+   "comp": "addition",
+   "open": false,
+   "x": 1344,
+   "y": 12
+  },
+  {
+   "id": "capHoles",
+   "comp": "capHoles",
+   "open": true,
+   "x": 2808,
+   "y": 9,
+   "question": "B02_Q07",
+   "need": "a component that turns Brep into Brep",
+   "hint": "Look in Surface › Util.",
+   "correct": "Cap Holes is the component this method uses here. Closes the planar openings of a brep.",
+   "distractors": [
+    "boundary",
+    "brepJoin",
+    "mergeFaces",
+    "flip",
+    "deconstructBrep",
+    "brepEdges",
+    "solidUnion",
+    "solidDifference",
+    "solidIntersection",
+    "offsetSurface",
+    "brepWireframe",
+    "untrim"
+   ],
+   "draft": true,
+   "stage": "Close the top and bottom to make a solid tower mass.",
+   "stage_draft": true
+  },
+  {
+   "id": "constructP",
+   "comp": "constructPoint",
+   "open": false,
+   "x": 817,
+   "y": 22,
+   "set": {
+    "X": 0.0,
+    "Y": 0.0
+   }
+  },
+  {
+   "id": "data",
+   "comp": "dataParam",
+   "open": false,
+   "x": 1491,
+   "y": 0,
+   "label": "Point"
+  },
+  {
+   "id": "data2",
+   "comp": "dataParam",
+   "open": false,
+   "x": 1491,
+   "y": 104,
+   "label": "Value"
+  },
+  {
+   "id": "data3",
+   "comp": "dataParam",
+   "open": false,
+   "x": 1491,
+   "y": 52,
+   "label": "Value"
+  },
+  {
+   "id": "data4",
+   "comp": "dataParam",
+   "open": false,
+   "x": 1858,
+   "y": 104,
+   "label": "Point"
+  },
+  {
+   "id": "data5",
+   "comp": "dataParam",
+   "open": false,
+   "x": 1858,
+   "y": 52,
+   "label": "Outline"
+  },
+  {
+   "id": "data6",
+   "comp": "dataParam",
+   "open": false,
+   "x": 2428,
+   "y": 0,
+   "label": "Twisted outlines"
+  },
+  {
+   "id": "data7",
+   "comp": "dataParam",
+   "open": false,
+   "x": 2702,
+   "y": 0,
+   "label": "Skin"
+  },
+  {
+   "id": "loft",
+   "comp": "loft",
+   "open": true,
+   "x": 2555,
+   "y": 12,
+   "set": {
+    "O": false
+   },
+   "question": "B02_Q06",
+   "need": "a component that turns Curves and Options into Loft",
+   "hint": "Look in Surface › Freeform.",
+   "correct": "Loft is the component this method uses here. Skins a surface through a list of curves.",
+   "distractors": [
+    "sweep1",
+    "sweep2",
+    "extrude",
+    "edgeSurface",
+    "networkSurface",
+    "boundary",
+    "surfaceFromPoints",
+    "pipe",
+    "revolution",
+    "railRevolution",
+    "patch",
+    "extrudeLinear"
+   ],
+   "draft": true,
+   "stage": "Skin a surface through all the twisted floor plates, bottom to top.",
+   "stage_draft": true
+  },
+  {
+   "id": "multiplica",
+   "comp": "multiplication",
+   "open": true,
+   "x": 586,
+   "y": 12,
+   "question": "B02_Q02",
+   "need": "a component that turns A and B into Result",
+   "hint": "Look in Maths › Operators.",
+   "correct": "Multiplication is the component this method uses here. Multiplies two values.",
+   "distractors": [
+    "addition",
+    "subtraction",
+    "power",
+    "modulus",
+    "maximum",
+    "minimum",
+    "massAddition",
+    "average",
+    "absolute",
+    "squareRoot",
+    "logarithm",
+    "cosine"
+   ],
+   "draft": true,
+   "stage": "Scale those values by the floor-to-floor height to get each floor's elevation.",
+   "stage_draft": true
+  },
+  {
+   "id": "multiplica2",
+   "comp": "multiplication",
+   "open": false,
+   "x": 700,
+   "y": 12
+  },
+  {
+   "id": "multiplica3",
+   "comp": "multiplication",
+   "open": false,
+   "x": 1228,
+   "y": 228
+  },
+  {
+   "id": "multiplica4",
+   "comp": "multiplication",
+   "open": false,
+   "x": 1228,
+   "y": 156
+  },
+  {
+   "id": "multiplica5",
+   "comp": "multiplication",
+   "open": false,
+   "x": 1228,
+   "y": 84
+  },
+  {
+   "id": "multiplica6",
+   "comp": "multiplication",
+   "open": false,
+   "x": 1228,
+   "y": 12
+  },
+  {
+   "id": "multiplica7",
+   "comp": "multiplication",
+   "open": false,
+   "x": 2126,
+   "y": 12
+  },
+  {
+   "id": "number",
+   "comp": "numberParam",
+   "open": false,
+   "x": 312,
+   "y": 0
+  },
+  {
+   "id": "number2",
+   "comp": "numberParam",
+   "open": false,
+   "x": 314,
+   "y": 52
+  },
+  {
+   "id": "number3",
+   "comp": "numberParam",
+   "open": false,
+   "x": 966,
+   "y": 0
+  },
+  {
+   "id": "number4",
+   "comp": "numberParam",
+   "open": false,
+   "x": 968,
+   "y": 52
+  },
+  {
+   "id": "number5",
+   "comp": "numberParam",
+   "open": false,
+   "x": 1860,
+   "y": 0
+  },
+  {
+   "id": "polygon",
+   "comp": "polygon",
+   "open": true,
+   "x": 1710,
+   "y": 32,
+   "question": "B02_Q04",
+   "need": "a component that turns Plane, Radius, Segments and Fillet into Polygon",
+   "hint": "Look in Curve › Primitive.",
+   "correct": "Polygon is the component this method uses here. Draws a regular polygon with S sides.",
+   "distractors": [
+    "polygonCenter",
+    "rectangle",
+    "circleCNR",
+    "ellipse",
+    "polygonEdge",
+    "rectangle2Pt",
+    "rectangle3Pt",
+    "circle",
+    "circle3Pt",
+    "incircle",
+    "inellipse",
+    "curveToPolyline"
+   ],
+   "draft": true,
+   "stage": "Draw a floor plate at every level, each with its own radius and fillet.",
+   "stage_draft": true
+  },
+  {
+   "id": "range",
+   "comp": "range",
+   "open": true,
+   "x": 164,
+   "y": 110,
+   "set": {
+    "D": [
+     1.0,
+     0.0
+    ]
+   },
+   "question": "B02_Q01",
+   "need": "a component that turns Domain and Steps into Range",
+   "hint": "Look in Sets › Sequence.",
+   "correct": "Range is the component this method uses here. Divides a domain into evenly spaced numbers.",
+   "distractors": [
+    "series",
+    "random",
+    "duplicateData",
+    "sequence",
+    "repeatData",
+    "fibonacci",
+    "jitter",
+    "constructDomain",
+    "divideDomain",
+    "bounds",
+    "remap",
+    "stackData"
+   ],
+   "draft": true,
+   "stage": "Make one value per floor, running evenly between 0 and 1: how far up the tower each floor sits.",
+   "stage_draft": true
+  },
+  {
+   "id": "range2",
+   "comp": "range",
+   "open": false,
+   "x": 164,
+   "y": 25,
+   "set": {
+    "D": [
+     0.0,
+     1.0
+    ]
+   }
+  },
+  {
+   "id": "rotate",
+   "comp": "rotate",
+   "open": true,
+   "x": 2250,
+   "y": 22,
+   "degrees": true,
+   "question": "B02_Q05",
+   "need": "a component that turns Geometry, Angle and Plane into Geometry",
+   "hint": "Look in Transform › Euclidean.",
+   "correct": "Rotate is the component this method uses here. Turns geometry around a plane.",
+   "distractors": [
+    "rotatePlane",
+    "mirror",
+    "scale",
+    "move",
+    "scaleNU",
+    "shear",
+    "shearAngle",
+    "orient",
+    "orientDirection",
+    "flipPlane",
+    "alignPlane",
+    "polarArray"
+   ],
+   "draft": true,
+   "stage": "Twist every floor a little more than the one below it.",
+   "stage_draft": true
+  },
+  {
+   "id": "slider",
+   "comp": "slider",
+   "open": false,
+   "x": 0,
+   "y": 0,
+   "param": "s1",
+   "label": "Floors"
+  },
+  {
+   "id": "slider2",
+   "comp": "slider",
+   "open": false,
+   "x": 395,
+   "y": 96,
+   "param": "s2",
+   "label": "Floor-to-floor (ft)"
+  },
+  {
+   "id": "slider3",
+   "comp": "slider",
+   "open": false,
+   "x": 1037,
+   "y": 240,
+   "param": "s3",
+   "label": "Top fillet (ft)"
+  },
+  {
+   "id": "slider4",
+   "comp": "slider",
+   "open": false,
+   "x": 1039,
+   "y": 192,
+   "param": "s4",
+   "label": "Base fillet (ft)"
+  },
+  {
+   "id": "slider5",
+   "comp": "slider",
+   "open": false,
+   "x": 1042,
+   "y": 144,
+   "param": "s5",
+   "label": "Top radius (ft)"
+  },
+  {
+   "id": "slider6",
+   "comp": "slider",
+   "open": false,
+   "x": 1044,
+   "y": 96,
+   "param": "s6",
+   "label": "Base radius (ft)"
+  },
+  {
+   "id": "slider7",
+   "comp": "slider",
+   "open": false,
+   "x": 1546,
+   "y": 147,
+   "param": "s7",
+   "label": "Sides"
+  },
+  {
+   "id": "slider8",
+   "comp": "slider",
+   "open": false,
+   "x": 1938,
+   "y": 147,
+   "param": "s8",
+   "label": "Total twist (deg)"
+  }
+ ],
+ "wires": [
+  {
+   "from": "slider.N",
+   "to": "range2.N"
+  },
+  {
+   "from": "slider.N",
+   "to": "range.N"
+  },
+  {
+   "from": "number.N",
+   "to": "multiplica.A"
+  },
+  {
+   "from": "slider2.N",
+   "to": "multiplica.B"
+  },
+  {
+   "from": "number2.N",
+   "to": "multiplica2.A"
+  },
+  {
+   "from": "multiplica.R",
+   "to": "multiplica2.B"
+  },
+  {
+   "from": "multiplica2.R",
+   "to": "constructP.Z"
+  },
+  {
+   "from": "number3.N",
+   "to": "multiplica6.A"
+  },
+  {
+   "from": "slider6.N",
+   "to": "multiplica6.B"
+  },
+  {
+   "from": "number4.N",
+   "to": "multiplica5.A"
+  },
+  {
+   "from": "slider5.N",
+   "to": "multiplica5.B"
+  },
+  {
+   "from": "multiplica6.R",
+   "to": "addition2.A"
+  },
+  {
+   "from": "multiplica5.R",
+   "to": "addition2.B"
+  },
+  {
+   "from": "number3.N",
+   "to": "multiplica4.A"
+  },
+  {
+   "from": "slider4.N",
+   "to": "multiplica4.B"
+  },
+  {
+   "from": "number4.N",
+   "to": "multiplica3.A"
+  },
+  {
+   "from": "slider3.N",
+   "to": "multiplica3.B"
+  },
+  {
+   "from": "multiplica4.R",
+   "to": "addition.A"
+  },
+  {
+   "from": "multiplica3.R",
+   "to": "addition.B"
+  },
+  {
+   "from": "data.D",
+   "to": "polygon.P"
+  },
+  {
+   "from": "data3.D",
+   "to": "polygon.R"
+  },
+  {
+   "from": "slider7.N",
+   "to": "polygon.S"
+  },
+  {
+   "from": "data2.D",
+   "to": "polygon.Rf"
+  },
+  {
+   "from": "number5.N",
+   "to": "multiplica7.A"
+  },
+  {
+   "from": "slider8.N",
+   "to": "multiplica7.B"
+  },
+  {
+   "from": "data5.D",
+   "to": "rotate.G"
+  },
+  {
+   "from": "multiplica7.R",
+   "to": "rotate.A"
+  },
+  {
+   "from": "data4.D",
+   "to": "rotate.P"
+  },
+  {
+   "from": "data6.D",
+   "to": "loft.C"
+  },
+  {
+   "from": "data7.D",
+   "to": "capHoles.B"
+  },
+  {
+   "from": "slider.N",
+   "to": "number.N"
+  },
+  {
+   "from": "range2.R",
+   "to": "number2.N"
+  },
+  {
+   "from": "range.R",
+   "to": "number3.N"
+  },
+  {
+   "from": "range2.R",
+   "to": "number4.N"
+  },
+  {
+   "from": "constructP.Pt",
+   "to": "data.D"
+  },
+  {
+   "from": "addition2.R",
+   "to": "data3.D"
+  },
+  {
+   "from": "addition.R",
+   "to": "data2.D"
+  },
+  {
+   "from": "range2.R",
+   "to": "number5.N"
+  },
+  {
+   "from": "polygon.P",
+   "to": "data5.D"
+  },
+  {
+   "from": "constructP.Pt",
+   "to": "data4.D"
+  },
+  {
+   "from": "rotate.G",
+   "to": "data6.D"
+  },
+  {
+   "from": "loft.L",
+   "to": "data7.D"
+  }
+ ],
+ "order": [
+  "range",
+  "multiplica",
+  "addition",
+  "polygon",
+  "rotate",
+  "loft",
+  "capHoles"
+ ]
+}

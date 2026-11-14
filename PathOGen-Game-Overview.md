@@ -6,8 +6,8 @@ PathOGen is a browser game that teaches Grasshopper 3D. Each level is a real Gra
 Players pick the right component cards, wire them correctly, and complete the definition before the monster defeats them.
 A live 3D preview shows the geometry growing with every correct move.
 
-*Status as of 14 Nov 2026: playable prototype. Level 1's five difficulties come from the LevelA `.ghx` files; level 2 is
-transcribed from `GH definitions/Twisty_Simple.gh`; levels 3–4 are placeholders until their `.ghx` files arrive.*
+*Status as of 14 Nov 2026: playable prototype. All four levels are built from the team's `.ghx` files
+(`GameLevels/LevelA`–`LevelD`): five difficulties for level 1 and three each for levels 2–4.*
 
 ---
 
@@ -25,6 +25,7 @@ Then open <http://localhost:5173>.
 | URL option | Effect |
 | --- | --- |
 | `?all` | Unlocks every level (for testing) |
+| `?inspect` | Testing inspector: a bar to jump to any level and difficulty and step through its definition stage by stage (auto-placing the right answers), with the live preview and sliders. Nothing is saved |
 | `?monster=tower` (or `spaghetti`, `tree`, `voronoi`) | Shows one monster on every level |
 
 Other pages: `web/review.html` lists every hint and explanation still marked as draft, for the team to review.
@@ -123,10 +124,10 @@ Every 3 correct picks in a row can award a bonus lifesaver (up to 2 per level).
 
 | # | Level | Monster | What the player builds | Source |
 | --- | --- | --- | --- | --- |
-| 1 | **Build the Base Shape** | The Spaghetti Boss | Construct Point → Polygon (5 sides, filleted corners), driven by sliders | Twisty_Simple.gh |
-| 2 | **Build the Mass** | The Twisted Tower | Unit Z → Move → Rotate (degrees) → Loft → Cap Holes: a twisted tower mass | Twisty_Simple.gh |
-| 3 | **Panels & Floors** | The Voronoi Golem | Contour (floors), Divide Domain² + Isotrim (facade panels) | Placeholder |
-| 4 | **Data Trees & Details** | The Branch Tree | Divide Curve per floor → Flip Matrix → Interpolate → Pipe: twisting mullions | Placeholder |
+| 1 | **Build the Base Shape** | The Spaghetti Boss | A rounded floor plate outline, five different ways | `GameLevels/LevelA/A01–A05.ghx` |
+| 2 | **Build the Mass** | The Twisted Tower | The twisted tower mass: floors stacked, scaled, rotated, lofted and capped | `GameLevels/LevelB/B01–B03.ghx` |
+| 3 | **Panels & Floors** | The Voronoi Golem | Floor slabs: the mass sliced level by level, set back and extruded | `GameLevels/LevelC/C01–C03.ghx` |
+| 4 | **Data Trees & Details** | The Branch Tree | Facade details: mullions run up the tower and the skin cut into panels | `GameLevels/LevelD/D01–D03.ghx` |
 
 ### Difficulties
 
@@ -152,6 +153,15 @@ Level 1's difficulties are five **methods** for building the same rounded pentag
 | A03 Pattern Pouncer | Construct Point → Move → Series → Rotate → Discontinuity | Standard | 4 | 5 | 1 | |
 | A04 Geometry Wizard | Construct Point → Divide Curve → Shift List → PolyLine → Flatten Tree | Independent | 3 | 6 | 2 | Fewer lifesavers |
 | A05 Grasshopper Legend | Construct Point → Divide Curve → Trim with Region → Arc SED → Shift List → Merge | Independent | 3 | 6 | 3 | 30-second timer |
+
+Levels 2–4 each have three methods, converted from LevelB–D for the web build (names and rules follow the
+Godot converter's defaults for the first three difficulties):
+
+| Difficulty | Level 2 · Mass (LevelB) | Level 3 · Floors (LevelC) | Level 4 · Details (LevelD) | Rules |
+| --- | --- | --- | --- | --- |
+| Hopper Hatchling | Multiplication → Unit Z → Rotate → Loft → Cap Holes | Contour → Multiplication → Extrude → Cap Holes | Divide Curve → Line → Pipe | Guided, 5 hearts, 3 cards |
+| Shape Scout | Range → Multiplication → Addition → Polygon → Rotate → Loft → Cap Holes | Scale → Multiplication → Extrude → Cap Holes → Area | Divide Domain² → Isotrim → Area → Scale → Pipe | Guided, 4 hearts, 4 cards |
+| Pattern Pouncer | Range → Graph Mapper → Multiplication → Addition → Polygon → Sine → Rotate → Loft → Cap Holes | Graft Tree → Scale → Multiplication → Extrude → Cap Holes → Area | Divide Domain² → Isotrim → Divide Curve → Flip Matrix → Interpolate → Pipe | Standard, 4 hearts, 5 cards, attack set 1 |
 
 ### Learning progression
 
@@ -224,7 +234,6 @@ the names also appear on the end-of-game screen. Edit them in `TEAM` in `web/js/
 
 ## 11. Open items
 
-- **Levels 3–4:** replace placeholder definitions with the real scripts; decide how many difficulties each has.
 - **Hero wire-attack animation:** needs evenly spaced frames on the sheet.
 - **Text review:** all hints and explanations are drafts written by Claude.
 - **Monster names and lines:** placeholders.

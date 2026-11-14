@@ -141,5 +141,9 @@
 <script src="js/loader.js"></script>
 <script src="js/art.js"></script>
 <script src="js/game.js"></script>
+<script>
+  // testing only: ?inspect adds the level inspector bar (js/inspect.js)
+  if (/[?&]inspect\b/.test(location.search)) { const s = document.createElement('script'); s.src = 'js/inspect.js'; document.body.appendChild(s); }
+</script>
 </body>
 </html>
