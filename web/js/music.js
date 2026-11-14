@@ -17,11 +17,13 @@
   const control = document.createElement('div');
   control.id = 'music-controls';
   control.innerHTML = '<button type="button" aria-label="Toggle background music"></button><input type="range" min="0" max="100" step="1" aria-label="Music volume" title="Music volume">';
-  Object.assign(control.style, { position: 'fixed', right: '14px', top: '12px', zIndex: '100', display: 'flex', alignItems: 'center', gap: '8px', padding: '7px 10px', borderRadius: '8px', background: '#152823e6', color: '#ece9de', fontFamily: 'Barlow, sans-serif', fontSize: '13px' });
+  // lives inside the 1600x900 stage so it scales with the game and keeps its spot at any window size
+  // (top-right, inside the frame and above the panels; below the modal layer, z-index 80)
+  Object.assign(control.style, { position: 'absolute', right: '58px', top: '8px', zIndex: '75', display: 'flex', alignItems: 'center', gap: '8px', padding: '7px 10px', borderRadius: '8px', background: '#152823e6', color: '#ece9de', fontFamily: 'Barlow, sans-serif', fontSize: '13px' });
   const button = control.querySelector('button'), slider = control.querySelector('input');
   Object.assign(button.style, { background: 'transparent', color: 'inherit', border: '0', cursor: 'pointer', font: 'inherit', padding: '2px' });
   Object.assign(slider.style, { width: '70px', accentColor: '#a8c690' });
-  document.body.append(control);
+  (document.getElementById('stage') || document.body).append(control);
   function updateControl() {
     button.textContent = enabled ? 'Music: On' : 'Music: Off';
     button.setAttribute('aria-pressed', String(enabled));
