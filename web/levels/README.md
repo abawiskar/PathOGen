@@ -19,6 +19,7 @@ The node graph **is** the answer key. The preview is computed live from it by a 
 | `order` | Optional build order of open node ids. Default: topological order of the graph |
 | `boss` | Optional, `true` for the boss level |
 | `goal` | Optional image of the finished result, e.g. `"goal.png"` placed in the level's folder (a Rhino render or viewport capture). Without it, the game renders the complete definition itself with the default slider values. Shown in the briefing and as a click-to-enlarge thumbnail in the preview |
+| `definition_image` | Optional picture of the finished Grasshopper definition, e.g. `"definition.png"` (a canvas capture) in the level's folder. Shown by the **Completed definition** button; without it the game draws the finished graph itself |
 | `source` | Optional, the Grasshopper file this level was transcribed from |
 | `placeholder` | Optional, `true` while the level is a stand-in waiting for its real script |
 
@@ -96,6 +97,9 @@ Flip Matrix, Move, Rotate, Scale, Mirror, Sine, Multiplication, Addition, Radian
 Also, for levels transcribed from `.ghx` files (ported from the Godot build): Unit Y, Division, Negative, Circle CNR, End Points,
 PolyLine, Fillet, Fillet (t), Discontinuity, Join Curves, Merge, Trim with Region, Arc SED, Evaluate Curve, and Point/Curve/Data
 parameters passing their input through.
+
+Node and card icons are David Rutten's Grasshopper icons (`img/gh-icons/`, mapped by component id in `js/gh_icons.js`);
+components without one keep a simple line icon from `js/data.js`.
 
 `js/components_extra.js` adds ~150 more components (cards, ports, descriptions) generated from the Godot build's
 `godot/data/components_godot.json`, so any card a `.ghx` level uses exists; only the ones above can be computed.

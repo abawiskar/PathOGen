@@ -35,6 +35,7 @@ Other pages: `web/review.html` lists every hint and explanation still marked as 
 
 | Area | What it shows |
 | --- | --- |
+| **Completed definition** (button, top right of the definition panel) | Opens the finished graph — every node placed and wired, the ones you place framed in gold — next to its output. |
 | **Build your definition** (top left) | A simplified Grasshopper canvas: placed components, wires, and empty nodes still to fill. Empty nodes appear as greyed-out components with a `?`; the one you're filling glows gold. Drag to pan on big graphs. |
 | **Preview** (centre) | Live wireframe 3D of the definition so far. Drag to orbit, scroll to zoom, double-click to reset. Perspective / Top / Front views. |
 | **Sliders** (preview, top right) | The definition's sliders — drag them and the whole definition re-runs. |
@@ -46,7 +47,7 @@ Other pages: `web/review.html` lists every hint and explanation still marked as 
 | **Your hand** (bottom) | The component cards (or port cards during a wire check) to choose from. |
 | **Hero** (bottom left) | The guide character; reacts to success, damage and defeat. |
 | **Moves / Help** (bottom right) | Moves opens a log of every decision with its explanation; Help explains the rules. |
-| **Title screen** | Begin the Hunt, How to Play, and Exit (asks first; closes the tab where the browser allows it, otherwise shows a goodbye message). |
+| **Title screen** | Begin the Hunt, How to Play, About Us, and Exit (asks first; closes the tab where the browser allows it, otherwise shows a goodbye message). |
 | **Main Menu / ← Map** (bottom right) | Leave the battle for the title screen or the map; asks first if the level is in progress. The map also has a Main Menu button. |
 
 ---
@@ -163,6 +164,7 @@ cards and pre-place less — moving players from **recognition → understanding
 
 | Asset | Source | In game |
 | --- | --- | --- |
+| Component icons | David Rutten's original Grasshopper icons, from github.com/aidannewsome/grasshopper-icons (free to use for Grasshopper-related projects) | `web/img/gh-icons/*.svg`, mapped in `web/js/gh_icons.js`; 161 of 202 components, the rest keep a simple line icon |
 | Hero | `Images/Hero/Material Seat for the hero_v3 - upscale.png` | Main pose (idle), Success, Damage and Defeat frames, cut to `web/img/hero-*.png` |
 | The Spaghetti Boss | `Images/Monster/Spaghetti Boss_v1.png` | `web/img/monster-spaghetti.png` |
 | The Twisted Tower | `Images/Monster/Twisted Tower Monster_v3.png` (dark background removed) | `web/img/monster-tower.png` |
@@ -205,7 +207,12 @@ Monster names and backstory lines are placeholders and can be edited in `web/js/
 
 ---
 
-## 10. Open items
+## 10. Team
+
+Made at the AECTech Hackathon 2026 by Abhishek Bawiskar, Garrett Herbst, Joel Hills, Riku Kanemitsu, Danny Karas,
+Maya Mashiach and Kazu Tajima (shown on the About Us page and the end-of-game screen; `TEAM` in `web/js/game.js`).
+
+## 11. Open items
 
 - **Levels 3–4:** replace placeholder definitions with the real scripts; decide how many difficulties each has.
 - **Hero wire-attack animation:** needs evenly spaced frames on the sheet.
