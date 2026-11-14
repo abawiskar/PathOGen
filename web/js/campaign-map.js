@@ -56,6 +56,8 @@
       const completed = !!node.querySelector('.mn-stars .on');
       if (completed) node.classList.add('completed');
       node.prepend(marker);
+      const art = node.querySelector('.mn-art');
+      if (art) art.innerHTML = '<img class="campaign-hero" src="img/hero-main.png" alt="Hero">';
       node.onclick = () => select(node);
       node.onkeydown = event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); select(node); } };
       const lock = node.querySelector('.lock'); if (lock) lock.innerHTML = '&#128274;';

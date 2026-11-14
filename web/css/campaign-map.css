@@ -27,3 +27,6 @@
 #screen-map .campaign-challenge { min-width:260px; min-height:70px; font:700 25px var(--serif); }
 #screen-map .campaign-challenge:disabled { opacity:.4; cursor:not-allowed; }
 #screen-map .campaign-progress { position:absolute; left:60px; bottom:220px; color:var(--sage); font:600 19px var(--sans); letter-spacing:.08em; }
+
+#screen-map .map-node.selected .mn-art { left:66px; top:-43px; width:88px; }
+#screen-map .campaign-hero { display:block; width:88px; height:88px; object-fit:contain; filter:drop-shadow(0 3px 4px rgba(0,0,0,.35)); }
