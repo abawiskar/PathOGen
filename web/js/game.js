@@ -950,12 +950,12 @@
   }
 
   /* ───────── Wiring ───────── */
-  $('#title-hero').innerHTML = '<img class="hero-title" src="img/hero-main.png" alt="">';
+  $('#title-hero').innerHTML = '<img class="hero-title" src="img/start-hero.webp" alt="">';
   $('#hero').innerHTML = '<img class="hero-main" src="img/hero-main.png" alt="">';
   $('#btn-start').onclick = () => { if (LEVELS.length) openMap(); else toast('Levels are still loading…'); };
   LevelLoader.loadAll().then(ls => {
     LEVELS = ls;
-    $('#title-monster').innerHTML = monsterArt('spaghetti');
+    $('#title-monster').innerHTML = '<img src="img/start-boss.webp" alt="The Spaghetti Boss">';
     if (/[?&]all\b/.test(location.search)) save.unlocked = LEVELS.length;
   }).catch(err => {
     console.error(err);
