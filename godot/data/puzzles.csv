@@ -1,0 +1,3 @@
+Puzzle ID,Name,Grove,Encounter,Monster ID,Monster,Threat,Hearts,Energy / Turn,Item Cap (Lag),Required Output,Par Turns,Cards in List,Notes
+P01,Twisted Tower,Tangled Grove,1,B-ROOT,The Rootbound,9,4,3,10,Brep,4,12,"Built from GH definitions/Twisty_Simple.gh: two Polygons, Move + Unit Z lifts the top, Rotate twists it, Loft + Cap Holes make the solid."
+P02,Gnat Swarm,Tangled Grove,2,B-GNAT,Null Gnat,4,4,3,6,Curve,2,8,Teaches Divide Curve.

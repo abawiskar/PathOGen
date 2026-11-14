@@ -1,0 +1,18 @@
+Card ID,Name,Nickname,Category,Inputs,Outputs,Output Type,Base Damage,Energy Cost,Description
+C-PT,Construct Point,Pt,Vector,"X, Y, Z (Number)",Pt (Point),Point,0,1,"Make a point from X, Y and Z values."
+C-SLIDER,Number Slider,Slider,Params,none,N (Number),Number,0,0,Pick a single number.
+C-SERIES,Series,Series,Sets,"S, N, C (Number)",S (Number list),Number,0,1,Create a sequence of values.
+C-RANGE,Range,Range,Sets,"D (Domain), N (Integer)",R (Number list),Number,0,1,Divide a domain into even steps.
+C-SORT,Sort List,Sort,Sets,"K (Keys), A (Values)","K, A",Any,0,1,Order keys and their matching values.
+C-CULL,Cull Pattern,Cull,Sets,"L (List), P (Boolean)",L (List),Any,0,1,Remove items using a repeating true/false pattern.
+C-UNITZ,Unit Z,Z,Vector,F (Number),V (Vector),Vector,0,1,"A vector pointing up, scaled by F."
+C-MOVE,Move,Move,Transform,"G (Geometry), T (Vector)","G, X",Same as input,1,1,Shift geometry along a vector.
+C-ROTATE,Rotate,Rotate,Transform,"G (Geometry), A (Angle), P (Plane)","G, X",Same as input,1,2,Turn geometry around a plane.
+C-LINE,Line,Ln,Curve,"A, B (Point)",L (Curve),Curve,2,1,Draw a line between two points.
+C-CIRCLE,Circle,Cir,Curve,"P (Plane), R (Number)",C (Curve),Curve,2,1,Draw a circle on a plane.
+C-DIVIDE,Divide Curve,Divide,Curve,"C (Curve), N (Integer), K (Boolean)","P (Points), T, t",Point,1,2,Split a curve into evenly spaced points.
+C-EXTRUDE,Extrude,Extr,Surface,"B (Curve), D (Vector)",E (Brep),Brep,3,2,Push a curve along a direction into a surface.
+C-PIPE,Pipe,Pipe,Surface,"C (Curve), R (Number), E (Caps)",B (Brep),Brep,3,3,Give a curve solid thickness.
+C-LOFT,Loft,Loft,Surface,"C (Curves), O (Options)",L (Brep),Brep,4,3,Skin a surface through a set of curves.
+C-POLYGON,Polygon,Poly,Curve,"P (Plane), R (Number), S (Integer), Fr (Number)",P (Curve),Curve,2,1,Draw a regular polygon with S sides around a plane.
+C-CAP,Cap Holes,Cap,Surface,B (Brep),B (Brep),Brep,1,1,Close the open ends of a Brep with flat caps.
