@@ -28,6 +28,15 @@ static func ensure_loaded() -> void:
 	if m is Dictionary:
 		monsters = m.get("options", {})
 		phases = m.get("phases", [])
+	# Godot-only options (new art the web version doesn't use yet); sync never touches this file
+	var extra = _read_json("res://data/monsters_godot.json")
+	if extra is Dictionary:
+		var opts: Dictionary = extra.get("options", {})
+		for key in opts:
+			if monsters.has(key):
+				monsters[key].merge(opts[key], true)
+			else:
+				monsters[key] = opts[key]
 	for a in OS.get_cmdline_user_args():
 		if a.begins_with("--monster=") and monsters.has(a.substr(10)):
 			monster_override = a.substr(10)
