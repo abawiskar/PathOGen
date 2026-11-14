@@ -9,12 +9,6 @@
    "img": "art/monster-staris.png",
    "place": "The Stairwell",
    "trait": "A staircase that crawled off its tower. Every step is a rotated copy of the last, and it wants yours out of order."
-  },
-  "voronoi": {
-   "name": "The Voronoi Golem",
-   "img": "art/monster-voronoi.png",
-   "place": "The Cell Quarry",
-   "trait": "A body of cells grown around stolen points. Feed it the wrong points and it only gets bigger."
   }
  }
 }
