@@ -1,0 +1,7 @@
+LifeSaver ID,Name,Command,Effect,Value,Uses / Puzzle,Star Cost,Help Text
+L-HINT,Hint,/hint,Hint,1,2,1,Reveals a clue about the missing component.
+L-POTION,Health Potion,/potion,Health Potion,1,1,1,Restores a portion of lost health.
+L-5050,50/50,/5050,50/50,2,1,1,Removes two incorrect cards from the available choices.
+L-CLEAR,Clear Vision,/clear,Clear Vision,1,2,0,Removes blur or restores hidden component labels.
+L-SECOND,Second Chance,/undo,Second Chance,1,1,1,Allows one incorrect move to be undone without taking damage.
+L-SEARCH,Search,/search,Search,1,1,2,Get a card the player wants (named after Grasshopper's double-click search).

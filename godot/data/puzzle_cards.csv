@@ -1,0 +1,16 @@
+Puzzle ID,Card ID,Card,Qty,Zone,Slot,Locked,Damage Override,Cost Override,Damage,Cost,Notes
+P01,C-PT,Construct Point,1,Pre-placed,1,TRUE,,,0,1,Tower center. Matches Twisty_Simple.gh.
+P01,C-POLYGON,Polygon,1,Hand,,FALSE,,,2,1,Base polygon.
+P01,C-POLYGON,Polygon,1,Hand,,FALSE,,,2,1,Top polygon.
+P01,C-SLIDER,Number Slider,4,Hand,,FALSE,,,0,0,"The .gh uses 11 sliders. Proposal: polygon radius/sides live on the card; sliders only for radius, height, twist angle."
+P01,C-UNITZ,Unit Z,1,Hand,,FALSE,,,0,1,Tower height.
+P01,C-MOVE,Move,1,Hand,,FALSE,,,1,1,Lifts the top polygon.
+P01,C-ROTATE,Rotate,1,Deck,,FALSE,,,1,2,The twist.
+P01,C-LOFT,Loft,1,Deck,,FALSE,,2,4,2,Skins base to top. Cost lowered.
+P01,C-CAP,Cap Holes,1,Deck,,FALSE,,,1,1,Closes the tower into a solid.
+P02,C-PT,Construct Point,1,Pre-placed,1,TRUE,,,0,1,
+P02,C-SLIDER,Number Slider,2,Hand,,FALSE,,,0,0,
+P02,C-CIRCLE,Circle,1,Hand,,FALSE,,,2,1,
+P02,C-DIVIDE,Divide Curve,1,Hand,,FALSE,,,1,2,
+P02,C-LINE,Line,2,Deck,,FALSE,3,,3,1,Boosted: the gnat is weak to curves.
+P02,C-MOVE,Move,1,Deck,,FALSE,,,1,1,

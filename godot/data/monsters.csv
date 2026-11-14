@@ -1,0 +1,5 @@
+Monster ID,Name,Grove,HP,Damage,Attacks Every (turns),Intent Pattern,Signature Attack,Attack Weight,Weak To,Resists,Threat Value,Notes
+B-ROOT,The Rootbound,Tangled Grove,25,1,1,"Attack, Attack, Tangle",Scramble,2,Brep,Point,9,Tangled roots = spaghetti wiring. Tangle scrambles your hand.
+B-GNAT,Null Gnat,Tangled Grove,10,1,1,Attack,Damage,0,Curve,,4,Tutorial pest. Plain damage only.
+B-MOTH,Mismatch Moth,Tangled Grove,15,1,2,"Charge, Lock",Blurred Vision,2,Number,Brep,6,Moth dust blurs component names.
+B-LOCUST,Loop Locust,Tangled Grove,30,2,2,"Charge, Attack",Time Pressure,2.5,Curve,Number,11,Recursion pest. Puts you on a timer.

@@ -4,7 +4,7 @@
   "objective": "Place a base point and draw a rounded five-sided floor plate around it.",
   "learn": "Sliders, points and planes: how numbers become a located, adjustable shape.",
   "source": "GH definitions/Twisty_Simple.gh",
-  "monster": "rootbound",
+  "monster": "spaghetti",
   "health": 4,
   "guidance": "guided",
   "lifesavers": { "hint": 3, "potion": 1, "fifty": 1, "clear": 0, "shield": 1, "second": 1 },

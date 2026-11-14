@@ -110,7 +110,28 @@
   const level = () => st.L;
   const nodeById = (id) => st.L.nodes.find(n => n.id === id);
   const isPlaced = (n) => n.given || st.done.has(n.step);
-  const monster = () => MONSTERS[st.L.monster];
+  /* the path's single monster, with this level's phase of attacks */
+  const phaseOf = (idx) => MONSTER_PHASES[Math.min(idx, MONSTER_PHASES.length - 1)];
+  const monsterKey = (L) => MONSTER_OVERRIDE || L.monster;
+  const monster = () => Object.assign({}, MONSTER_OPTIONS[monsterKey(st.L)], phaseOf(st.idx));
+  const monsterArt = (key) => { const m = MONSTER_OPTIONS[key]; return m.img ? `<img class="monster-img" src="${m.img}" alt="${esc(m.name)}">` : ART.monster(m.art); };
+  const levelHP = (L) => buildDecisions(L).reduce((a, d) => a + (d.kind === 'comp' ? 10 : 5), 0);
+  /* hero sprite reactions (frames cut from the hero sheet) */
+  const HERO_FRAMES = { success: 4, damage: 4, defeat: 4 };
+  let heroTimer = null;
+  function heroReact(kind) {
+    const el = $('#hero img'); if (!el) return;
+    clearInterval(heroTimer); clearTimeout(heroTimer);
+    if (!HERO_FRAMES[kind]) { el.src = 'img/hero-main.png'; el.className = 'hero-main'; return; }
+    let i = 0; el.className = 'hero-frame'; el.src = `img/hero-${kind}-0.png`;
+    heroTimer = setInterval(() => {
+      if (++i < HERO_FRAMES[kind]) { el.src = `img/hero-${kind}-${i}.png`; return; }
+      clearInterval(heroTimer);
+      if (kind !== 'defeat') heroTimer = setTimeout(() => heroReact('idle'), 600);
+    }, 140);
+  }
+  ['main', 'success-0', 'success-1', 'success-2', 'success-3', 'damage-0', 'damage-1', 'damage-2', 'damage-3', 'defeat-0', 'defeat-1', 'defeat-2', 'defeat-3']
+    .forEach(f => { new Image().src = `img/hero-${f}.png`; });
   const HAND_SIZE = { guided: 4, standard: 5, independent: 6 };
   const LS_INFO = {
     hint: ['Hint', 'Reveals a clue about the missing component or port.'],
@@ -142,7 +163,8 @@
       streak: 0, drops: 0, decMistakes: 0, hintShown: false, params: Object.fromEntries(L.params.map(p => [p.key, p.value])),
       journal: [], over: false, won: false, intent: null, lastPlaced: null, fb: null,
     };
-    st.hpMax = st.decisions.reduce((a, d) => a + (d.kind === 'comp' ? 10 : 5), 0); st.hp = st.hpMax;
+    st.hpMax = levelHP(L); st.hp = st.hpMax;
+    heroReact('idle');
     rollIntent(); dealHand();
     st.fb = { cls: '', head: 'Field notes', title: level().title, body: level().objective, meta: `<b>Skill:</b> ${esc(level().learn)}` };
     show('screen-battle');
@@ -206,7 +228,7 @@
     st.streak++;
     st.lastPlaced = d.kind === 'comp' ? d.step.key : null;
     floatText($('#mon-art'), `-${dmg}`, ''); floatText($('#p-health'), `+${gain} XP`, 'good', 360, 110);
-    anim($('#mon-art'), 'hurt', 500); anim($('#hero'), 'cheer', 600);
+    anim($('#mon-art'), 'hurt', 500); heroReact('success');
 
     if (d.kind === 'comp') {
       const c = COMPONENTS[id];
@@ -264,7 +286,7 @@
     const intent = st.intent;
     let dmg = 1;
     anim($('#mon-art'), 'attack', 550);
-    setTimeout(() => { anim($('#flash'), 'red', 500); anim($('#hero'), 'hit', 500); anim($('#p-health'), 'shake', 400); }, 220);
+    setTimeout(() => { anim($('#flash'), 'red', 500); heroReact('damage'); anim($('#p-health'), 'shake', 400); }, 220);
     switch (intent) {
       case 'damage': dmg = 2; break;
       case 'blur': st.effects.blur = 2; break;
@@ -295,7 +317,7 @@
     if (st.shield) { st.shield = false; toast('Out of time — your shield absorbs the hit.', 'good'); }
     else {
       st.health = Math.max(0, st.health - 1);
-      anim($('#mon-art'), 'attack', 550); anim($('#flash'), 'red', 500); anim($('#hero'), 'hit', 500);
+      anim($('#mon-art'), 'attack', 550); anim($('#flash'), 'red', 500); heroReact('damage');
       toast('Too slow! The monster strikes.', 'bad'); floatText($('#p-health'), '-1', 'bad', 200, 70);
     }
     st.journal.push({ cls: 'bad', title: '✗ Out of time', text: 'Hesitation cost a heart. Lifesavers like Hint and 50/50 can speed up a tough decision.' });
@@ -396,7 +418,7 @@
     const next = LEVELS[st.idx + 1];
     setTimeout(() => modal(`
       <button class="x-close">&times;</button>
-      <div class="sub">${esc(monster().place)} &middot; ${L.boss ? 'Boss defeated' : 'Encounter ' + pad2(L.id)}</div>
+      <div class="sub">${esc(monster().place)} &middot; Level ${st.idx + 1} of ${LEVELS.length}</div>
       <h2>${esc(monster().name)} is defeated!</h2>
       <div class="stars-big">${[1, 2, 3].map(i => `<span class="${i <= stars ? 'on' : ''}">★</span>`).join('')}</div>
       <p>You built a working definition: <b>${esc(L.objective)}</b></p>
@@ -416,11 +438,11 @@
 
   function defeat() {
     if (st.won) return;
-    st.over = true; clearTimer();
+    st.over = true; clearTimer(); heroReact('defeat');
     const doneCount = st.di;
     modal(`
       <div class="sub">${esc(monster().place)}</div>
-      <h2>${esc(monster().name)} wins this round</h2>
+      <h2>${esc(monster().name)} wins this round</h2>${''}
       <p>Your health ran out with <b>${doneCount} of ${st.decisions.length}</b> decisions complete. Every mistake taught you something — check <b>Moves</b> for the explanations, then try again.</p>
       <div class="actions">
         ${st.snap && st.ls.second ? '<button class="btn warm" data-act="second">Use Second Chance</button>' : ''}
@@ -450,13 +472,14 @@
     const mode = { guided: 'Guided — descriptions shown, the open node tells you what it needs.', standard: 'Standard — descriptions shown, no slot hints.', independent: 'Independent — card descriptions hidden. Read the icons and ports.' }[L.guidance];
     modal(`
       <div class="brief">
-        <div class="art">${ART.monster(m.art)}</div>
+        <div class="art">${monsterArt(monsterKey(L))}</div>
         <div>
-          <div class="sub">${L.boss ? 'Boss level' : 'Level ' + L.id} &middot; ${esc(m.place)}</div>
+          <div class="sub">Level ${L.id} of ${LEVELS.length} &middot; ${esc(m.place)}</div>
           <h2>${esc(L.title)}</h2>
-          <p><b>${esc(m.name)}</b> blocks the path. ${esc(m.trait)}</p>
+          <p><b>${esc(m.name)}</b> blocks the path. ${esc(m.trait)} ${esc(m.line)}</p>
           <div class="kv">
             <span>Challenge</span><div>${esc(L.objective)}</div>
+            <span>Goal</span><div><img class="goal-brief" src="${goalImage(L)}" alt="Finished result"></div>
             <span>You’ll learn</span><div>${esc(L.learn)}</div>
             <span>Mode</span><div>${mode}</div>
             <span>Decisions</span><div>${st.decisions.length} (${L.steps.length} components${st.decisions.length > L.steps.length ? ' + ' + (st.decisions.length - L.steps.length) + ' wire checks' : ''})</div>
@@ -520,6 +543,9 @@
     renderGraph(); renderHand(); renderFeatured(); renderFeedback(); renderHealth(); renderEffects(); renderMonster(); renderLifesavers(); renderTimer();
     const d = cur();
     $('#hand-sub').textContent = !d ? (st.won ? 'Definition complete' : '') : d.kind === 'quiz' ? 'Wire check — choose a port' : 'Choose a component';
+    const cb = $('#curse-banner'), n = st.effects.icon;
+    cb.classList.toggle('on', n > 0 && !st.over);
+    cb.innerHTML = n > 0 ? `<b>Icon Curse!</b> ${esc(monster().name)} has stolen the card names. They return after <b>${n}</b> correct placement${n > 1 ? 's' : ''} — or use <b>Clear Vision</b>.` : '';
   }
 
   function ioMeta(c) {
@@ -559,18 +585,27 @@
         if (name) nodesSVG += `<text class="g-label" x="${n.x}" y="${n.y + g.h / 2 + 13}" text-anchor="middle"${filt}>${esc(name)}</text>`;
         if (quizCur && quizCur.target === n.id) nodesSVG += `<rect x="${n.x - g.w / 2 - 5}" y="${n.y - g.h / 2 - 5}" width="${g.w + 10}" height="${g.h + 10}" rx="8" fill="none" stroke="#e8dcb0" stroke-width="1.5" stroke-dasharray="4 3"/>`;
       } else {
-        const r = isCur ? 22 : 18;
-        g.ports = { in: comp.ins.map(() => [n.x - r, n.y]), out: comp.outs.map(() => [n.x + r, n.y]) };
+        // empty slot: a greyed-out node of the right size and port layout, with a question mark
+        const w = g.w, h = g.h, x0 = n.x - w / 2, y0 = n.y - h / 2;
+        const py = (i, cnt) => y0 + 6 + (i + 0.5) * (h - 12) / cnt;
+        g.ports = { in: comp.ins.map((_, i) => [x0, py(i, comp.ins.length)]), out: comp.outs.map((_, i) => [x0 + w, py(i, comp.outs.length)]) };
+        const dots = [...g.ports.in, ...g.ports.out].map(([px, pyy]) => `<circle class="g-ghost-port" cx="${px}" cy="${pyy}" r="3.2"/>`).join('');
+        const zin = comp.ins.length ? 18 : 6, zout = comp.outs.length ? 18 : 6;
+        const divs = (comp.ins.length ? `<line class="g-ghost-div" x1="${x0 + zin}" y1="${y0 + 4}" x2="${x0 + zin}" y2="${y0 + h - 4}"/>` : '') +
+          (comp.outs.length ? `<line class="g-ghost-div" x1="${x0 + w - zout}" y1="${y0 + 4}" x2="${x0 + w - zout}" y2="${y0 + h - 4}"/>` : '');
+        const qx = x0 + zin + (w - zin - zout) / 2, qs = Math.min(20, h - 6);
         if (isCur) {
-          nodesSVG += `<g class="g-cur${st.selected ? ' armed' : ''}" data-act="place-node">
-            <circle class="halo" cx="${n.x}" cy="${n.y}" r="${r + 4}"/><circle class="ring" cx="${n.x}" cy="${n.y}" r="${r}"/>
-            <path class="plus" d="M${n.x - 8} ${n.y}h16M${n.x} ${n.y - 8}v16"/></g>
-            <text class="g-label cur" x="${n.x}" y="${n.y + r + 16}" text-anchor="middle">Node ${pad2(slotNum[n.step])}</text>
-            <line x1="${n.x - 26}" x2="${n.x + 26}" y1="${n.y + r + 21}" y2="${n.y + r + 21}" stroke="#e8dcb0" stroke-width="1"/>`;
-          if (L.guidance === 'guided') nodesSVG += `<text class="g-need" x="${n.x}" y="${n.y + r + 33}" text-anchor="middle">needs ${esc(shortNeed(d.step.need))}</text>`;
+          nodesSVG += `<g class="g-ghost cur${st.selected ? ' armed' : ''}" data-act="place-node">
+            <rect class="halo" x="${x0 - 4}" y="${y0 - 4}" width="${w + 8}" height="${h + 8}" rx="8"/>
+            <rect class="body" x="${x0}" y="${y0}" width="${w}" height="${h}" rx="5"/>${divs}${dots}
+            <text class="q" x="${qx}" y="${n.y + qs * 0.36}" text-anchor="middle" font-size="${qs}">?</text></g>
+            <text class="g-label cur" x="${n.x}" y="${y0 + h + 14}" text-anchor="middle">Node ${pad2(slotNum[n.step])}</text>
+            <line x1="${n.x - 26}" x2="${n.x + 26}" y1="${y0 + h + 19}" y2="${y0 + h + 19}" stroke="#e8dcb0" stroke-width="1"/>`;
+          if (L.guidance === 'guided') nodesSVG += `<text class="g-need" x="${n.x}" y="${y0 + h + 31}" text-anchor="middle">needs ${esc(shortNeed(d.step.need))}</text>`;
         } else {
-          nodesSVG += `<circle class="g-slot" cx="${n.x}" cy="${n.y}" r="${r}"/><text class="g-slot-q" x="${n.x}" y="${n.y + 5.5}" text-anchor="middle">?</text>
-            <text class="g-label" x="${n.x}" y="${n.y + r + 14}" text-anchor="middle" opacity=".7">Open node</text>`;
+          nodesSVG += `<g class="g-ghost"><rect class="body" x="${x0}" y="${y0}" width="${w}" height="${h}" rx="5"/>${divs}${dots}
+            <text class="q" x="${qx}" y="${n.y + qs * 0.36}" text-anchor="middle" font-size="${qs}">?</text></g>
+            <text class="g-label" x="${n.x}" y="${y0 + h + 13}" text-anchor="middle" opacity=".6">Open node</text>`;
         }
       }
     });
@@ -619,6 +654,29 @@
     else foot = `<b>Selected slot ${pad2(slotNum[d.step.key])}</b> &bull; Place a card here to extend the definition.`;
     $('#graph-foot').innerHTML = foot;
   }
+  const curseNote = () => (st && st.effects.icon > 0 ? `<div class="curse-note">\u2726 Icon Curse<small>name hidden \u00B7 ${st.effects.icon} more</small></div>` : '');
+  /* The level's finished result: a custom image (level.json "goal") or a render of the complete definition. */
+  const goalCache = {};
+  function goalImage(L) {
+    if (L.goal) return `levels/${L.dir}/${L.goal}`;
+    if (!goalCache[L.dir]) {
+      const params = Object.fromEntries((L.params || []).map(p => [p.key, p.value]));
+      const ctx = { params, placed: () => true, wireActive: () => true };
+      const sc = Engine.scene(L, Engine.evaluate(L, ctx), ctx);
+      sc.labels = [];
+      sc.lines.forEach(l => { l.k = null; });
+      goalCache[L.dir] = Preview.snapshot(sc, 480, 360);
+    }
+    return goalCache[L.dir];
+  }
+  function goalModal() {
+    const L = level();
+    modal(`<button class="x-close">&times;</button><div class="sub">Level ${L.id} &middot; Goal</div><h2>${esc(L.title)}</h2>
+      <p>${esc(L.objective)}</p>
+      <img class="goal-big" src="${goalImage(L)}" alt="Finished result for ${esc(L.title)}">
+      <p class="muted">This is what the finished definition produces with the default slider values. Build it piece by piece to get here.</p>
+      <div class="actions"><button class="btn primary" data-act="close">Back to building</button></div>`);
+  }
   const shortNeed = (s) => s.length > 44 ? s.slice(0, 42) + '…' : s;
 
   function cardHTML(id, opts = {}) {
@@ -631,7 +689,7 @@
         <div class="card-tier">${esc(p[0])}</div>
         <div class="card-chip"><div class="tag">${esc(comp.name)}</div>${svgWrap(c)}</div>
         <div class="card-name">${esc(p[0])} &middot; ${esc(p[1])}</div>
-        <div class="card-desc">${side === 'in' ? 'Expects' : 'Carries'} ${esc(p[2])}.</div></div>`;
+        <div class="card-desc">${side === 'in' ? 'Expects' : 'Carries'} ${esc(p[2])}.</div>${curseNote()}</div>`;
     }
     const comp = COMPONENTS[id];
     const c = chip(comp, 0, 0, { w: 150, big: true, label: comp.id === 'slider' ? 'Slider' : null, value: comp.id === 'slider' ? 5 : null, frac: 0.5 });
@@ -641,7 +699,7 @@
       <div class="card-tier">${comp.tier}</div>
       <div class="card-chip"><div class="tag">${esc(comp.name)}</div>${svgWrap(c)}</div>
       <div class="card-name">${esc(comp.name)}</div>
-      <div class="card-desc">${showDesc ? esc(comp.desc) : '<i>Read the icon and ports.</i>'}</div></div>`;
+      <div class="card-desc">${showDesc ? esc(comp.desc) : '<i>Read the icon and ports.</i>'}</div>${curseNote()}</div>`;
   }
   function svgWrap(c) {
     return `<svg viewBox="${-c.w / 2 - 7} ${-c.h / 2 - 3} ${c.w + 14} ${c.h + 6}" xmlns="http://www.w3.org/2000/svg">${c.svg}</svg>`;
@@ -719,18 +777,19 @@
   function renderMonster() {
     const m = monster(), L = level();
     $('#mon-name').textContent = m.name; $('#mon-name').classList.toggle('long', m.name.length > 15);
-    $('#mon-sub').textContent = `${m.place} · ${L.boss ? 'Boss' : 'Encounter ' + pad2(L.id)}`;
+    $('#mon-sub').textContent = `${m.place} · Level ${st.idx + 1} of ${LEVELS.length}`;
     $('#mon-intent').innerHTML = st.won ? 'Defeated' : `⚔ Intent: ${INTENT_TXT[st.intent]}`;
     $('#mon-hp-text').textContent = `${st.hp} / ${st.hpMax}`;
     $('#mon-hp-bar').style.width = (st.hp / st.hpMax * 100) + '%';
     const art = $('#mon-art');
-    if (art.dataset.kind !== m.art + st.idx + (st.runId || '')) { art.innerHTML = ART.monster(m.art); art.dataset.kind = m.art + st.idx + (st.runId || ''); }
+    const mk = monsterKey(L);
+    if (art.dataset.kind !== mk) { art.innerHTML = monsterArt(mk); art.dataset.kind = mk; }
     if (!st.won) art.classList.remove('dead');
   }
 
   function renderLifesavers() {
     const el = $('#lifesavers');
-    el.innerHTML = Object.keys(LS_INFO).map(k => `<button class="ls${k === 'shield' && st.shield ? ' active' : ''}${k === 'second' && canUse('second') ? ' ready' : ''}" data-ls="${k}" ${canUse(k) ? '' : 'disabled'}>${ART.lsIcon(k)}<i>${st.ls[k] || 0}</i></button>`).join('');
+    el.innerHTML = Object.keys(LS_INFO).map(k => `<button class="ls${k === 'shield' && st.shield ? ' active' : ''}${(k === 'second' || k === 'clear') && canUse(k) ? ' ready' : ''}" data-ls="${k}" ${canUse(k) ? '' : 'disabled'}>${ART.lsIcon(k)}<i>${st.ls[k] || 0}</i></button>`).join('');
     $$('.ls', el).forEach(b => {
       b.onclick = () => useLifesaver(b.dataset.ls);
       b.onmouseenter = () => showTip(b, `<b>${LS_INFO[b.dataset.ls][0]}</b>${LS_INFO[b.dataset.ls][1]}`);
@@ -753,6 +812,7 @@
       updatePreview(); renderGraph();
     }));
     $('#preview-foot').textContent = `World XY • ${L.title} preview`;
+    $('#goal').innerHTML = `<div class="ph">Goal <span>click to enlarge</span></div><img src="${goalImage(L)}" alt="Finished result">`;
   }
 
   function updatePreview(freshKey) {
@@ -778,15 +838,15 @@
     show('screen-map');
     const xp = totalXP();
     $('#map-xp').textContent = xp; $('#map-rank').textContent = rankFor(xp);
-    const pts = MAP_POS;
+    const pts = (LEVELS.length <= 4 ? [[270, 330], [630, 560], [990, 330], [1340, 560]] : MAP_POS).slice(0, LEVELS.length);
     let d = `M${pts[0][0]} ${pts[0][1]}`;
     for (let i = 1; i < pts.length; i++) { const a = pts[i - 1], b = pts[i]; d += ` Q${(a[0] + b[0]) / 2 + (i % 2 ? 0 : 40)} ${(a[1] + b[1]) / 2 + (i % 2 ? 60 : -40)} ${b[0]} ${b[1]}`; }
     $('#map-path').innerHTML = `<path d="${d}" fill="none" stroke="#3d5450" stroke-width="10" stroke-linecap="round"/><path d="${d}" fill="none" stroke="#a8c690" stroke-width="2.5" stroke-dasharray="2 12" stroke-linecap="round" opacity=".7"/>`;
     $('#map-nodes').innerHTML = LEVELS.map((L, i) => {
-      const locked = i + 1 > save.unlocked, best = save.best[L.id], m = MONSTERS[L.monster];
+      const locked = i + 1 > save.unlocked, best = save.best[L.id], m = MONSTER_OPTIONS[monsterKey(L)];
       const isCurrent = i + 1 === save.unlocked && !best;
       return `<div class="map-node${locked ? ' locked' : ''}${isCurrent ? ' current' : ''}${L.boss ? ' boss' : ''}" data-i="${i}" style="left:${pts[i][0]}px;top:${pts[i][1]}px">
-        <div class="mn-art">${ART.monster(m.art)}</div>
+        <div class="mn-art">${monsterArt(monsterKey(L))}</div>
         ${locked ? '<span class="lock">🔒</span>' : ''}
         <div class="mn-num">${L.boss ? 'Boss' : 'Level ' + L.id} &middot; ${esc(m.name)}</div>
         <div class="mn-title">${esc(L.title)}</div>
@@ -801,12 +861,12 @@
   }
 
   /* ───────── Wiring ───────── */
-  $('#title-monster').innerHTML = ART.monster('rootbound');
-  $('#title-hero').innerHTML = ART.hero();
-  $('#hero').innerHTML = ART.hero();
+  $('#title-hero').innerHTML = '<img class="hero-title" src="img/hero-main.png" alt="">';
+  $('#hero').innerHTML = '<img class="hero-main" src="img/hero-main.png" alt="">';
   $('#btn-start').onclick = () => { if (LEVELS.length) openMap(); else toast('Levels are still loading…'); };
   LevelLoader.loadAll().then(ls => {
     LEVELS = ls;
+    $('#title-monster').innerHTML = monsterArt(monsterKey(LEVELS[LEVELS.length - 1]));
     if (/[?&]all\b/.test(location.search)) save.unlocked = LEVELS.length;
   }).catch(err => {
     console.error(err);
@@ -817,6 +877,7 @@
   $('#btn-map-help').onclick = helpModal;
   $('#btn-help').onclick = helpModal;
   $('#btn-moves').onclick = movesModal;
+  $('#goal').onclick = () => { if (st) goalModal(); };
   $('#btn-map').onclick = () => { if (st && !st.over && st.di > 0) { modal(`<h2>Leave the battle?</h2><p>Your progress in this level will be lost.</p><div class="actions"><button class="btn" data-act="close">Stay</button><button class="btn warm" data-act="map">Leave</button></div>`); } else openMap(); };
   $('#btn-reset').onclick = () => modal(`<h2>Reset progress?</h2><p>This clears all XP, stars and unlocked levels on this device.</p><div class="actions"><button class="btn" data-act="close">Cancel</button><button class="btn warm" data-act="reset">Reset</button></div>`);
   let gDrag = null;

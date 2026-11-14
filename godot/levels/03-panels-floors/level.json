@@ -1,0 +1,328 @@
+{
+  "id": 3,
+  "title": "Panels & Floors",
+  "placeholder": true,
+  "objective": "Slice the twisted mass into floors and cut its facade into panels.",
+  "learn": "Panelization: contouring a solid into floors and subdividing a surface by its UV domain.",
+  "monster": "blightmoth",
+  "health": 4,
+  "guidance": "standard",
+  "lifesavers": {
+    "hint": 2,
+    "potion": 1,
+    "fifty": 1,
+    "clear": 2,
+    "shield": 1,
+    "second": 1
+  },
+  "params": [
+    {
+      "key": "h",
+      "label": "Height",
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "value": 67
+    },
+    {
+      "key": "tw",
+      "label": "Twist (°)",
+      "min": 0,
+      "max": 90,
+      "step": 1,
+      "value": 59
+    },
+    {
+      "key": "fh",
+      "label": "Floor ht",
+      "min": 1,
+      "max": 10,
+      "step": 0.5,
+      "value": 3.5
+    },
+    {
+      "key": "u",
+      "label": "U panels",
+      "min": 3,
+      "max": 30,
+      "step": 1,
+      "value": 15
+    },
+    {
+      "key": "v",
+      "label": "V panels",
+      "min": 3,
+      "max": 30,
+      "step": 1,
+      "value": 18
+    }
+  ],
+  "nodes": [
+    {
+      "id": "pb",
+      "comp": "polygon",
+      "open": false,
+      "label": "Base",
+      "set": {
+        "R": 6,
+        "S": 5,
+        "Rf": 1.46
+      },
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": "pt",
+      "comp": "polygon",
+      "open": false,
+      "label": "Top copy",
+      "set": {
+        "R": 6,
+        "S": 5,
+        "Rf": 1.46
+      },
+      "x": 0,
+      "y": 120
+    },
+    {
+      "id": "sh",
+      "comp": "slider",
+      "open": false,
+      "label": "Height",
+      "param": "h",
+      "x": 0,
+      "y": 230
+    },
+    {
+      "id": "uz",
+      "comp": "unitZ",
+      "open": false,
+      "x": 150,
+      "y": 230
+    },
+    {
+      "id": "mv",
+      "comp": "move",
+      "open": false,
+      "x": 290,
+      "y": 150
+    },
+    {
+      "id": "stw",
+      "comp": "slider",
+      "open": false,
+      "label": "Twist °",
+      "param": "tw",
+      "x": 290,
+      "y": 250
+    },
+    {
+      "id": "rot",
+      "comp": "rotate",
+      "open": false,
+      "degrees": true,
+      "x": 430,
+      "y": 160
+    },
+    {
+      "id": "lft",
+      "comp": "loft",
+      "open": false,
+      "preview": false,
+      "x": 570,
+      "y": 70
+    },
+    {
+      "id": "cap",
+      "comp": "capHoles",
+      "open": false,
+      "label": "Tower mass",
+      "ghost": true,
+      "preview": true,
+      "x": 710,
+      "y": 0
+    },
+    {
+      "id": "sfh",
+      "comp": "slider",
+      "open": false,
+      "label": "Floor ht",
+      "param": "fh",
+      "x": 710,
+      "y": 95
+    },
+    {
+      "id": "con",
+      "comp": "contour",
+      "open": true,
+      "x": 860,
+      "y": 40,
+      "need": "a component that slices the mass into floors at a fixed spacing",
+      "hint": "Intersect › Mathematical. Shape in, evenly spaced section curves out.",
+      "correct": "Contour slices the closed mass with parallel planes every D units along the Z direction — one closed curve per floor.",
+      "wrong": {
+        "divideCurve": "Divide Curve splits a curve into points; it can't slice a solid.",
+        "series": "Series gives you floor heights as numbers, but you'd still need to cut the mass at each one. Contour does both.",
+        "isotrim": "Isotrim cuts a surface into patches — that's the panels, not the floors.",
+        "*": "This slot needs a component that slices the mass into floors at a fixed spacing."
+      },
+      "distractors": [
+        "divideCurve",
+        "series",
+        "isotrim",
+        "offset"
+      ],
+      "draft": true
+    },
+    {
+      "id": "su",
+      "comp": "slider",
+      "open": false,
+      "label": "U panels",
+      "param": "u",
+      "x": 710,
+      "y": 190
+    },
+    {
+      "id": "sv",
+      "comp": "slider",
+      "open": false,
+      "label": "V panels",
+      "param": "v",
+      "x": 710,
+      "y": 236
+    },
+    {
+      "id": "dd",
+      "comp": "divDomain2",
+      "open": true,
+      "x": 860,
+      "y": 210,
+      "need": "a way to split the loft's UV space into a grid of panel cells",
+      "hint": "Maths › Domain. A surface has a 2D (U×V) domain.",
+      "correct": "Divide Domain² splits the loft surface's U×V domain into a grid of cells: U panels around, V panels up.",
+      "wrong": {
+        "range": "Range divides a 1D domain. A surface needs a 2D grid.",
+        "series": "Series makes numbers, not UV cells.",
+        "divideCurve": "Divide Curve works on curves, not surfaces.",
+        "*": "This slot needs a way to split the loft's UV space into a grid of panel cells."
+      },
+      "distractors": [
+        "range",
+        "series",
+        "divideCurve",
+        "graft"
+      ],
+      "draft": true
+    },
+    {
+      "id": "iso",
+      "comp": "isotrim",
+      "open": true,
+      "x": 1000,
+      "y": 140,
+      "need": "a component that cuts the facade surface into panels",
+      "hint": "Surface › Util. One sub-surface per UV cell.",
+      "correct": "Isotrim cuts one sub-surface per UV cell of the loft — the facade panels follow the twist.",
+      "wrong": {
+        "shatter": "Shatter cuts curves, not surfaces.",
+        "contour": "Contour already made the floors; panels need the surface cut by UV cells.",
+        "boundary": "Boundary Surfaces fills flat outlines.",
+        "*": "This slot needs a component that cuts the facade surface into panels."
+      },
+      "distractors": [
+        "shatter",
+        "contour",
+        "boundary",
+        "listItem"
+      ],
+      "draft": true
+    }
+  ],
+  "wires": [
+    {
+      "from": "sh.N",
+      "to": "uz.F"
+    },
+    {
+      "from": "pt.P",
+      "to": "mv.G"
+    },
+    {
+      "from": "uz.V",
+      "to": "mv.T"
+    },
+    {
+      "from": "mv.G",
+      "to": "rot.G"
+    },
+    {
+      "from": "stw.N",
+      "to": "rot.A"
+    },
+    {
+      "from": "pb.P",
+      "to": "lft.C"
+    },
+    {
+      "from": "rot.G",
+      "to": "lft.C"
+    },
+    {
+      "from": "lft.L",
+      "to": "cap.B"
+    },
+    {
+      "from": "cap.B",
+      "to": "con.S"
+    },
+    {
+      "from": "sfh.N",
+      "to": "con.D",
+      "check": {
+        "side": "in",
+        "prompt": "The Floor height slider should drive which input of Contour?",
+        "hint": "S = shape, P = start point, N = direction, D = distance between contours.",
+        "correct": "D is the spacing between contours — the floor-to-floor height.",
+        "wrong": {
+          "S": "S is the shape to slice; the tower mass is already connected.",
+          "P": "P is the point where contouring starts — a location, not a spacing.",
+          "N": "N is the slicing direction (a vector). Left empty it's Z, which gives horizontal floors.",
+          "*": "That input isn't the spacing."
+        },
+        "draft": true
+      }
+    },
+    {
+      "from": "lft.L",
+      "to": "dd.I"
+    },
+    {
+      "from": "su.N",
+      "to": "dd.U"
+    },
+    {
+      "from": "sv.N",
+      "to": "dd.V"
+    },
+    {
+      "from": "lft.L",
+      "to": "iso.S"
+    },
+    {
+      "from": "dd.S",
+      "to": "iso.D",
+      "check": {
+        "side": "in",
+        "prompt": "Which input of Isotrim receives the Divide Domain² grid?",
+        "hint": "S = surface to cut, D = domains to cut by.",
+        "correct": "D takes the sub-domains: one surface × many cells = many panels.",
+        "wrong": {
+          "S": "S is the base surface; the loft is already connected.",
+          "*": "That input isn't the domain list."
+        },
+        "draft": true
+      }
+    }
+  ]
+}

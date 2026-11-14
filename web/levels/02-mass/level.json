@@ -4,7 +4,7 @@
   "objective": "Lift a copy of the floor plate, twist it, and loft between the two into a closed tower mass.",
   "learn": "Vectors and transforms (Move, Rotate), then turning profiles into a solid with Loft and Cap Holes.",
   "source": "GH definitions/Twisty_Simple.gh",
-  "monster": "mossback",
+  "monster": "tower",
   "health": 4,
   "guidance": "guided",
   "lifesavers": { "hint": 3, "potion": 1, "fifty": 1, "clear": 1, "shield": 1, "second": 1 },
