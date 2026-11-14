@@ -7,21 +7,98 @@
   "monster": "spaghetti",
   "health": 4,
   "guidance": "guided",
-  "lifesavers": { "hint": 3, "potion": 1, "fifty": 1, "clear": 0, "shield": 1, "second": 1 },
+  "lifesavers": {
+    "hint": 3,
+    "potion": 1,
+    "fifty": 1,
+    "clear": 0,
+    "shield": 1,
+    "second": 1
+  },
   "params": [
-    { "key": "x", "label": "X", "min": 0, "max": 10, "step": 0.1, "value": 0 },
-    { "key": "y", "label": "Y", "min": 0, "max": 10, "step": 0.1, "value": 0 },
-    { "key": "z", "label": "Z", "min": 0, "max": 10, "step": 0.1, "value": 0 },
-    { "key": "r", "label": "Radius", "min": 1, "max": 10, "step": 0.1, "value": 6 },
-    { "key": "s", "label": "Segments", "min": 3, "max": 10, "step": 1, "value": 5 },
-    { "key": "rf", "label": "Fillet", "min": 0.01, "max": 2, "step": 0.01, "value": 1.46 }
+    {
+      "key": "x",
+      "label": "X",
+      "min": 0,
+      "max": 10,
+      "step": 0.1,
+      "value": 0
+    },
+    {
+      "key": "y",
+      "label": "Y",
+      "min": 0,
+      "max": 10,
+      "step": 0.1,
+      "value": 0
+    },
+    {
+      "key": "z",
+      "label": "Z",
+      "min": 0,
+      "max": 10,
+      "step": 0.1,
+      "value": 0
+    },
+    {
+      "key": "r",
+      "label": "Radius",
+      "min": 1,
+      "max": 10,
+      "step": 0.1,
+      "value": 6
+    },
+    {
+      "key": "s",
+      "label": "Segments",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "value": 5
+    },
+    {
+      "key": "rf",
+      "label": "Fillet",
+      "min": 0.01,
+      "max": 2,
+      "step": 0.01,
+      "value": 1.46
+    }
   ],
   "nodes": [
-    { "id": "sx", "comp": "slider", "open": false, "label": "X", "param": "x", "x": 0, "y": 60 },
-    { "id": "sy", "comp": "slider", "open": false, "label": "Y", "param": "y", "x": 0, "y": 106 },
-    { "id": "sz", "comp": "slider", "open": false, "label": "Z", "param": "z", "x": 0, "y": 152 },
     {
-      "id": "cp", "comp": "constructPoint", "open": true, "x": 165, "y": 106,
+      "id": "sx",
+      "comp": "slider",
+      "open": false,
+      "label": "X",
+      "param": "x",
+      "x": 0,
+      "y": 60
+    },
+    {
+      "id": "sy",
+      "comp": "slider",
+      "open": false,
+      "label": "Y",
+      "param": "y",
+      "x": 0,
+      "y": 106
+    },
+    {
+      "id": "sz",
+      "comp": "slider",
+      "open": false,
+      "label": "Z",
+      "param": "z",
+      "x": 0,
+      "y": 152
+    },
+    {
+      "id": "cp",
+      "comp": "constructPoint",
+      "open": true,
+      "x": 165,
+      "y": 106,
       "need": "a component that turns X, Y and Z numbers into a point",
       "hint": "Vector › Point. Three number inputs, one point out.",
       "correct": "Construct Point combines the X, Y and Z sliders into a single point. That point becomes the centre of the floor plate, so moving a slider moves the whole shape.",
@@ -31,14 +108,47 @@
         "vector2pt": "Vector 2Pt makes a direction between two existing points; there are no points yet.",
         "*": "This slot needs a component that turns X, Y and Z numbers into a point."
       },
-      "distractors": ["pointParam", "xyPlane", "vector2pt", "unitX"],
+      "distractors": [
+        "pointParam",
+        "xyPlane",
+        "vector2pt",
+        "unitX"
+      ],
       "draft": true
     },
-    { "id": "sr", "comp": "slider", "open": false, "label": "Radius", "param": "r", "x": 320, "y": 0 },
-    { "id": "ss", "comp": "slider", "open": false, "label": "Segments", "param": "s", "x": 320, "y": 46 },
-    { "id": "srf", "comp": "slider", "open": false, "label": "Fillet", "param": "rf", "x": 320, "y": 92 },
     {
-      "id": "pol", "comp": "polygon", "open": true, "x": 485, "y": 70,
+      "id": "sr",
+      "comp": "slider",
+      "open": false,
+      "label": "Radius",
+      "param": "r",
+      "x": 320,
+      "y": 0
+    },
+    {
+      "id": "ss",
+      "comp": "slider",
+      "open": false,
+      "label": "Segments",
+      "param": "s",
+      "x": 320,
+      "y": 46
+    },
+    {
+      "id": "srf",
+      "comp": "slider",
+      "open": false,
+      "label": "Fillet",
+      "param": "rf",
+      "x": 320,
+      "y": 92
+    },
+    {
+      "id": "pol",
+      "comp": "polygon",
+      "open": true,
+      "x": 485,
+      "y": 70,
       "need": "a regular shape with a radius, a number of sides and rounded corners",
       "hint": "Curve › Primitive. Look for Radius, Segments and Fillet Radius inputs.",
       "correct": "Polygon draws a regular shape on a plane: Radius sets its size, Segments the number of sides, and Fillet Radius rounds every corner. Plugging a point into Plane places it there.",
@@ -48,16 +158,31 @@
         "interpolate": "Interpolate draws a free curve through points; it has no radius or side count.",
         "*": "This slot needs a regular shape with a radius, a number of sides and rounded corners."
       },
-      "distractors": ["circle", "rectangle", "interpolate", "lineSDL"],
+      "distractors": [
+        "circle",
+        "rectangle",
+        "interpolate",
+        "lineSDL"
+      ],
       "draft": true
     }
   ],
   "wires": [
-    { "from": "sx.N", "to": "cp.X" },
-    { "from": "sy.N", "to": "cp.Y" },
-    { "from": "sz.N", "to": "cp.Z" },
     {
-      "from": "cp.Pt", "to": "pol.P",
+      "from": "sx.N",
+      "to": "cp.X"
+    },
+    {
+      "from": "sy.N",
+      "to": "cp.Y"
+    },
+    {
+      "from": "sz.N",
+      "to": "cp.Z"
+    },
+    {
+      "from": "cp.Pt",
+      "to": "pol.P",
       "check": {
         "side": "in",
         "prompt": "Which input of Polygon should the point connect to?",
@@ -72,9 +197,13 @@
         "draft": true
       }
     },
-    { "from": "sr.N", "to": "pol.R" },
     {
-      "from": "ss.N", "to": "pol.S",
+      "from": "sr.N",
+      "to": "pol.R"
+    },
+    {
+      "from": "ss.N",
+      "to": "pol.S",
       "check": {
         "side": "in",
         "prompt": "The Segments slider should drive which input of Polygon?",
@@ -89,6 +218,100 @@
         "draft": true
       }
     },
-    { "from": "srf.N", "to": "pol.Rf" }
+    {
+      "from": "srf.N",
+      "to": "pol.Rf"
+    }
+  ],
+  "difficulties": [
+    {
+      "id": "1",
+      "name": "Beginner",
+      "description": "The point is already placed — just find the Polygon.",
+      "open": [
+        "pol"
+      ],
+      "guidance": "guided",
+      "health": 5,
+      "hand": 3,
+      "attacks": 0,
+      "lifesavers": {
+        "hint": 3,
+        "potion": 2,
+        "fifty": 2,
+        "clear": 1,
+        "shield": 2,
+        "second": 2
+      }
+    },
+    {
+      "id": "2",
+      "name": "Easy",
+      "description": "Build the point and the polygon, with the open nodes telling you what they need.",
+      "guidance": "guided",
+      "health": 4,
+      "hand": 4,
+      "attacks": 0,
+      "lifesavers": {
+        "hint": 3,
+        "potion": 1,
+        "fifty": 1,
+        "clear": 1,
+        "shield": 1,
+        "second": 1
+      }
+    },
+    {
+      "id": "3",
+      "name": "Medium",
+      "description": "No slot hints, more cards to choose from, and a monster that scrambles and blurs.",
+      "guidance": "standard",
+      "health": 4,
+      "hand": 5,
+      "attacks": 1,
+      "lifesavers": {
+        "hint": 2,
+        "potion": 1,
+        "fifty": 1,
+        "clear": 1,
+        "shield": 1,
+        "second": 1
+      }
+    },
+    {
+      "id": "4",
+      "name": "Hard",
+      "description": "Card descriptions are hidden — read the icons and ports.",
+      "guidance": "independent",
+      "health": 3,
+      "hand": 6,
+      "attacks": 2,
+      "lifesavers": {
+        "hint": 1,
+        "potion": 1,
+        "fifty": 1,
+        "clear": 1,
+        "shield": 0,
+        "second": 1
+      }
+    },
+    {
+      "id": "5",
+      "name": "Expert",
+      "description": "Every decision is on a 30-second clock, and the monster uses every trick.",
+      "guidance": "independent",
+      "health": 3,
+      "hand": 6,
+      "attacks": 3,
+      "timer": 30,
+      "lifesavers": {
+        "hint": 0,
+        "potion": 1,
+        "fifty": 1,
+        "clear": 1,
+        "shield": 0,
+        "second": 0
+      }
+    }
   ]
 }
