@@ -1,5 +1,6 @@
 {
  "source": "GameLevels/LevelA/A03.ghx",
+ "definition_image": "A03-definition.svg",
  "method": "A03",
  "params": [
   {
