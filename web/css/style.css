@@ -385,3 +385,22 @@ button { font-family: inherit; cursor: pointer; }
 .g-ghost.cur .q { fill: var(--gold); animation: pulse 1.2s infinite; }
 .g-ghost.cur .g-ghost-port { fill: #c9b26a; }
 .g-ghost.cur.armed .body { fill: rgba(168,198,144,.28); stroke: var(--sage); }
+
+/* difficulties */
+.diff-list { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+.diff { display: grid; grid-template-columns: 44px 1fr auto; gap: 14px; align-items: center; text-align: left; padding: 10px 14px;
+  background: rgba(0,0,0,.2); border: 1px solid var(--line); border-radius: 6px; color: var(--text); transition: border-color .15s, transform .12s; }
+.diff:hover { border-color: var(--sage); transform: translateX(3px); }
+.diff.last { border-color: var(--gold-dim); }
+.diff-n { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-family: var(--serif); font-weight: 900; font-size: 18px;
+  color: var(--gold); border: 2px solid var(--gold-dim); background: #1a2a28; }
+.diff-body b { display: block; font-family: var(--serif); color: var(--gold); font-size: 16px; }
+.diff-body small { display: block; font-size: 12.5px; color: var(--text); opacity: .85; margin: 2px 0; }
+.diff-body em { display: block; font-style: normal; font-size: 11px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; font-weight: 700; }
+.diff-stars { color: #45524e; letter-spacing: 2px; font-size: 16px; text-align: right; }
+.diff-stars .on { color: #e6c35a; }
+.diff-stars small { display: block; letter-spacing: 0; font-size: 11px; color: var(--muted); }
+.mn-diff { display: flex; align-items: center; gap: 4px; margin-top: 6px; }
+.mn-diff i { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid #6f8a83; }
+.mn-diff i.done { background: var(--sage); border-color: var(--sage); }
+.mn-diff span { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-left: 4px; }
