@@ -11,7 +11,7 @@ The node graph **is** the answer key. The preview is computed live from it by a 
 | Field | Meaning |
 | --- | --- |
 | `id`, `title`, `objective`, `learn` | Shown on the map and in the briefing |
-| `monster` | A key from `js/monsters.js` (`rootbound`, `mossback`, `blightmoth`, `glyphleech`, `wraith`, `hexwarden`, `branchmaw`, `wyrm`) |
+| `monster` | The level's monster: a key from `js/monsters.js` (`spaghetti`, `tower`, `tree`, or `placeholder` until the 4th artwork arrives). Attacks get harder with the level's position, whichever monster it is. `?monster=<key>` in the URL previews one monster everywhere |
 | `health` | Number of hearts |
 | `guidance` | `guided` (slot says what it needs, 4 cards) · `standard` (5 cards) · `independent` (no card descriptions, 6 cards) |
 | `lifesavers` | Counts of `hint`, `potion`, `fifty`, `clear`, `shield`, `second` |

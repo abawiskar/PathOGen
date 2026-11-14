@@ -74,8 +74,8 @@ button { font-family: inherit; cursor: pointer; }
 .logo span { color: var(--sage); }
 .tagline { font-family: var(--serif); font-size: 22px; color: var(--gold-dim); letter-spacing: .06em; margin: 6px 0 40px; z-index: 2; }
 .title-btns { display: flex; gap: 18px; z-index: 2; }
-.title-monster { position: absolute; right: 60px; top: 110px; width: 330px; opacity: .9; animation: bob 3.4s ease-in-out infinite; }
-.title-hero { position: absolute; left: 90px; bottom: 50px; width: 380px; }
+.title-monster { position: absolute; right: 50px; top: 90px; width: 400px; opacity: .9; animation: bob 3.4s ease-in-out infinite; }
+.title-hero { position: absolute; left: 70px; bottom: 40px; width: 290px; }
 
 /* ───────── Map ───────── */
 .map-head { position: absolute; left: 60px; right: 60px; top: 46px; display: flex; justify-content: space-between; align-items: flex-end; z-index: 2; }
@@ -196,10 +196,11 @@ button { font-family: inherit; cursor: pointer; }
 .mon-hp .bar { height: 11px; border-radius: 6px; border: 1.5px solid #d9c9a0; background: #2c2524; overflow: hidden; }
 .mon-hp .bar i { display: block; height: 100%; background: linear-gradient(90deg, #a8434c, #e0796f); transition: width .5s ease; }
 .mon-art { position: absolute; left: 30px; right: 30px; bottom: 6px; top: 110px; display: grid; place-items: center; }
-.mon-art .monster-svg { width: 100%; height: 100%; animation: bob 3s ease-in-out infinite; overflow: visible; }
-.mon-art.hurt .monster-svg { animation: hurt .5s; }
-.mon-art.attack .monster-svg { animation: lunge .55s ease-in; }
-.mon-art.dead .monster-svg { animation: die 1.2s forwards; }
+.mon-art .monster-svg, .mon-art .monster-img { width: 100%; height: 100%; animation: bob 3s ease-in-out infinite; overflow: visible; }
+.monster-img { display: block; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 10px 18px rgba(0,0,0,.45)); }
+.mon-art.hurt .monster-svg, .mon-art.hurt .monster-img { animation: hurt .5s; }
+.mon-art.attack .monster-svg, .mon-art.attack .monster-img { animation: lunge .55s ease-in; }
+.mon-art.dead .monster-svg, .mon-art.dead .monster-img { animation: die 1.2s forwards; }
 .mon-art .glow { animation: glow 1.6s ease-in-out infinite; }
 @keyframes bob { 50% { transform: translateY(-8px); } }
 @keyframes hurt { 0%, 100% { filter: none; transform: none; } 20% { filter: brightness(2.2) saturate(0); transform: translateX(10px); } 50% { transform: translateX(-8px); } }
@@ -336,3 +337,13 @@ button { font-family: inherit; cursor: pointer; }
 .journal .je p { margin: 3px 0 0; font-size: 13px; }
 .x-close { position: absolute; right: 14px; top: 10px; background: none; border: 0; color: var(--muted); font-size: 26px; }
 .muted { color: var(--muted); }
+
+/* hero sprite (from Images/Hero) */
+#hero img { position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%); pointer-events: none; filter: drop-shadow(0 8px 10px rgba(0,0,0,.35)); }
+#hero img.hero-main { height: 236px; animation: herobob 3.2s ease-in-out infinite; }
+#hero img.hero-frame { height: 178px; }
+@keyframes herobob { 50% { transform: translateX(-50%) translateY(-6px); } }
+.title-hero img { width: 100%; animation: bob 3.2s ease-in-out infinite; }
+.title-monster .monster-img { height: auto; }
+.map-node .mn-art .monster-img { height: 76px; }
+.modal-card .brief .art .monster-img { height: 190px; }

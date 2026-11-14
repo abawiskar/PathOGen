@@ -110,7 +110,28 @@
   const level = () => st.L;
   const nodeById = (id) => st.L.nodes.find(n => n.id === id);
   const isPlaced = (n) => n.given || st.done.has(n.step);
-  const monster = () => MONSTERS[st.L.monster];
+  /* the path's single monster, with this level's phase of attacks */
+  const phaseOf = (idx) => MONSTER_PHASES[Math.min(idx, MONSTER_PHASES.length - 1)];
+  const monsterKey = (L) => MONSTER_OVERRIDE || L.monster;
+  const monster = () => Object.assign({}, MONSTER_OPTIONS[monsterKey(st.L)], phaseOf(st.idx));
+  const monsterArt = (key) => { const m = MONSTER_OPTIONS[key]; return m.img ? `<img class="monster-img" src="${m.img}" alt="${esc(m.name)}">` : ART.monster(m.art); };
+  const levelHP = (L) => buildDecisions(L).reduce((a, d) => a + (d.kind === 'comp' ? 10 : 5), 0);
+  /* hero sprite reactions (frames cut from the hero sheet) */
+  const HERO_FRAMES = { success: 4, damage: 4, defeat: 4 };
+  let heroTimer = null;
+  function heroReact(kind) {
+    const el = $('#hero img'); if (!el) return;
+    clearInterval(heroTimer); clearTimeout(heroTimer);
+    if (!HERO_FRAMES[kind]) { el.src = 'img/hero-main.png'; el.className = 'hero-main'; return; }
+    let i = 0; el.className = 'hero-frame'; el.src = `img/hero-${kind}-0.png`;
+    heroTimer = setInterval(() => {
+      if (++i < HERO_FRAMES[kind]) { el.src = `img/hero-${kind}-${i}.png`; return; }
+      clearInterval(heroTimer);
+      if (kind !== 'defeat') heroTimer = setTimeout(() => heroReact('idle'), 600);
+    }, 140);
+  }
+  ['main', 'success-0', 'success-1', 'success-2', 'success-3', 'damage-0', 'damage-1', 'damage-2', 'damage-3', 'defeat-0', 'defeat-1', 'defeat-2', 'defeat-3']
+    .forEach(f => { new Image().src = `img/hero-${f}.png`; });
   const HAND_SIZE = { guided: 4, standard: 5, independent: 6 };
   const LS_INFO = {
     hint: ['Hint', 'Reveals a clue about the missing component or port.'],
@@ -142,7 +163,8 @@
       streak: 0, drops: 0, decMistakes: 0, hintShown: false, params: Object.fromEntries(L.params.map(p => [p.key, p.value])),
       journal: [], over: false, won: false, intent: null, lastPlaced: null, fb: null,
     };
-    st.hpMax = st.decisions.reduce((a, d) => a + (d.kind === 'comp' ? 10 : 5), 0); st.hp = st.hpMax;
+    st.hpMax = levelHP(L); st.hp = st.hpMax;
+    heroReact('idle');
     rollIntent(); dealHand();
     st.fb = { cls: '', head: 'Field notes', title: level().title, body: level().objective, meta: `<b>Skill:</b> ${esc(level().learn)}` };
     show('screen-battle');
@@ -206,7 +228,7 @@
     st.streak++;
     st.lastPlaced = d.kind === 'comp' ? d.step.key : null;
     floatText($('#mon-art'), `-${dmg}`, ''); floatText($('#p-health'), `+${gain} XP`, 'good', 360, 110);
-    anim($('#mon-art'), 'hurt', 500); anim($('#hero'), 'cheer', 600);
+    anim($('#mon-art'), 'hurt', 500); heroReact('success');
 
     if (d.kind === 'comp') {
       const c = COMPONENTS[id];
@@ -264,7 +286,7 @@
     const intent = st.intent;
     let dmg = 1;
     anim($('#mon-art'), 'attack', 550);
-    setTimeout(() => { anim($('#flash'), 'red', 500); anim($('#hero'), 'hit', 500); anim($('#p-health'), 'shake', 400); }, 220);
+    setTimeout(() => { anim($('#flash'), 'red', 500); heroReact('damage'); anim($('#p-health'), 'shake', 400); }, 220);
     switch (intent) {
       case 'damage': dmg = 2; break;
       case 'blur': st.effects.blur = 2; break;
@@ -295,7 +317,7 @@
     if (st.shield) { st.shield = false; toast('Out of time — your shield absorbs the hit.', 'good'); }
     else {
       st.health = Math.max(0, st.health - 1);
-      anim($('#mon-art'), 'attack', 550); anim($('#flash'), 'red', 500); anim($('#hero'), 'hit', 500);
+      anim($('#mon-art'), 'attack', 550); anim($('#flash'), 'red', 500); heroReact('damage');
       toast('Too slow! The monster strikes.', 'bad'); floatText($('#p-health'), '-1', 'bad', 200, 70);
     }
     st.journal.push({ cls: 'bad', title: '✗ Out of time', text: 'Hesitation cost a heart. Lifesavers like Hint and 50/50 can speed up a tough decision.' });
@@ -396,7 +418,7 @@
     const next = LEVELS[st.idx + 1];
     setTimeout(() => modal(`
       <button class="x-close">&times;</button>
-      <div class="sub">${esc(monster().place)} &middot; ${L.boss ? 'Boss defeated' : 'Encounter ' + pad2(L.id)}</div>
+      <div class="sub">${esc(monster().place)} &middot; Level ${st.idx + 1} of ${LEVELS.length}</div>
       <h2>${esc(monster().name)} is defeated!</h2>
       <div class="stars-big">${[1, 2, 3].map(i => `<span class="${i <= stars ? 'on' : ''}">★</span>`).join('')}</div>
       <p>You built a working definition: <b>${esc(L.objective)}</b></p>
@@ -416,11 +438,11 @@
 
   function defeat() {
     if (st.won) return;
-    st.over = true; clearTimer();
+    st.over = true; clearTimer(); heroReact('defeat');
     const doneCount = st.di;
     modal(`
       <div class="sub">${esc(monster().place)}</div>
-      <h2>${esc(monster().name)} wins this round</h2>
+      <h2>${esc(monster().name)} wins this round</h2>${''}
       <p>Your health ran out with <b>${doneCount} of ${st.decisions.length}</b> decisions complete. Every mistake taught you something — check <b>Moves</b> for the explanations, then try again.</p>
       <div class="actions">
         ${st.snap && st.ls.second ? '<button class="btn warm" data-act="second">Use Second Chance</button>' : ''}
@@ -450,11 +472,11 @@
     const mode = { guided: 'Guided — descriptions shown, the open node tells you what it needs.', standard: 'Standard — descriptions shown, no slot hints.', independent: 'Independent — card descriptions hidden. Read the icons and ports.' }[L.guidance];
     modal(`
       <div class="brief">
-        <div class="art">${ART.monster(m.art)}</div>
+        <div class="art">${monsterArt(monsterKey(L))}</div>
         <div>
-          <div class="sub">${L.boss ? 'Boss level' : 'Level ' + L.id} &middot; ${esc(m.place)}</div>
+          <div class="sub">Level ${L.id} of ${LEVELS.length} &middot; ${esc(m.place)}</div>
           <h2>${esc(L.title)}</h2>
-          <p><b>${esc(m.name)}</b> blocks the path. ${esc(m.trait)}</p>
+          <p><b>${esc(m.name)}</b> blocks the path. ${esc(m.trait)} ${esc(m.line)}</p>
           <div class="kv">
             <span>Challenge</span><div>${esc(L.objective)}</div>
             <span>You’ll learn</span><div>${esc(L.learn)}</div>
@@ -719,12 +741,13 @@
   function renderMonster() {
     const m = monster(), L = level();
     $('#mon-name').textContent = m.name; $('#mon-name').classList.toggle('long', m.name.length > 15);
-    $('#mon-sub').textContent = `${m.place} · ${L.boss ? 'Boss' : 'Encounter ' + pad2(L.id)}`;
+    $('#mon-sub').textContent = `${m.place} · Level ${st.idx + 1} of ${LEVELS.length}`;
     $('#mon-intent').innerHTML = st.won ? 'Defeated' : `⚔ Intent: ${INTENT_TXT[st.intent]}`;
     $('#mon-hp-text').textContent = `${st.hp} / ${st.hpMax}`;
     $('#mon-hp-bar').style.width = (st.hp / st.hpMax * 100) + '%';
     const art = $('#mon-art');
-    if (art.dataset.kind !== m.art + st.idx + (st.runId || '')) { art.innerHTML = ART.monster(m.art); art.dataset.kind = m.art + st.idx + (st.runId || ''); }
+    const mk = monsterKey(L);
+    if (art.dataset.kind !== mk) { art.innerHTML = monsterArt(mk); art.dataset.kind = mk; }
     if (!st.won) art.classList.remove('dead');
   }
 
@@ -778,15 +801,15 @@
     show('screen-map');
     const xp = totalXP();
     $('#map-xp').textContent = xp; $('#map-rank').textContent = rankFor(xp);
-    const pts = MAP_POS;
+    const pts = (LEVELS.length <= 4 ? [[270, 330], [630, 560], [990, 330], [1340, 560]] : MAP_POS).slice(0, LEVELS.length);
     let d = `M${pts[0][0]} ${pts[0][1]}`;
     for (let i = 1; i < pts.length; i++) { const a = pts[i - 1], b = pts[i]; d += ` Q${(a[0] + b[0]) / 2 + (i % 2 ? 0 : 40)} ${(a[1] + b[1]) / 2 + (i % 2 ? 60 : -40)} ${b[0]} ${b[1]}`; }
     $('#map-path').innerHTML = `<path d="${d}" fill="none" stroke="#3d5450" stroke-width="10" stroke-linecap="round"/><path d="${d}" fill="none" stroke="#a8c690" stroke-width="2.5" stroke-dasharray="2 12" stroke-linecap="round" opacity=".7"/>`;
     $('#map-nodes').innerHTML = LEVELS.map((L, i) => {
-      const locked = i + 1 > save.unlocked, best = save.best[L.id], m = MONSTERS[L.monster];
+      const locked = i + 1 > save.unlocked, best = save.best[L.id], m = MONSTER_OPTIONS[monsterKey(L)];
       const isCurrent = i + 1 === save.unlocked && !best;
       return `<div class="map-node${locked ? ' locked' : ''}${isCurrent ? ' current' : ''}${L.boss ? ' boss' : ''}" data-i="${i}" style="left:${pts[i][0]}px;top:${pts[i][1]}px">
-        <div class="mn-art">${ART.monster(m.art)}</div>
+        <div class="mn-art">${monsterArt(monsterKey(L))}</div>
         ${locked ? '<span class="lock">🔒</span>' : ''}
         <div class="mn-num">${L.boss ? 'Boss' : 'Level ' + L.id} &middot; ${esc(m.name)}</div>
         <div class="mn-title">${esc(L.title)}</div>
@@ -801,12 +824,12 @@
   }
 
   /* ───────── Wiring ───────── */
-  $('#title-monster').innerHTML = ART.monster('rootbound');
-  $('#title-hero').innerHTML = ART.hero();
-  $('#hero').innerHTML = ART.hero();
+  $('#title-hero').innerHTML = '<img class="hero-title" src="img/hero-main.png" alt="">';
+  $('#hero').innerHTML = '<img class="hero-main" src="img/hero-main.png" alt="">';
   $('#btn-start').onclick = () => { if (LEVELS.length) openMap(); else toast('Levels are still loading…'); };
   LevelLoader.loadAll().then(ls => {
     LEVELS = ls;
+    $('#title-monster').innerHTML = monsterArt(monsterKey(LEVELS[LEVELS.length - 1]));
     if (/[?&]all\b/.test(location.search)) save.unlocked = LEVELS.length;
   }).catch(err => {
     console.error(err);

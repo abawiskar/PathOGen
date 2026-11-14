@@ -26,7 +26,8 @@ Then open http://localhost:5173. Add `?all` to the URL to unlock every level (fo
 | `js/data.js` | Component library (real GH components: inputs, outputs, descriptions) and icons |
 | `js/engine.js` | Simplified Grasshopper solver: data trees, longest-list matching, component solvers, preview builder |
 | `js/loader.js` | Loads and validates `level.json` files, derives build order and wire checks |
-| `js/monsters.js` | Monsters and their attack personalities |
+| `js/monsters.js` | Monsters (one per level, chosen in each level.json) and the attack sets that escalate along the path |
+| `img/` | Web-sized monster art and hero sprite frames, cut from `Images/Monster` and `Images/Hero` (hero v3) |
 | `js/preview.js` | Wireframe 3D viewport |
 | `js/art.js` | Original SVG monsters, hero and lifesaver icons |
 | `js/game.js` | Game engine: turns, attacks, lifesavers, scoring, save data, rendering |
