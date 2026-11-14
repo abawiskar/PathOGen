@@ -255,8 +255,9 @@ func _build_map_frame(s: Control) -> void:
 	var stat := func(title: String, x: float) -> Label:
 		UIKit.sub(s, title, Vector2(x, 44), 0, 10)
 		return UIKit.label(s, "0", 26, UIKit.GOLD, UIKit.serif, Vector2(x, 58))
-	_map_xp = stat.call("Total XP", 1010)
-	_map_rank = stat.call("Rank", 1120)
+	# stats sit left of the buttons; the rank shrinks to fit so long ranks never run under "Main Menu"
+	_map_xp = stat.call("Total XP", 880)
+	_map_rank = stat.call("Rank", 990)
 	var menu := UIKit.button("Main Menu", "ghost", "small")
 	menu.position = Vector2(1328, 66)
 	menu.pressed.connect(main_menu)
@@ -292,6 +293,10 @@ func open_map() -> void:
 	var xp := SaveData.total_xp()
 	_map_xp.text = str(xp)
 	_map_rank.text = SaveData.rank_for(xp)
+	var fs := 26
+	while fs > 14 and UIKit.serif.get_string_size(_map_rank.text, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x > 1310 - 990:
+		fs -= 1
+	_map_rank.add_theme_font_size_override("font_size", fs)
 	for c in _map_nodes.get_children():
 		c.queue_free()
 	var pts: Array = []
