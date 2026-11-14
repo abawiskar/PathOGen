@@ -1,19 +1,35 @@
-/* PathOGen — monsters. `intents` are weighted attacks rolled after each mistake; `frenzy` times every decision (seconds). */
-const MONSTERS = {
-  rootbound: { name: 'The Rootbound', place: 'Tangled Grove', art: 'rootbound', intents: { hit: 1 },
-    trait: 'Slow and clumsy. It only knows how to hit.' },
-  mossback: { name: 'Mossback', place: 'Moss Hollow', art: 'mossback', intents: { hit: 2, scramble: 2 },
-    trait: 'Rolls through your hand, scrambling your cards.' },
-  blightmoth: { name: 'Blightmoth', place: 'Dusk Hollow', art: 'blightmoth', intents: { blur: 3, hit: 1 },
-    trait: 'Its dust blurs component names and your preview.' },
-  glyphleech: { name: 'Glyph Leech', place: 'Rune Marsh', art: 'glyphleech', intents: { icon: 3, blur: 1, hit: 1 },
-    trait: 'Drinks the words off your cards, leaving only icons.' },
-  wraith: { name: 'Shuffle Wraith', place: 'Mirror Halls', art: 'wraith', intents: { scramble: 2, locked: 2, hit: 1 },
-    trait: 'Shuffles your hand and hides the labels of placed nodes.' },
-  hexwarden: { name: 'Hexwarden', place: 'Lockstone Keep', art: 'hexwarden', intents: { locked: 2, icon: 1, time: 2, damage: 1 },
-    trait: 'Locks your nodes and puts you on the clock.' },
-  branchmaw: { name: 'Branchmaw', place: 'Canopy of Branches', art: 'branchmaw', intents: { scramble: 1, blur: 1, locked: 1, time: 1, damage: 1, hit: 1 },
-    trait: 'A many-headed tangle of data branches. Expect anything.' },
-  wyrm: { name: 'The Spaghetti Wyrm', place: 'The Tangle', art: 'wyrm', intents: { damage: 2, blur: 1, icon: 1, scramble: 1, locked: 1, time: 1 }, frenzy: 35,
-    trait: 'Boss. Every decision is timed, and it uses every trick.' },
+/* PathOGen — monsters.
+ *
+ * Each level names its monster with "monster" in its level.json (a key below).
+ * `img` is artwork from Images/Monster (web-sized copy in web/img); `art` falls back to a built-in SVG.
+ * Attacks escalate with the level's position on the path (MONSTER_PHASES), whichever monster it is.
+ * `intents` are weighted attacks rolled after each mistake; `frenzy` times every decision (seconds).
+ * Add ?monster=<key> to the URL to preview one monster on every level.
+ */
+const MONSTER_OPTIONS = {
+  tower: {
+    name: 'The Twisted Tower', img: 'img/monster-tower.png', place: 'The Skyline',
+    trait: 'A tower that twisted itself out of shape. It wants your definition to collapse the same way.',
+  },
+  spaghetti: {
+    name: 'The Spaghetti Boss', img: 'img/monster-spaghetti.png', place: 'The Tangle',
+    trait: 'A knot of crossed wires and orphaned components — every messy definition ever made.',
+  },
+  tree: {
+    name: 'The Branch Tree', img: 'img/monster-tree.png', place: 'The Data Grove',
+    trait: 'It grows a new branch for every item you forget to flatten.',
+  },
+  /* stand-in until the fourth monster's artwork arrives */
+  placeholder: {
+    name: 'The Blightmoth', art: 'blightmoth', place: 'Dusk Hollow', placeholder: true,
+    trait: 'Its dust blurs names and smears your preview.',
+  },
 };
+
+/* Attack set by level position (the last one repeats if there are more levels). */
+const MONSTER_PHASES = [
+  { line: 'Slow and clumsy — it only knows how to hit.', intents: { hit: 1 } },
+  { line: 'It throws your cards around and blurs your vision.', intents: { hit: 2, scramble: 1, blur: 1 } },
+  { line: 'It fights dirty: blurring names, stealing words, locking your nodes.', intents: { hit: 1, blur: 2, icon: 2, locked: 1 } },
+  { line: 'The last guardian. It uses every trick there is.', intents: { damage: 2, blur: 1, icon: 1, scramble: 1, locked: 1, time: 1 } },
+];

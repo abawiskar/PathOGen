@@ -7,6 +7,7 @@
  *   order?:  explicit build order of open node ids (default: topological order of the graph)
  */
 var LEVELS = [];
+var MONSTER_OVERRIDE = null;
 
 const LevelLoader = (() => {
   function resolvePort(nodes, ref, side, where) {
@@ -76,13 +77,14 @@ const LevelLoader = (() => {
       };
       steps[Math.max(0, pos(w.from[0]), pos(w.to[0]))].quizzes.push(quiz);
     });
-    if (!MONSTERS[raw.monster]) console.warn(`${where}: unknown monster "${raw.monster}", using rootbound`);
     return Object.assign({ params: [], lifesavers: {}, health: 4, guidance: 'standard' }, raw,
-      { dir, monster: MONSTERS[raw.monster] ? raw.monster : 'rootbound', nodes, wires, steps });
+      { dir, nodes, wires, steps, monster: MONSTER_OPTIONS[raw.monster] ? raw.monster : (console.warn(`${where}: unknown monster "${raw.monster}"`), 'placeholder') });
   }
 
   async function loadAll() {
     const idx = await (await fetch('levels/index.json', { cache: 'no-cache' })).json();
+    const pick = (location.search.match(/[?&]monster=(\w+)/) || [])[1];
+    MONSTER_OVERRIDE = MONSTER_OPTIONS[pick] ? pick : null;
     const out = [];
     for (const dir of idx.levels) {
       const raw = await (await fetch(`levels/${dir}/level.json`, { cache: 'no-cache' })).json();
