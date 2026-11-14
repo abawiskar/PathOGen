@@ -6,8 +6,8 @@ PathOGen is a browser game that teaches Grasshopper 3D. Each level is a real Gra
 Players pick the right component cards, wire them correctly, and complete the definition before the monster defeats them.
 A live 3D preview shows the geometry growing with every correct move.
 
-*Status as of 14 Nov 2026: playable prototype. Level 1's five difficulties come from the LevelA `.ghx` files; level 2 is
-transcribed from `GH definitions/Twisty_Simple.gh`; levels 3–4 are placeholders until their `.ghx` files arrive.*
+*Status as of 14 Nov 2026: playable prototype. All four levels are built from the team's `.ghx` files
+(`GameLevels/LevelA`–`LevelD`): five difficulties for level 1 and three each for levels 2–4.*
 
 ---
 
@@ -25,6 +25,7 @@ Then open <http://localhost:5173>.
 | URL option | Effect |
 | --- | --- |
 | `?all` | Unlocks every level (for testing) |
+| `?inspect` | Testing inspector: a bar to jump to any level and difficulty and step through its definition stage by stage (auto-placing the right answers), with the live preview and sliders. Nothing is saved |
 | `?monster=tower` (or `spaghetti`, `tree`, `voronoi`) | Shows one monster on every level |
 
 Other pages: `web/review.html` lists every hint and explanation still marked as draft, for the team to review.
@@ -35,6 +36,7 @@ Other pages: `web/review.html` lists every hint and explanation still marked as 
 
 | Area | What it shows |
 | --- | --- |
+| **Completed definition** (button, top right of the definition panel) | Opens the finished graph — every node placed and wired, the ones you place framed in gold — next to its output. |
 | **Build your definition** (top left) | A simplified Grasshopper canvas: placed components, wires, and empty nodes still to fill. Empty nodes appear as greyed-out components with a `?`; the one you're filling glows gold. Drag to pan on big graphs. |
 | **Preview** (centre) | Live wireframe 3D of the definition so far. Drag to orbit, scroll to zoom, double-click to reset. Perspective / Top / Front views. |
 | **Sliders** (preview, top right) | The definition's sliders — drag them and the whole definition re-runs. |
@@ -46,7 +48,7 @@ Other pages: `web/review.html` lists every hint and explanation still marked as 
 | **Your hand** (bottom) | The component cards (or port cards during a wire check) to choose from. |
 | **Hero** (bottom left) | The guide character; reacts to success, damage and defeat. |
 | **Moves / Help** (bottom right) | Moves opens a log of every decision with its explanation; Help explains the rules. |
-| **Title screen** | Begin the Hunt, How to Play, and Exit (asks first; closes the tab where the browser allows it, otherwise shows a goodbye message). |
+| **Title screen** | Begin the Hunt, How to Play, About Us, and Exit (asks first; closes the tab where the browser allows it, otherwise shows a goodbye message). |
 | **Main Menu / ← Map** (bottom right) | Leave the battle for the title screen or the map; asks first if the level is in progress. The map also has a Main Menu button. |
 
 ---
@@ -122,10 +124,10 @@ Every 3 correct picks in a row can award a bonus lifesaver (up to 2 per level).
 
 | # | Level | Monster | What the player builds | Source |
 | --- | --- | --- | --- | --- |
-| 1 | **Build the Base Shape** | The Spaghetti Boss | Construct Point → Polygon (5 sides, filleted corners), driven by sliders | Twisty_Simple.gh |
-| 2 | **Build the Mass** | The Twisted Tower | Unit Z → Move → Rotate (degrees) → Loft → Cap Holes: a twisted tower mass | Twisty_Simple.gh |
-| 3 | **Panels & Floors** | The Voronoi Golem | Contour (floors), Divide Domain² + Isotrim (facade panels) | Placeholder |
-| 4 | **Data Trees & Details** | The Branch Tree | Divide Curve per floor → Flip Matrix → Interpolate → Pipe: twisting mullions | Placeholder |
+| 1 | **Build the Base Shape** | The Spaghetti Boss | A rounded floor plate outline, five different ways | `GameLevels/LevelA/A01–A05.ghx` |
+| 2 | **Build the Mass** | The Twisted Tower | The twisted tower mass: floors stacked, scaled, rotated, lofted and capped | `GameLevels/LevelB/B01–B03.ghx` |
+| 3 | **Panels & Floors** | The Voronoi Golem | Floor slabs: the mass sliced level by level, set back and extruded | `GameLevels/LevelC/C01–C03.ghx` |
+| 4 | **Data Trees & Details** | The Branch Tree | Facade details: mullions run up the tower and the skin cut into panels | `GameLevels/LevelD/D01–D03.ghx` |
 
 ### Difficulties
 
@@ -152,6 +154,15 @@ Level 1's difficulties are five **methods** for building the same rounded pentag
 | A04 Geometry Wizard | Construct Point → Divide Curve → Shift List → PolyLine → Flatten Tree | Independent | 3 | 6 | 2 | Fewer lifesavers |
 | A05 Grasshopper Legend | Construct Point → Divide Curve → Trim with Region → Arc SED → Shift List → Merge | Independent | 3 | 6 | 3 | 30-second timer |
 
+Levels 2–4 each have three methods, converted from LevelB–D for the web build (names and rules follow the
+Godot converter's defaults for the first three difficulties):
+
+| Difficulty | Level 2 · Mass (LevelB) | Level 3 · Floors (LevelC) | Level 4 · Details (LevelD) | Rules |
+| --- | --- | --- | --- | --- |
+| Hopper Hatchling | Multiplication → Unit Z → Rotate → Loft → Cap Holes | Contour → Multiplication → Extrude → Cap Holes | Divide Curve → Line → Pipe | Guided, 5 hearts, 3 cards |
+| Shape Scout | Range → Multiplication → Addition → Polygon → Rotate → Loft → Cap Holes | Scale → Multiplication → Extrude → Cap Holes → Area | Divide Domain² → Isotrim → Area → Scale → Pipe | Guided, 4 hearts, 4 cards |
+| Pattern Pouncer | Range → Graph Mapper → Multiplication → Addition → Polygon → Sine → Rotate → Loft → Cap Holes | Graft Tree → Scale → Multiplication → Extrude → Cap Holes → Area | Divide Domain² → Isotrim → Divide Curve → Flip Matrix → Interpolate → Pipe | Standard, 4 hearts, 5 cards, attack set 1 |
+
 ### Learning progression
 
 Early difficulties show descriptions and tell you what each open node needs; later ones hide descriptions, offer more
@@ -163,6 +174,7 @@ cards and pre-place less — moving players from **recognition → understanding
 
 | Asset | Source | In game |
 | --- | --- | --- |
+| Component icons | David Rutten's original Grasshopper icons, from github.com/aidannewsome/grasshopper-icons (free to use for Grasshopper-related projects) | `web/img/gh-icons/*.svg`, mapped in `web/js/gh_icons.js`; 161 of 202 components, the rest keep a simple line icon |
 | Hero | `Images/Hero/Material Seat for the hero_v3 - upscale.png` | Main pose (idle), Success, Damage and Defeat frames, cut to `web/img/hero-*.png` |
 | The Spaghetti Boss | `Images/Monster/Spaghetti Boss_v1.png` | `web/img/monster-spaghetti.png` |
 | The Twisted Tower | `Images/Monster/Twisted Tower Monster_v3.png` (dark background removed) | `web/img/monster-tower.png` |
@@ -205,9 +217,23 @@ Monster names and backstory lines are placeholders and can be edited in `web/js/
 
 ---
 
-## 10. Open items
+## 10. Team
 
-- **Levels 3–4:** replace placeholder definitions with the real scripts; decide how many difficulties each has.
+Made at the AECTech Hackathon 2026. On the About Us page, clicking a name shows that person's title and workplace;
+the names also appear on the end-of-game screen. Edit them in `TEAM` in `web/js/game.js`.
+
+| Name | Title | Organisation |
+| --- | --- | --- |
+| Abhishek Bawiskar | Senior Associate Application Developer | Thornton Tomasetti |
+| Garrett Herbst | Director of Emerging Technologies | Little |
+| Joel Hills | Senior Digital Design Technologist | Thornton Tomasetti |
+| Riku Kanemitsu | Graduate Student | Waseda University & ADL Intern |
+| Danny Karas | Associate Computational Designer | Thornton Tomasetti |
+| Maya Mashiach | Design Technology Specialist | LPA Design Studios |
+| Kazu Tajima | Graduate Student | Waseda University & ADL Intern |
+
+## 11. Open items
+
 - **Hero wire-attack animation:** needs evenly spaced frames on the sheet.
 - **Text review:** all hints and explanations are drafts written by Claude.
 - **Monster names and lines:** placeholders.

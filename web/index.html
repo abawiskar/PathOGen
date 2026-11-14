@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Cinzel:wght@500;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
-  <link rel='stylesheet' href='css/campaign-map.css'>
+  <link rel='stylesheet' href='css/campaign-map.css?v=map2'>
 </head>
 <body>
 <div id="viewport">
@@ -25,6 +25,7 @@
         <div class="title-btns">
           <button class="btn big primary" id="btn-start">Begin the Hunt</button>
           <button class="btn big" id="btn-title-help">How to Play</button>
+          <button class="btn big" id="btn-about">About Us</button>
           <button class="btn big ghost" id="btn-exit">Exit</button>
         </div>
         <div class="title-hero" id="title-hero"></div>
@@ -32,6 +33,19 @@
     </section>
 
     <!-- ───────── Map ───────── -->
+    <!-- ───────── About Us (ported from the Godot build) ───────── -->
+    <section id="screen-about" class="screen">
+      <div class="about">
+        <h1 class="about-title">About Us</h1>
+        <div class="about-event">Made at the AECTech Hackathon 2026</div>
+        <p class="about-text">PathOGen teaches Grasshopper by playing it: every card you place adds a real component to a working definition, and a live 3D preview shows what your script builds. Get it right to beat the monster.</p>
+        <h2 class="about-head">The team</h2>
+        <div class="team" id="team"></div>
+        <div class="about-fonts">Fonts: Cinzel and Barlow (SIL Open Font License) &nbsp;·&nbsp; Grasshopper component icons by David Rutten / Robert McNeel &amp; Associates</div>
+        <button class="btn big primary" id="btn-about-back">&#8592; Main Menu</button>
+      </div>
+    </section>
+
     <section id="screen-map" class="screen">
       <header class="map-head">
         <div>
@@ -54,6 +68,7 @@
     <section id="screen-battle" class="screen">
       <div class="panel" id="p-graph">
         <header>
+          <button class="def-btn" id="btn-def" title="See the finished definition and its output">&#9638; Completed definition</button>
           <h3 class="smallcaps" id="graph-title">Build your definition</h3>
           <div class="stage-hint" id="graph-sub">Place components into the open nodes</div>
         </header>
@@ -121,13 +136,21 @@
 <script src="js/sound.js?v=7"></script>
 <script src="js/data.js"></script>
 <script src="js/components_extra.js"></script>
+<script src="js/gh_icons.js"></script>
 <script src="js/preview.js"></script>
 <script src="js/monsters.js"></script>
 <script src="js/engine.js"></script>
 <script src="js/loader.js"></script>
 <script src="js/art.js"></script>
 <script src="js/game.js?v=sfx3"></script>
-  <script src='js/campaign-map.js'></script>
+<<<<<<< HEAD
+  <script src='js/campaign-map.js?v=map2'></script>
+=======
+<script>
+  // testing only: ?inspect adds the level inspector bar (js/inspect.js)
+  if (/[?&]inspect\b/.test(location.search)) { const s = document.createElement('script'); s.src = 'js/inspect.js'; document.body.appendChild(s); }
+</script>
+>>>>>>> origin/main
 <script src="js/music.js?v=bgm1"></script>
 </body>
 </html>

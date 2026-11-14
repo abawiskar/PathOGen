@@ -1,0 +1,876 @@
+{
+ "source": "GameLevels/LevelD/D02.ghx",
+ "method": "D02",
+ "params": [
+  {
+   "key": "s1",
+   "label": "Floors",
+   "min": 5.0,
+   "max": 80.0,
+   "step": 1,
+   "value": 30.0
+  },
+  {
+   "key": "s2",
+   "label": "Panel scale (joints)",
+   "min": 0.8,
+   "max": 1.0,
+   "step": 0.001,
+   "value": 0.95
+  },
+  {
+   "key": "s3",
+   "label": "Mullion radius (ft)",
+   "min": 0.1,
+   "max": 1.0,
+   "step": 0.01,
+   "value": 0.25
+  },
+  {
+   "key": "s4",
+   "label": "Floor-to-floor (ft)",
+   "min": 10.0,
+   "max": 18.0,
+   "step": 0.1,
+   "value": 13.0
+  },
+  {
+   "key": "s5",
+   "label": "Top fillet (ft)",
+   "min": 0.0,
+   "max": 15.0,
+   "step": 0.1,
+   "value": 6.0
+  },
+  {
+   "key": "s6",
+   "label": "Base fillet (ft)",
+   "min": 0.0,
+   "max": 15.0,
+   "step": 0.1,
+   "value": 6.0
+  },
+  {
+   "key": "s7",
+   "label": "Top radius (ft)",
+   "min": 30.0,
+   "max": 120.0,
+   "step": 0.1,
+   "value": 45.0
+  },
+  {
+   "key": "s8",
+   "label": "Base radius (ft)",
+   "min": 30.0,
+   "max": 120.0,
+   "step": 0.1,
+   "value": 60.0
+  },
+  {
+   "key": "s9",
+   "label": "Sides",
+   "min": 3.0,
+   "max": 12.0,
+   "step": 1,
+   "value": 4.0
+  },
+  {
+   "key": "s10",
+   "label": "Total twist (deg)",
+   "min": -180.0,
+   "max": 180.0,
+   "step": 1,
+   "value": 90.0
+  },
+  {
+   "key": "s11",
+   "label": "Panels around",
+   "min": 8.0,
+   "max": 120.0,
+   "step": 1,
+   "value": 32.0
+  }
+ ],
+ "nodes": [
+  {
+   "id": "addition",
+   "comp": "addition",
+   "open": false,
+   "x": 1344,
+   "y": 12
+  },
+  {
+   "id": "addition2",
+   "comp": "addition",
+   "open": false,
+   "x": 1344,
+   "y": 84
+  },
+  {
+   "id": "area",
+   "comp": "area",
+   "open": true,
+   "x": 3731,
+   "y": 40,
+   "question": "D02_Q03",
+   "need": "a component that turns Geometry into Area",
+   "hint": "Look in Surface › Analysis.",
+   "correct": "Area is the component this method uses here. Measures area and finds the centroid.",
+   "distractors": [
+    "volume",
+    "length",
+    "dimensions",
+    "boundingBox",
+    "curveMiddle",
+    "evaluateCurve",
+    "closed",
+    "curveClosestPoint",
+    "polygonCenter",
+    "segmentLengths",
+    "planar",
+    "boxProperties"
+   ],
+   "draft": true,
+   "stage": "Find the centre of every panel.",
+   "stage_draft": true
+  },
+  {
+   "id": "capHoles",
+   "comp": "capHoles",
+   "open": false,
+   "x": 2808,
+   "y": 9
+  },
+  {
+   "id": "constructP",
+   "comp": "constructPoint",
+   "open": false,
+   "x": 817,
+   "y": 22,
+   "set": {
+    "X": 0.0,
+    "Y": 0.0
+   }
+  },
+  {
+   "id": "data",
+   "comp": "dataParam",
+   "open": false,
+   "x": 1491,
+   "y": 52,
+   "label": "Value"
+  },
+  {
+   "id": "data10",
+   "comp": "dataParam",
+   "open": false,
+   "x": 3365,
+   "y": 52,
+   "label": "Domains"
+  },
+  {
+   "id": "data11",
+   "comp": "dataParam",
+   "open": false,
+   "x": 3623,
+   "y": 0,
+   "label": "Panels"
+  },
+  {
+   "id": "data12",
+   "comp": "dataParam",
+   "open": false,
+   "x": 3879,
+   "y": 0,
+   "label": "Panels"
+  },
+  {
+   "id": "data13",
+   "comp": "dataParam",
+   "open": false,
+   "x": 3892,
+   "y": 52,
+   "label": "Panel centres"
+  },
+  {
+   "id": "data14",
+   "comp": "dataParam",
+   "open": false,
+   "x": 4328,
+   "y": 0,
+   "label": "Twisted outlines"
+  },
+  {
+   "id": "data2",
+   "comp": "dataParam",
+   "open": false,
+   "x": 1491,
+   "y": 0,
+   "label": "Point"
+  },
+  {
+   "id": "data3",
+   "comp": "dataParam",
+   "open": false,
+   "x": 1491,
+   "y": 104,
+   "label": "Value"
+  },
+  {
+   "id": "data4",
+   "comp": "dataParam",
+   "open": false,
+   "x": 1858,
+   "y": 104,
+   "label": "Point"
+  },
+  {
+   "id": "data5",
+   "comp": "dataParam",
+   "open": false,
+   "x": 1858,
+   "y": 52,
+   "label": "Outline"
+  },
+  {
+   "id": "data6",
+   "comp": "dataParam",
+   "open": false,
+   "x": 2428,
+   "y": 0,
+   "label": "Twisted outlines"
+  },
+  {
+   "id": "data7",
+   "comp": "dataParam",
+   "open": false,
+   "x": 2702,
+   "y": 0,
+   "label": "Skin"
+  },
+  {
+   "id": "data8",
+   "comp": "dataParam",
+   "open": false,
+   "x": 2955,
+   "y": 0,
+   "label": "Skin"
+  },
+  {
+   "id": "data9",
+   "comp": "dataParam",
+   "open": false,
+   "x": 3362,
+   "y": 0,
+   "label": "Skin"
+  },
+  {
+   "id": "divideDoma",
+   "comp": "divDomain2",
+   "open": true,
+   "x": 3214,
+   "y": 22,
+   "question": "D02_Q01",
+   "need": "a component that turns Domain, U Count and V Count into Segments",
+   "hint": "Look in Maths › Domain.",
+   "correct": "Divide Domain² is the component this method uses here. Splits a 2D domain into a U×V grid.",
+   "distractors": [
+    "divideDomain",
+    "constructDomainUV",
+    "deconstructDomain",
+    "bounds2D",
+    "divideSurface",
+    "surfaceFrames",
+    "dimensions",
+    "consecutiveDomains",
+    "findDomain",
+    "includes",
+    "constructDomain"
+   ],
+   "draft": true,
+   "stage": "Plan the facade grid: split the tower skin into panels around and up.",
+   "stage_draft": true
+  },
+  {
+   "id": "isotrim",
+   "comp": "isotrim",
+   "open": true,
+   "x": 3476,
+   "y": 18,
+   "question": "D02_Q02",
+   "need": "a component that turns Surface and Domain into Surface",
+   "hint": "Look in Surface › Util.",
+   "correct": "Isotrim is the component this method uses here. Cuts a surface into pieces by UV domains.",
+   "distractors": [
+    "divideSurface",
+    "surfaceSplit",
+    "copyTrim",
+    "retrim",
+    "untrim",
+    "surfaceFrames",
+    "isoCurve",
+    "evaluateSurface",
+    "subCurve",
+    "dimensions",
+    "brepEdges",
+    "deconstructBrep"
+   ],
+   "draft": true,
+   "stage": "Cut the tower skin into panels along that grid.",
+   "stage_draft": true
+  },
+  {
+   "id": "loft",
+   "comp": "loft",
+   "open": false,
+   "x": 2555,
+   "y": 12,
+   "set": {
+    "O": false
+   }
+  },
+  {
+   "id": "multiplica",
+   "comp": "multiplication",
+   "open": false,
+   "x": 586,
+   "y": 12
+  },
+  {
+   "id": "multiplica2",
+   "comp": "multiplication",
+   "open": false,
+   "x": 700,
+   "y": 12
+  },
+  {
+   "id": "multiplica3",
+   "comp": "multiplication",
+   "open": false,
+   "x": 1228,
+   "y": 12
+  },
+  {
+   "id": "multiplica4",
+   "comp": "multiplication",
+   "open": false,
+   "x": 1228,
+   "y": 156
+  },
+  {
+   "id": "multiplica5",
+   "comp": "multiplication",
+   "open": false,
+   "x": 1228,
+   "y": 228
+  },
+  {
+   "id": "multiplica6",
+   "comp": "multiplication",
+   "open": false,
+   "x": 1228,
+   "y": 84
+  },
+  {
+   "id": "multiplica7",
+   "comp": "multiplication",
+   "open": false,
+   "x": 2126,
+   "y": 12
+  },
+  {
+   "id": "number",
+   "comp": "numberParam",
+   "open": false,
+   "x": 312,
+   "y": 0
+  },
+  {
+   "id": "number2",
+   "comp": "numberParam",
+   "open": false,
+   "x": 314,
+   "y": 52
+  },
+  {
+   "id": "number3",
+   "comp": "numberParam",
+   "open": false,
+   "x": 966,
+   "y": 0
+  },
+  {
+   "id": "number4",
+   "comp": "numberParam",
+   "open": false,
+   "x": 968,
+   "y": 52
+  },
+  {
+   "id": "number5",
+   "comp": "numberParam",
+   "open": false,
+   "x": 1860,
+   "y": 0
+  },
+  {
+   "id": "number6",
+   "comp": "numberParam",
+   "open": false,
+   "x": 2955,
+   "y": 52
+  },
+  {
+   "id": "pipe",
+   "comp": "pipe",
+   "open": true,
+   "x": 4584,
+   "y": 58,
+   "set": {
+    "E": 0.0
+   },
+   "question": "D02_Q05",
+   "need": "a component that turns Curve, Radius and Caps into Pipe",
+   "hint": "Look in Surface › Freeform.",
+   "correct": "Pipe is the component this method uses here. Gives a curve solid thickness.",
+   "distractors": [
+    "sweep1",
+    "sweep2",
+    "extrude",
+    "loft",
+    "offset",
+    "fillet",
+    "rebuildCurve",
+    "revolution",
+    "railRevolution",
+    "patch",
+    "boundary",
+    "extrudePoint"
+   ],
+   "draft": true,
+   "stage": "Turn the floor edges into thick horizontal mullions.",
+   "stage_draft": true
+  },
+  {
+   "id": "polygon",
+   "comp": "polygon",
+   "open": false,
+   "x": 1710,
+   "y": 32
+  },
+  {
+   "id": "range",
+   "comp": "range",
+   "open": false,
+   "x": 164,
+   "y": 110,
+   "set": {
+    "D": [
+     1.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "id": "range2",
+   "comp": "range",
+   "open": false,
+   "x": 164,
+   "y": 25,
+   "set": {
+    "D": [
+     0.0,
+     1.0
+    ]
+   }
+  },
+  {
+   "id": "rotate",
+   "comp": "rotate",
+   "open": false,
+   "x": 2250,
+   "y": 22,
+   "degrees": true
+  },
+  {
+   "id": "scale",
+   "comp": "scale",
+   "open": true,
+   "x": 4160,
+   "y": 54,
+   "question": "D02_Q04",
+   "need": "a component that turns Geometry, Centre and Factor into Geometry",
+   "hint": "Look in Transform › Affine.",
+   "correct": "Scale is the component this method uses here. Resizes geometry around a centre point.",
+   "distractors": [
+    "scaleNU",
+    "mirror",
+    "rotate",
+    "move",
+    "shear",
+    "shearAngle",
+    "orient",
+    "orientDirection",
+    "rotateAxis",
+    "moveAwayFrom",
+    "project",
+    "linearArray"
+   ],
+   "draft": true,
+   "stage": "Shrink each panel slightly around its centre to open up the joints between panels.",
+   "stage_draft": true
+  },
+  {
+   "id": "slider",
+   "comp": "slider",
+   "open": false,
+   "x": 0,
+   "y": 0,
+   "param": "s1",
+   "label": "Floors"
+  },
+  {
+   "id": "slider10",
+   "comp": "slider",
+   "open": false,
+   "x": 3965,
+   "y": 96,
+   "param": "s2",
+   "label": "Panel scale (joints)"
+  },
+  {
+   "id": "slider11",
+   "comp": "slider",
+   "open": false,
+   "x": 4392,
+   "y": 48,
+   "param": "s3",
+   "label": "Mullion radius (ft)"
+  },
+  {
+   "id": "slider2",
+   "comp": "slider",
+   "open": false,
+   "x": 395,
+   "y": 96,
+   "param": "s4",
+   "label": "Floor-to-floor (ft)"
+  },
+  {
+   "id": "slider3",
+   "comp": "slider",
+   "open": false,
+   "x": 1037,
+   "y": 240,
+   "param": "s5",
+   "label": "Top fillet (ft)"
+  },
+  {
+   "id": "slider4",
+   "comp": "slider",
+   "open": false,
+   "x": 1039,
+   "y": 192,
+   "param": "s6",
+   "label": "Base fillet (ft)"
+  },
+  {
+   "id": "slider5",
+   "comp": "slider",
+   "open": false,
+   "x": 1042,
+   "y": 144,
+   "param": "s7",
+   "label": "Top radius (ft)"
+  },
+  {
+   "id": "slider6",
+   "comp": "slider",
+   "open": false,
+   "x": 1044,
+   "y": 96,
+   "param": "s8",
+   "label": "Base radius (ft)"
+  },
+  {
+   "id": "slider7",
+   "comp": "slider",
+   "open": false,
+   "x": 1546,
+   "y": 147,
+   "param": "s9",
+   "label": "Sides"
+  },
+  {
+   "id": "slider8",
+   "comp": "slider",
+   "open": false,
+   "x": 1938,
+   "y": 147,
+   "param": "s10",
+   "label": "Total twist (deg)"
+  },
+  {
+   "id": "slider9",
+   "comp": "slider",
+   "open": false,
+   "x": 3031,
+   "y": 96,
+   "param": "s11",
+   "label": "Panels around"
+  }
+ ],
+ "wires": [
+  {
+   "from": "slider.N",
+   "to": "range2.N"
+  },
+  {
+   "from": "slider.N",
+   "to": "range.N"
+  },
+  {
+   "from": "number.N",
+   "to": "multiplica.A"
+  },
+  {
+   "from": "slider2.N",
+   "to": "multiplica.B"
+  },
+  {
+   "from": "number2.N",
+   "to": "multiplica2.A"
+  },
+  {
+   "from": "multiplica.R",
+   "to": "multiplica2.B"
+  },
+  {
+   "from": "multiplica2.R",
+   "to": "constructP.Z"
+  },
+  {
+   "from": "number3.N",
+   "to": "multiplica3.A"
+  },
+  {
+   "from": "slider6.N",
+   "to": "multiplica3.B"
+  },
+  {
+   "from": "number4.N",
+   "to": "multiplica6.A"
+  },
+  {
+   "from": "slider5.N",
+   "to": "multiplica6.B"
+  },
+  {
+   "from": "multiplica3.R",
+   "to": "addition.A"
+  },
+  {
+   "from": "multiplica6.R",
+   "to": "addition.B"
+  },
+  {
+   "from": "number3.N",
+   "to": "multiplica4.A"
+  },
+  {
+   "from": "slider4.N",
+   "to": "multiplica4.B"
+  },
+  {
+   "from": "number4.N",
+   "to": "multiplica5.A"
+  },
+  {
+   "from": "slider3.N",
+   "to": "multiplica5.B"
+  },
+  {
+   "from": "multiplica4.R",
+   "to": "addition2.A"
+  },
+  {
+   "from": "multiplica5.R",
+   "to": "addition2.B"
+  },
+  {
+   "from": "data2.D",
+   "to": "polygon.P"
+  },
+  {
+   "from": "data.D",
+   "to": "polygon.R"
+  },
+  {
+   "from": "slider7.N",
+   "to": "polygon.S"
+  },
+  {
+   "from": "data3.D",
+   "to": "polygon.Rf"
+  },
+  {
+   "from": "number5.N",
+   "to": "multiplica7.A"
+  },
+  {
+   "from": "slider8.N",
+   "to": "multiplica7.B"
+  },
+  {
+   "from": "data5.D",
+   "to": "rotate.G"
+  },
+  {
+   "from": "multiplica7.R",
+   "to": "rotate.A"
+  },
+  {
+   "from": "data4.D",
+   "to": "rotate.P"
+  },
+  {
+   "from": "data6.D",
+   "to": "loft.C"
+  },
+  {
+   "from": "data7.D",
+   "to": "capHoles.B"
+  },
+  {
+   "from": "data8.D",
+   "to": "divideDoma.I"
+  },
+  {
+   "from": "slider9.N",
+   "to": "divideDoma.U"
+  },
+  {
+   "from": "number6.N",
+   "to": "divideDoma.V"
+  },
+  {
+   "from": "data9.D",
+   "to": "isotrim.S"
+  },
+  {
+   "from": "data10.D",
+   "to": "isotrim.D"
+  },
+  {
+   "from": "data11.D",
+   "to": "area.G"
+  },
+  {
+   "from": "data12.D",
+   "to": "scale.G"
+  },
+  {
+   "from": "data13.D",
+   "to": "scale.C"
+  },
+  {
+   "from": "slider10.N",
+   "to": "scale.F"
+  },
+  {
+   "from": "data14.D",
+   "to": "pipe.C"
+  },
+  {
+   "from": "slider11.N",
+   "to": "pipe.R"
+  },
+  {
+   "from": "slider.N",
+   "to": "number.N"
+  },
+  {
+   "from": "range2.R",
+   "to": "number2.N"
+  },
+  {
+   "from": "range.R",
+   "to": "number3.N"
+  },
+  {
+   "from": "range2.R",
+   "to": "number4.N"
+  },
+  {
+   "from": "constructP.Pt",
+   "to": "data2.D"
+  },
+  {
+   "from": "addition.R",
+   "to": "data.D"
+  },
+  {
+   "from": "addition2.R",
+   "to": "data3.D"
+  },
+  {
+   "from": "range2.R",
+   "to": "number5.N"
+  },
+  {
+   "from": "polygon.P",
+   "to": "data5.D"
+  },
+  {
+   "from": "constructP.Pt",
+   "to": "data4.D"
+  },
+  {
+   "from": "rotate.G",
+   "to": "data6.D"
+  },
+  {
+   "from": "loft.L",
+   "to": "data7.D"
+  },
+  {
+   "from": "loft.L",
+   "to": "data8.D"
+  },
+  {
+   "from": "slider.N",
+   "to": "number6.N"
+  },
+  {
+   "from": "loft.L",
+   "to": "data9.D"
+  },
+  {
+   "from": "divideDoma.S",
+   "to": "data10.D"
+  },
+  {
+   "from": "isotrim.S",
+   "to": "data11.D"
+  },
+  {
+   "from": "isotrim.S",
+   "to": "data12.D"
+  },
+  {
+   "from": "area.C",
+   "to": "data13.D"
+  },
+  {
+   "from": "rotate.G",
+   "to": "data14.D"
+  }
+ ],
+ "order": [
+  "divideDoma",
+  "isotrim",
+  "area",
+  "scale",
+  "pipe"
+ ]
+}

@@ -33,7 +33,8 @@
     $('#toast').appendChild(t); setTimeout(() => t.remove(), 2300);
   }
   let modalOnClose = null;
-  function modal(html, onClose) {
+  function modal(html, onClose, wide) {
+    $('#modal-card').classList.toggle('wide', !!wide);
     $('#modal-card').innerHTML = html; $('#modal').classList.remove('hidden'); modalOnClose = onClose || null;
     hideTip();
   }
@@ -60,6 +61,8 @@
     return { w: w || 92, h: Math.max(rows * ROW + 12, 30) };
   }
   function iconSVG(id, x, y, s) {
+    // the real Grasshopper icon when we have one (img/gh-icons, David Rutten's artwork); otherwise our line icon
+    if (typeof GH_ICONS !== 'undefined' && GH_ICONS[id]) return `<image class="gh-icon" href="img/gh-icons/${GH_ICONS[id]}" x="${x}" y="${y}" width="${s}" height="${s}"/>`;
     return `<svg class="icon" x="${x}" y="${y}" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${ICONS[id] || ''}</svg>`;
   }
   /* returns { svg, ports: { in: [[x,y]], out: [[x,y]] }, w, h } — centred at (cx, cy) */
@@ -508,11 +511,22 @@
     () => { if (monster().frenzy && !st.over && !st.timer) startTimer(monster().frenzy); });
   }
 
+  /* the team (alphabetical by last name, as in the Godot build's TEAM list); click a name on About Us for the details */
+  const TEAM = [
+    { name: 'Abhishek Bawiskar', title: 'Senior Associate Application Developer', org: 'Thornton Tomasetti' },
+    { name: 'Garrett Herbst', title: 'Director of Emerging Technologies', org: 'Little' },
+    { name: 'Joel Hills', title: 'Senior Digital Design Technologist', org: 'Thornton Tomasetti' },
+    { name: 'Riku Kanemitsu', title: 'Graduate Student', org: 'Waseda University & ADL Intern' },
+    { name: 'Danny Karas', title: 'Associate Computational Designer', org: 'Thornton Tomasetti' },
+    { name: 'Maya Mashiach', title: 'Design Technology Specialist', org: 'LPA Design Studios' },
+    { name: 'Kazu Tajima', title: 'Graduate Student', org: 'Waseda University & ADL Intern' },
+  ];
   function credits() {
     modal(`<h2>Script Master</h2>
-      <p>You defeated the Spaghetti Wyrm and built a complete parametric workflow — polygon, series, graph mapping, scale, rotate, move and loft — all driven by a handful of sliders.</p>
-      <p>That chain is real Grasshopper. Open Rhino, place the same components, wire them the same way, and you’ll get the same tower.</p>
-      <p class="muted">Replay levels for three stars and a higher rank, or try a perfect run without lifesavers.</p>
+      <p>You cleared the path and built complete parametric definitions, all driven by a handful of sliders.</p>
+      <p>That chain is real Grasshopper. Open Rhino, place the same components, wire them the same way, and you’ll get the same result.</p>
+      <p class="muted">Replay levels for three stars and a higher rank, try a harder difficulty, or go for a perfect run without lifesavers.</p>
+      <h4>Made by the PathOGen team at the AECTech Hackathon 2026</h4><p>${TEAM.map(t => esc(t.name)).join(' &nbsp;·&nbsp; ')}</p>
       <div class="actions"><button class="btn primary" data-act="map">Back to the map</button></div>`);
   }
 
@@ -694,6 +708,42 @@
     }
     return goalCache[gk];
   }
+  /* The finished definition as a static picture: every node placed, every wire connected, sliders at their defaults.
+   * A level can show its own picture instead with "definition_image": "<file>.png" (e.g. a Grasshopper canvas capture). */
+  function definitionSVG(L) {
+    const params = Object.fromEntries((L.params || []).map(p => [p.key, p.value]));
+    const geo = {}; let mnx = Infinity, mny = Infinity, mxx = -Infinity, mxy = -Infinity, nodes = '', wires = '';
+    L.nodes.forEach(n => {
+      const comp = COMPONENTS[n.comp], p = (L.params || []).find(pp => pp.key === n.param);
+      const c = chip(comp, n.x, n.y, { label: n.label, value: n.param ? params[n.param] : (n.value != null ? n.value : null),
+        frac: p ? (params[p.key] - p.min) / ((p.max - p.min) || 1) : null });
+      geo[n.id] = c;
+      const name = n.label && comp.id !== 'slider' ? n.label : comp.id === 'slider' ? '' : comp.name;
+      if (!n.given) nodes += `<rect class="def-frame" x="${n.x - c.w / 2 - 5}" y="${n.y - c.h / 2 - 5}" width="${c.w + 10}" height="${c.h + 10}" rx="8"/>`;
+      nodes += `<g class="${n.given ? '' : 'def-open'}">${c.svg}</g>` + (name ? `<text class="g-label" x="${n.x}" y="${n.y + c.h / 2 + 13}" text-anchor="middle">${esc(name)}</text>` : '');
+      mnx = Math.min(mnx, n.x - c.w / 2); mxx = Math.max(mxx, n.x + c.w / 2); mny = Math.min(mny, n.y - c.h / 2); mxy = Math.max(mxy, n.y + c.h / 2 + 18);
+    });
+    const curve = (a, b) => { const dx = Math.max(24, Math.abs(b[0] - a[0]) * 0.5); return `M${a[0]} ${a[1]}C${a[0] + dx} ${a[1]} ${b[0] - dx} ${b[1]} ${b[0]} ${b[1]}`; };
+    L.wires.forEach(w => {
+      if (w.hideWhen) return;
+      const a = geo[w.from[0]] && geo[w.from[0]].ports.out[w.from[1]], b = geo[w.to[0]] && geo[w.to[0]].ports.in[w.to[1]];
+      if (a && b) wires += `<path class="g-wire" d="${curve(a, b)}"/>`;
+    });
+    const pad = 24;
+    return `<svg class="def-svg" viewBox="${mnx - pad} ${mny - pad} ${mxx - mnx + pad * 2} ${mxy - mny + pad * 2}" xmlns="http://www.w3.org/2000/svg">${wires}${nodes}</svg>`;
+  }
+  function definitionModal() {
+    const L = level();
+    const pic = L.definition_image ? `<img class="def-img" src="levels/${L.dir}/${L.definition_image}" alt="Completed definition">` : definitionSVG(L);
+    modal(`<button class="x-close">&times;</button><div class="sub">Level ${L.id}${L.diffCount > 1 ? ' &middot; ' + esc(L.diffName) : ''} &middot; Completed definition</div>
+      <h2>${esc(L.title)}</h2>
+      <div class="def-layout">
+        <div class="def-canvas">${pic}<div class="def-cap">The finished definition. Nodes outlined in gold are the ones you place.</div></div>
+        <div class="def-side"><div class="def-cap top">Output</div><img class="def-out" src="${goalImage(L)}" alt="Finished result"><p class="muted">What the definition produces with the default slider values.</p></div>
+      </div>
+      <div class="actions"><button class="btn primary" data-act="close">Back to building</button></div>`, null, true);
+  }
+
   function goalModal() {
     const L = level();
     modal(`<button class="x-close">&times;</button><div class="sub">Level ${L.id} &middot; Goal</div><h2>${esc(L.title)}</h2>
@@ -922,6 +972,16 @@
       <p class="muted">Levels are loaded with fetch(), so the game must be served over http — e.g. <code>python -m http.server 5173 --directory web</code> — not opened as a file.</p>`);
   });
   $('#btn-title-help').onclick = helpModal;
+  $('#team').innerHTML = TEAM.map(t => `<button class="team-card" aria-expanded="false">
+      <span class="tc-name">${esc(t.name)}</span>
+      <span class="tc-more"><b>${esc(t.title)}</b>${esc(t.org)}</span>
+      <span class="tc-hint">Click for more</span></button>`).join('');
+  $$('#team .team-card').forEach(c => c.onclick = () => {
+    const open = !c.classList.contains('open');
+    c.classList.toggle('open', open); c.setAttribute('aria-expanded', open);
+  });
+  $('#btn-about').onclick = () => show('screen-about');
+  $('#btn-about-back').onclick = () => openTitle();
   /* Exit: browsers only let a page close a tab that a script opened, so try it and fall back to a farewell screen. */
   $('#btn-exit').onclick = () => modal(`<h2>Leave PathOGen?</h2><p>Your progress is saved on this device, so you can pick up where you left off.</p>
     <div class="actions"><button class="btn" data-act="close">Stay</button><button class="btn warm" data-act="exit">Exit</button></div>`);
@@ -937,6 +997,7 @@
   $('#btn-help').onclick = helpModal;
   $('#btn-moves').onclick = movesModal;
   $('#goal').onclick = () => { if (st) goalModal(); };
+  $('#btn-def').onclick = () => { if (st) definitionModal(); };
   /* leaving a battle in progress asks first (as in the Godot build); 'to' = map or main menu */
   const leaveBattle = (to) => {
     if (st && !st.over && st.di > 0) modal(`<h2>Leave the battle?</h2><p>Your progress in this level will be lost.</p><div class="actions"><button class="btn" data-act="close">Stay</button><button class="btn warm" data-act="${to}">Leave</button></div>`);

@@ -1,7 +1,7 @@
 {
   "id": 2,
   "title": "Build the Mass",
-  "objective": "Lift a copy of the floor plate, twist it, and loft between the two into a closed tower mass.",
+  "objective": "Grow the floor plate into a twisted tower mass: stack, scale and rotate the floors, then loft and cap them.",
   "learn": "Vectors and transforms (Move, Rotate), then turning profiles into a solid with Loft and Cap Holes.",
   "source": "GH definitions/Twisty_Simple.gh",
   "monster": "tower",
@@ -410,5 +410,62 @@
       "from": "lft.L",
       "to": "cap.B"
     }
-  ]
+  ],
+  "difficulties": [
+    {
+      "id": "B01",
+      "name": "Hopper Hatchling",
+      "description": "Method B01.",
+      "file": "B01.json",
+      "guidance": "guided",
+      "health": 5,
+      "hand": 3,
+      "attacks": 0,
+      "lifesavers": {
+        "hint": 3,
+        "potion": 2,
+        "fifty": 2,
+        "clear": 1,
+        "shield": 2,
+        "second": 2
+      }
+    },
+    {
+      "id": "B02",
+      "name": "Shape Scout",
+      "description": "Method B02.",
+      "file": "B02.json",
+      "guidance": "guided",
+      "health": 4,
+      "hand": 4,
+      "attacks": 0,
+      "lifesavers": {
+        "hint": 3,
+        "potion": 1,
+        "fifty": 1,
+        "clear": 1,
+        "shield": 1,
+        "second": 1
+      }
+    },
+    {
+      "id": "B03",
+      "name": "Pattern Pouncer",
+      "description": "Method B03.",
+      "file": "B03.json",
+      "guidance": "standard",
+      "health": 4,
+      "hand": 5,
+      "attacks": 1,
+      "lifesavers": {
+        "hint": 2,
+        "potion": 1,
+        "fifty": 1,
+        "clear": 1,
+        "shield": 1,
+        "second": 1
+      }
+    }
+  ],
+  "difficulties_source": "GameLevels/LevelB/*.ghx via godot/tools/ghx_to_level.py (converted for the web build)"
 }

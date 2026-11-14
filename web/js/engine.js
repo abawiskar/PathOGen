@@ -75,9 +75,10 @@ const Engine = (() => {
   /* ───── component solvers: def = defaults per input, access = 'list' for list inputs ───── */
   const S = {
     slider: { fn: (a, n, ctx) => [n.param != null ? ctx.params[n.param] : (n.value != null ? n.value : 5)] },
-    panel: { def: [null], fn: (a, n) => [L(n.values || [])] },
+    // a wired panel passes its input through (as in Grasshopper); unwired it outputs its typed values
+    panel: { access: ['list'], def: [null], fn: ([v], n) => [L(v && v.some(x => x != null) ? v : (n.values || []))] },
     toggle: { fn: (a, n) => [n.value != null ? n.value : true] },
-    pointParam: { fn: ([v]) => [v] }, curveParam: { fn: ([v]) => [v] }, dataParam: { fn: ([v]) => [v] },
+    pointParam: { fn: ([v]) => [v] }, curveParam: { fn: ([v]) => [v] }, dataParam: { fn: ([v]) => [v] }, numberParam: { fn: ([v]) => [v] },
     xyPlane: { def: [[0, 0, 0]], fn: ([o]) => { const p = PLANES.XY(); p.o = toPoint(o); return [p]; } },
     constructPoint: { def: [0, 0, 0], fn: ([x, y, z]) => [pt([toNum(x), toNum(y), toNum(z)])] },
     unitZ: { def: [1], fn: ([f]) => [vec([0, 0, toNum(f)])] },
@@ -155,9 +156,19 @@ const Engine = (() => {
     addition: { def: [0, 0], fn: ([a, b]) => [toNum(a) + toNum(b)] },
     radians: { fn: ([d]) => [toNum(d) * Math.PI / 180] },
     remap: { def: [undefined, [0, 1], [0, 1]], fn: ([v, s, t]) => { const A = toDomain(s), B = toDomain(t), x = (toNum(v) - A[0]) / ((A[1] - A[0]) || 1); return [B[0] + x * (B[1] - B[0]), B[0] + Math.max(0, Math.min(1, x)) * (B[1] - B[0])]; } },
-    /* Graph Mapper: node.graph = { type: 'linear'|'pinch'|'sine'|'bell', param?: '<slider key>' }; x is normalised to the incoming list. */
+    /* Graph Mapper: node.graph = { type: 'linear'|'pinch'|'sine'|'bell', param?: '<slider key>' }; x is normalised to the incoming list.
+     * { type: 'bezier', cp: [[x,y] ×4] } is Grasshopper's Bezier graph (from a .ghx), read over the graph's 0–1 domain like Grasshopper. */
     graphMapper: { access: ['list'], fn: ([xs], n, ctx) => {
       const nums = xs.map(toNum), lo = Math.min(...nums), hi = Math.max(...nums), g = n.graph || { type: 'linear' };
+      if (g.type === 'bezier' && g.cp && g.cp.length === 4) {
+        const [p0, p1, p2, p3] = g.cp, B = (t, i) => { const u = 1 - t; return u * u * u * p0[i] + 3 * u * u * t * p1[i] + 3 * u * t * t * p2[i] + t * t * t * p3[i]; };
+        const yAt = (x) => {   // solve B_x(t) = x by bisection (x is monotonic along a graph-mapper Bezier)
+          let a = 0, b = 1;
+          for (let k = 0; k < 40; k++) { const m = (a + b) / 2; if (B(m, 0) < x) a = m; else b = m; }
+          return B((a + b) / 2, 1);
+        };
+        return [L(nums.map(x => yAt(Math.max(0, Math.min(1, x)))))];
+      }
       const k = g.param != null ? ctx.params[g.param] : (g.k != null ? g.k : 0.5);
       const f = { linear: t => t, pinch: t => 1 - k * Math.sin(Math.PI * t), sine: t => 0.5 + 0.5 * Math.sin(Math.PI * 2 * t), bell: t => Math.exp(-Math.pow((t - 0.5) / (0.2 + k * 0.3), 2)) }[g.type] || (t => t);
       return [L(nums.map(x => f(hi > lo ? (x - lo) / (hi - lo) : 0)))];
