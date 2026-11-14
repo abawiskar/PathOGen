@@ -70,24 +70,22 @@ button { font-family: inherit; cursor: pointer; }
 
 /* ───────── Title ───────── */
 /* Only the Start screen uses the illustrated plate; text and controls stay live. */
-#screen-title { overflow: hidden; }
+#screen-title { overflow: hidden; background: url('../img/start-environment.webp') center / cover no-repeat; }
+/* The ruins and ground stay still; only a faint veil of mist drifts. */
 #screen-title::before {
-  content: ''; position: absolute; inset: -24px; pointer-events: none;
-  background: url('../img/start-environment.webp') center / cover no-repeat;
-  transform-origin: 65% 25%; animation: title-drift 12s ease-in-out infinite alternate paused;
+  content: ''; position: absolute; inset: -24px; pointer-events: none; z-index: 1;
+  background: radial-gradient(ellipse at 25% 68%, var(--muted), transparent 45%), radial-gradient(ellipse at 80% 80%, var(--muted), transparent 40%);
+  opacity: .045; animation: title-drift 24s ease-in-out infinite alternate paused;
 }
 #screen-title.active::before, #screen-title.active .title-wrap::before { animation-play-state: running; }
-@keyframes title-drift {
-  from { transform: scale(1) translate(0, 0); }
-  to { transform: scale(1.025) translate(-10px, 4px); }
-}
+@keyframes title-drift { from { transform: translateX(-8px); } to { transform: translateX(8px); } }
 #screen-title .title-wrap::before {
   z-index: 1;
   content: ''; position: absolute; inset: 0; pointer-events: none;
   background: radial-gradient(ellipse at 65% 22%, var(--gold), transparent 16%);
-  mix-blend-mode: screen; opacity: .025; animation: title-glow 2.4s ease-in-out infinite alternate paused;
+  mix-blend-mode: screen; opacity: .025; animation: title-glow 7s ease-in-out infinite alternate paused;
 }
-@keyframes title-glow { to { opacity: .22; } }
+@keyframes title-glow { to { opacity: .055; } }
 @media (prefers-reduced-motion: reduce) {
   #screen-title::before, #screen-title .title-wrap::before { animation: none; }
 }
@@ -100,15 +98,19 @@ button { font-family: inherit; cursor: pointer; }
 /* Keep the live menu readable as the boss passes behind it. */
 #screen-title .title-wrap::after { content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 1; background: radial-gradient(ellipse 42% 29% at 50% 55%, var(--bg) 45%, transparent 100%); opacity: 1; }
 /* Separate Start-only art layers move on independent rhythms. */
-#screen-title .title-monster { position: absolute; inset: 0; pointer-events: none; transform-origin: 70% 32%; animation: title-boss 4.6s ease-in-out infinite alternate paused; }
-#screen-title .title-monster img { width: 100%; height: 100%; object-fit: fill; display: block; }
-#screen-title .title-hero { position: absolute; left: 24px; bottom: 76px; width: 340px; pointer-events: none; z-index: 2; transform-origin: 50% 95%; animation: title-hero-idle 2.6s ease-in-out infinite paused; }
-#screen-title .title-hero img { display: block; width: 100%; animation: none; }
-#screen-title.active .title-monster, #screen-title.active .title-hero { animation-play-state: running; }
-@keyframes title-boss { from { transform: translate(0, 0) rotate(-.3deg) scale(1); } to { transform: translate(-8px, 12px) rotate(.4deg) scale(1.025); } }
-@keyframes title-hero-idle { 0%, 100% { transform: translateY(0) rotate(-.5deg); } 50% { transform: translateY(-9px) rotate(.7deg); } }
+#screen-title .title-monster { position: absolute; inset: 0; pointer-events: none; }
+#screen-title .title-monster img { width: 100%; height: 100%; object-fit: fill; display: block; transform-origin: 70% 25%; animation: title-boss 7s ease-in-out infinite alternate paused; }
+#screen-title .title-hero { position: absolute; left: 24px; bottom: 76px; width: 340px; pointer-events: none; z-index: 2; }
+/* Only the upper curl moves. The face, body and boots remain planted. */
+#screen-title .title-hero img { display: block; width: 100%; animation: none; clip-path: inset(20% 0 0); }
+#screen-title .title-hero::before { content: ''; position: absolute; inset: 0; background: url('../img/start-hero.webp') center / 100% 100% no-repeat; clip-path: inset(0 0 79%); transform-origin: 60% 20%; animation: title-hair 4.5s ease-in-out infinite alternate paused; }
+/* The stationary environment occludes the lower boss tendrils. */
+#screen-title .title-monster::after { content: ''; position: absolute; inset: 0; background: url('../img/start-environment.webp') center / cover no-repeat; mask-image: linear-gradient(to bottom, transparent 28%, var(--bg) 69%); }
+#screen-title.active .title-monster img, #screen-title.active .title-hero::before { animation-play-state: running; }
+@keyframes title-boss { from { transform: translateY(0); } to { transform: translateY(3px) scale(1.006); } }
+@keyframes title-hair { from { transform: rotate(-.45deg); } to { transform: rotate(.65deg); } }
 @media (prefers-reduced-motion: reduce) {
-  #screen-title .title-monster, #screen-title .title-hero { animation: none; }
+  #screen-title .title-monster img, #screen-title .title-hero::before { animation: none; }
 }
 
 /* ───────── Map ───────── */
