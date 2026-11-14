@@ -46,6 +46,10 @@ Other web files are ported by hand, so check them when the web version changes:
 - An option with `img` uses that painting (`img/monster-<key>.png`); otherwise it uses the web SVG
   `art/monster_<art>.svg`. To try one monster on every level, run with `-- --monster=<key>`
   (the web version's `?monster=<key>`).
+- Godot-only monsters live in `data/monsters_godot.json` with their art in `art/monster-*.png`. That file is
+  merged over the synced `monsters.json` (same key = override, new key = new option) and the sync never touches it.
+  Current: Spaghetti Boss v2 art, The Staris, The Voronoi Golem. Move an entry into `web/js/monsters.js` once
+  the web version uses it, then delete it there.
 - A level can set `"goal": "<file>.png"` in its folder for the Goal picture; otherwise the game renders
   the finished definition.
 
@@ -64,5 +68,8 @@ scripts/main.gd  title, map and battle screens, modals, toasts, keyboard
 tools/      sync_from_web.py
 tests/      run_checks.gd, screenshots.gd
 ```
+
+Godot-only additions (not in the web version): a Main Menu button on the map and battle screens, and an Exit button
+on the title screen (hidden in web exports, where a page can't close itself).
 
 Progress is saved to `user://pathogen_save.json`. Run with `-- --all` to unlock every level for testing.
