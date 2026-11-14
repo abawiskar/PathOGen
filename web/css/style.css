@@ -73,15 +73,16 @@ button { font-family: inherit; cursor: pointer; }
 #screen-title { overflow: hidden; }
 #screen-title::before {
   content: ''; position: absolute; inset: -24px; pointer-events: none;
-  background: url('../img/start-confrontation.webp') center / cover no-repeat;
-  transform-origin: 65% 25%; animation: title-drift 6s ease-in-out infinite alternate paused;
+  background: url('../img/start-environment.webp') center / cover no-repeat;
+  transform-origin: 65% 25%; animation: title-drift 12s ease-in-out infinite alternate paused;
 }
 #screen-title.active::before, #screen-title.active .title-wrap::before { animation-play-state: running; }
 @keyframes title-drift {
   from { transform: scale(1) translate(0, 0); }
-  to { transform: scale(1.055) translate(-12px, 8px); }
+  to { transform: scale(1.025) translate(-10px, 4px); }
 }
 #screen-title .title-wrap::before {
+  z-index: 1;
   content: ''; position: absolute; inset: 0; pointer-events: none;
   background: radial-gradient(ellipse at 65% 22%, var(--gold), transparent 16%);
   mix-blend-mode: screen; opacity: .025; animation: title-glow 2.4s ease-in-out infinite alternate paused;
@@ -96,8 +97,19 @@ button { font-family: inherit; cursor: pointer; }
 .logo span { color: var(--sage); }
 .tagline { font-family: var(--serif); font-size: 22px; color: var(--gold-dim); letter-spacing: .06em; margin: 6px 0 40px; z-index: 2; }
 #screen-title .title-btns { display: flex; gap: 18px; z-index: 2; }
-/* The plate already contains both characters. Keep their existing DOM hooks. */
-#screen-title .title-monster, #screen-title .title-hero { display: none; }
+/* Keep the live menu readable as the boss passes behind it. */
+#screen-title .title-wrap::after { content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 1; background: radial-gradient(ellipse 42% 29% at 50% 55%, var(--bg) 45%, transparent 100%); opacity: 1; }
+/* Separate Start-only art layers move on independent rhythms. */
+#screen-title .title-monster { position: absolute; inset: 0; pointer-events: none; transform-origin: 70% 32%; animation: title-boss 4.6s ease-in-out infinite alternate paused; }
+#screen-title .title-monster img { width: 100%; height: 100%; object-fit: fill; display: block; }
+#screen-title .title-hero { position: absolute; left: 24px; bottom: 76px; width: 340px; pointer-events: none; z-index: 2; transform-origin: 50% 95%; animation: title-hero-idle 2.6s ease-in-out infinite paused; }
+#screen-title .title-hero img { display: block; width: 100%; animation: none; }
+#screen-title.active .title-monster, #screen-title.active .title-hero { animation-play-state: running; }
+@keyframes title-boss { from { transform: translate(0, 0) rotate(-.3deg) scale(1); } to { transform: translate(-8px, 12px) rotate(.4deg) scale(1.025); } }
+@keyframes title-hero-idle { 0%, 100% { transform: translateY(0) rotate(-.5deg); } 50% { transform: translateY(-9px) rotate(.7deg); } }
+@media (prefers-reduced-motion: reduce) {
+  #screen-title .title-monster, #screen-title .title-hero { animation: none; }
+}
 
 /* ───────── Map ───────── */
 .map-head { position: absolute; left: 60px; right: 60px; top: 46px; display: flex; justify-content: space-between; align-items: flex-end; z-index: 2; }
