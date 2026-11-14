@@ -32,6 +32,10 @@ func _run() -> void:
 	await create_timer(0.6).timeout
 	await shot("01_title")
 	main.open_map()
+	await shot("02a_map_menu_check")
+	main.main_menu()
+	await shot("02b_back_to_title")
+	main.open_map()
 	await shot("02_map")
 	main.start_level(0)
 	await create_timer(0.4).timeout

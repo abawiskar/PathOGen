@@ -27,8 +27,13 @@ func _init() -> void:
 	for e in loaded.errors:
 		check(false, e)
 	var n: int = loaded.levels.size()
+	var runs := []
 	for i in n:
-		var L: Dictionary = loaded.levels[i]
+		for df in loaded.levels[i].difficulties:
+			runs.append([i, df.level])
+	for run in runs:
+		var i: int = run[0]
+		var L: Dictionary = run[1]
 		# 1. every decision's correct card is in the dealt hand, and a perfect run wins with 3 stars
 		var b := Battle.new(L, i, n, 7)
 		var guard := 0
@@ -40,8 +45,13 @@ func _init() -> void:
 		check(b.won, "%s: perfect run did not win" % L.dir)
 		var mon := b.monster()
 		check(mon.has("line") and mon.has("intents") and mon.has("name"), "%s: monster should merge option + phase" % L.dir)
-		var ph: Dictionary = GHData.phases[mini(i, GHData.phases.size() - 1)]
-		check(mon.intents == ph.intents, "%s: monster intents should come from phase %d" % [L.dir, i])
+		var pi: int = int(L.attacks) if L.get("attacks") != null else i
+		var ph: Dictionary = GHData.phases[clampi(pi, 0, GHData.phases.size() - 1)]
+		check(mon.intents == ph.intents, "%s: monster intents should come from phase %d" % [L.dir, pi])
+		if L.get("hand") != null and b.decisions.size() > 0:
+			var b2 := Battle.new(L, i, n, 3)
+			if b2.cur().kind == "comp":
+				check(b2.hand.size() == maxi(2, int(L.hand)), "%s: hand should hold %d cards, has %d" % [L.dir, int(L.hand), b2.hand.size()])
 		check(b.score.get("stars", 0) == 3, "%s: perfect run should give 3 stars" % L.dir)
 		check(b.hp == 0, "%s: monster HP should reach 0, is %d" % [L.dir, b.hp])
 		# full graph solves to some preview geometry
@@ -69,7 +79,7 @@ func _init() -> void:
 			else:
 				m.place(wc[0])
 		check(m.over, "%s: messy run never ended" % L.dir)
-		print("  %-24s %-20s decisions %2d  perfect %d XP  messy run %s" % [L.dir, b.monster().get("name", "?"), b.decisions.size(), b.score.get("total", 0), "won" if m.won else "lost"])
+		print("  %-24s %-14s %-20s decisions %2d  perfect %d XP  messy run %s" % [L.dir, L.diff_name, b.monster().get("name", "?"), b.decisions.size(), b.score.get("total", 0), "won" if m.won else "lost"])
 	SaveData.reset()
 	print("FAILURES: ", failures)
 	quit(1 if failures > 0 else 0)

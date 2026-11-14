@@ -188,6 +188,11 @@ func _build_title(s: Control) -> void:
 	var help := UIKit.button("How to Play")
 	help.pressed.connect(help_modal)
 	row.add_child(help)
+	# a browser tab can't be closed from the game, so web exports have no Exit
+	if not OS.has_feature("web"):
+		var quit := UIKit.button("Exit", "ghost")
+		quit.pressed.connect(quit_game)
+		row.add_child(quit)
 
 
 # ═════════════════════ map ═════════════════════
@@ -203,8 +208,12 @@ func _build_map_frame(s: Control) -> void:
 	var stat := func(title: String, x: float) -> Label:
 		UIKit.sub(s, title, Vector2(x, 44), 0, 10)
 		return UIKit.label(s, "0", 26, UIKit.GOLD, UIKit.serif, Vector2(x, 58))
-	_map_xp = stat.call("Total XP", 1150)
-	_map_rank = stat.call("Rank", 1260)
+	_map_xp = stat.call("Total XP", 1010)
+	_map_rank = stat.call("Rank", 1120)
+	var menu := UIKit.button("Main Menu", "ghost", "small")
+	menu.position = Vector2(1328, 66)
+	menu.pressed.connect(main_menu)
+	s.add_child(menu)
 	var help := UIKit.button("Help", "", "small")
 	help.position = Vector2(1430, 66)
 	help.pressed.connect(help_modal)
@@ -248,7 +257,8 @@ func open_map() -> void:
 		var L: Dictionary = levels[i]
 		var m: Dictionary = GHData.monsters.get(GHData.monster_key(L), {})
 		var locked := i + 1 > SaveData.unlocked
-		var best := SaveData.best_for(int(L.id))
+		var best := SaveData.stage_best(L)
+		var ndiff: int = L.difficulties.size()
 		var current := i + 1 == SaveData.unlocked and best.is_empty()
 		var border := UIKit.LINE
 		if L.get("boss", false):
@@ -256,7 +266,7 @@ func open_map() -> void:
 		if current:
 			border = UIKit.GOLD
 		var card := Panel.new()
-		card.size = Vector2(250, 110)
+		card.size = Vector2(250, 128 if ndiff > 1 else 110)
 		card.position = pts[i] - card.size / 2
 		card.add_theme_stylebox_override("panel", UIKit.box(UIKit.PANEL_HI, border, 8, 2 if current else 1, 12))
 		card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND if not locked else Control.CURSOR_FORBIDDEN
@@ -280,7 +290,14 @@ func open_map() -> void:
 		var stars := RichTextLabel.new()
 		stars.bbcode_enabled = true
 		stars.fit_content = true
-		stars.position = Vector2(92, 84)
+		stars.position = Vector2(92, 102 if ndiff > 1 else 84)
+		if ndiff > 1:
+			var pips := FxViews.DiffPips.new()
+			pips.position = Vector2(92, 86)
+			pips.size = Vector2(150, 12)
+			for df in L.difficulties:
+				pips.done.append(not SaveData.best_for(SaveData.key_for(df.level)).is_empty())
+			card.add_child(pips)
 		stars.size = Vector2(150, 20)
 		stars.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		stars.add_theme_font_size_override("normal_font_size", 14)
@@ -298,8 +315,10 @@ func open_map() -> void:
 			if e is InputEventMouseButton and e.pressed and e.button_index == MOUSE_BUTTON_LEFT:
 				if idx + 1 > SaveData.unlocked:
 					toast("Defeat the previous monster first", "bad")
+				elif levels[idx].difficulties.size() > 1:
+					difficulty_picker(idx)
 				else:
-					start_level(idx))
+					start_level(idx, 0))
 		var home: Vector2 = card.position
 		card.mouse_entered.connect(func(): if not locked: card.position = home - Vector2(0, 3))
 		card.mouse_exited.connect(func(): card.position = home)
@@ -573,19 +592,16 @@ func _build_battle(s: Control) -> void:
 	helpb.add_theme_font_size_override("font_size", 24)
 	helpb.pressed.connect(help_modal)
 	side.add_child(helpb)
+	var navrow := HBoxContainer.new()
+	navrow.alignment = BoxContainer.ALIGNMENT_END
+	navrow.add_theme_constant_override("separation", 8)
+	side.add_child(navrow)
+	var menub := UIKit.button("Main Menu", "ghost", "small")
+	menub.pressed.connect(func(): leave_battle(main_menu))
+	navrow.add_child(menub)
 	var mapb := UIKit.button("← Map", "ghost", "small")
-	mapb.size_flags_horizontal = Control.SIZE_SHRINK_END
-	mapb.pressed.connect(func():
-		if battle and not battle.over and battle.di > 0:
-			modal(func(b):
-				_m_h2(b, "Leave the battle?")
-				_m_p(b, "Your progress in this level will be lost.")
-				_m_actions(b, [["Stay", "", close_modal], ["Leave", "warm", func():
-					close_modal()
-					open_map()]]))
-		else:
-			open_map())
-	side.add_child(mapb)
+	mapb.pressed.connect(func(): leave_battle(open_map))
+	navrow.add_child(mapb)
 	flash = FxViews.Flash.new()
 	flash.size = Vector2(1600, 900)
 	s.add_child(flash)
@@ -628,11 +644,42 @@ func _build_overlays() -> void:
 	modal_scroll.add_child(modal_box)
 
 
-# ═════════════════════ battle flow ═════════════════════
-func start_level(i: int) -> void:
+# ═════════════════════ navigation ═════════════════════
+func main_menu() -> void:
 	if battle:
 		battle.clear_timer()
-	battle = Battle.new(levels[i], i, levels.size())
+	show_screen("title")
+
+
+func quit_game() -> void:
+	SaveData.write()
+	get_tree().quit()
+
+
+## Leave the battle for the map or the main menu, confirming if progress would be lost.
+func leave_battle(go: Callable) -> void:
+	if battle and not battle.over and battle.di > 0:
+		modal(func(b):
+			_m_h2(b, "Leave the battle?")
+			_m_p(b, "Your progress in this level will be lost.")
+			_m_actions(b, [["Stay", "", close_modal], ["Leave", "warm", func():
+				close_modal()
+				go.call()]]))
+	else:
+		go.call()
+
+
+# ═════════════════════ battle flow ═════════════════════
+## Start stage i at difficulty d (default: the one last played there).
+func start_level(i: int, d := -1) -> void:
+	if battle:
+		battle.clear_timer()
+	var stage: Dictionary = levels[i]
+	if d < 0:
+		d = SaveData.last_diff(stage)
+	d = clampi(d, 0, stage.difficulties.size() - 1)
+	SaveData.set_last_diff(stage, d)
+	battle = Battle.new(stage.difficulties[d].level, i, levels.size())
 	battle.changed.connect(render_all)
 	battle.fx.connect(_on_fx)
 	graph.battle = battle
@@ -914,7 +961,10 @@ func _render_health() -> void:
 	hp_text.text = "%d / %d" % [battle.health, battle.max_health]
 	hearts.set_state(battle.health, battle.max_health, battle.shield)
 	xp_text.text = "XP %d" % battle.xp
-	level_chip.text = ("Boss level" if battle.L.get("boss", false) else "Level %d · %s" % [int(battle.L.id), battle.L.title]).to_upper()
+	var chip := "Level %d · %s" % [int(battle.L.id), battle.L.title]
+	if int(battle.L.get("diff_count", 1)) > 1:
+		chip += " · " + str(battle.L.diff_name)
+	level_chip.text = chip.to_upper()
 
 
 func _chip(text: String, good := false, none := false) -> void:
@@ -1125,12 +1175,72 @@ func _m_actions(b: Control, acts: Array) -> void:
 		row.add_child(btn)
 
 
+# ═════════════════════ difficulties ═════════════════════
+const MODE_NAME := {"guided": "Guided", "standard": "Standard", "independent": "Independent"}
+
+
+func difficulty_picker(i: int) -> void:
+	var S: Dictionary = levels[i]
+	var last := SaveData.last_diff(S)
+	modal(func(b):
+		_m_sub(b, "Level %d · %s" % [int(S.id), GHData.monsters.get(GHData.monster_key(S), {}).get("name", "")])
+		_m_h2(b, S.title)
+		_m_p(b, "[color=#8fa29b]Choose a difficulty. Each one is its own definition to build.[/color]")
+		for d in S.difficulties.size():
+			var L: Dictionary = S.difficulties[d].level
+			var df: Dictionary = S.difficulties[d]
+			var bst := SaveData.best_for(SaveData.key_for(L))
+			var row := Button.new()
+			row.custom_minimum_size = Vector2(652, 66)
+			row.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+			var nb := UIKit.box(Color(0, 0, 0, 0.2), UIKit.GOLD_DIM if d == last else UIKit.LINE, 6, 1)
+			var hb := UIKit.box(Color(0, 0, 0, 0.28), UIKit.SAGE, 6, 1)
+			row.add_theme_stylebox_override("normal", nb)
+			row.add_theme_stylebox_override("hover", hb)
+			row.add_theme_stylebox_override("pressed", hb)
+			row.add_theme_stylebox_override("focus", nb)
+			b.add_child(row)
+			var num := Panel.new()
+			num.position = Vector2(14, 13)
+			num.size = Vector2(40, 40)
+			num.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			num.add_theme_stylebox_override("panel", UIKit.box(Color("1a2a28"), UIKit.GOLD_DIM, 20, 2))
+			row.add_child(num)
+			var nl := UIKit.label(num, str(d + 1), 18, UIKit.GOLD, UIKit.serif, Vector2(0, 7), 40)
+			nl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			UIKit.label(row, df.name, 16, UIKit.GOLD, UIKit.serif, Vector2(70, 6))
+			if str(df.description) != "":
+				var dl := UIKit.label(row, df.description, 12, Color(UIKit.TEXT, 0.85), UIKit.sans, Vector2(70, 26), 470)
+				dl.clip_text = true
+			var meta := "%s · %d hearts · %d components%s" % [MODE_NAME.get(L.guidance, L.guidance), int(L.health), L.steps.size(), (" · %ds timer" % int(L.timer)) if L.get("timer") != null else ""]
+			UIKit.label(row, meta.to_upper(), 10, UIKit.MUTED, UIKit.sans_bold, Vector2(70, 45))
+			var st := RichTextLabel.new()
+			st.bbcode_enabled = true
+			st.fit_content = true
+			st.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			st.position = Vector2(548, 12)
+			st.size = Vector2(92, 44)
+			st.add_theme_font_size_override("normal_font_size", 16)
+			var t := "[right]"
+			for k in 3:
+				t += "[color=%s]★[/color]" % ("#e6c35a" if not bst.is_empty() and k < int(bst.stars) else "#45524e")
+			if not bst.is_empty():
+				t += "\n[font_size=11][color=#8fa29b]%d XP[/color][/font_size]" % int(bst.xp)
+			st.text = t + "[/right]"
+			row.add_child(st)
+			var dd: int = d
+			row.pressed.connect(func():
+				close_modal()
+				start_level(i, dd)))
+
+
 # ═════════════════════ goal ═════════════════════
 ## The complete definition as a scene: everything placed, every wire live, no labels
 ## (goalImage() in game.js). Cached per level.
 func _goal_scene(L: Dictionary) -> Dictionary:
-	if _goal_scenes.has(L.dir):
-		return _goal_scenes[L.dir]
+	var gk := "%s:%s" % [L.dir, L.get("diff_id", "")]
+	if _goal_scenes.has(gk):
+		return _goal_scenes[gk]
 	var params := {}
 	for p in L.get("params", []):
 		params[p.key] = p.value
@@ -1139,7 +1249,7 @@ func _goal_scene(L: Dictionary) -> Dictionary:
 	sc.labels = []
 	for l in sc.lines:
 		l.k = ""
-	_goal_scenes[L.dir] = sc
+	_goal_scenes[gk] = sc
 	return sc
 
 
@@ -1201,7 +1311,10 @@ func briefing() -> void:
 		_m_sub(col, "Level %d of %d · %s" % [int(L.id), levels.size(), m.get("place", "")])
 		_m_h2(col, L.title)
 		_m_p(col, "[b]%s[/b] blocks the path. %s %s" % [m.get("name", ""), m.get("trait", ""), m.get("line", "")], 15, 430)
-		var kv := [["Challenge", L.objective], ["Goal", null], ["You'll learn", L.get("learn", "")], ["Mode", mode],
+		var kv := [["Challenge", L.objective], ["Goal", null], ["You'll learn", L.get("learn", "")]]
+		if int(L.get("diff_count", 1)) > 1:
+			kv.append(["Difficulty", "[b]%s[/b] (%d of %d)%s" % [L.diff_name, int(L.diff_index) + 1, int(L.diff_count), (". " + str(L.diff_desc)) if str(L.diff_desc) != "" else ""]])
+		kv += [["Mode", mode],
 			["Decisions", "%d (%d components%s)" % [battle.decisions.size(), L.steps.size(), (" + %d wire checks" % quizzes) if quizzes > 0 else ""]]]
 		for e in kv:
 			var r2 := HBoxContainer.new()
@@ -1244,6 +1357,10 @@ func victory_modal() -> void:
 		var acts := [["Explore result", "ghost", close_modal], ["Map", "", func():
 			close_modal()
 			open_map()]]
+		if int(L.get("diff_index", 0)) < int(L.get("diff_count", 1)) - 1:
+			acts.append(["Try harder ↑", "warm", func():
+				close_modal()
+				start_level(battle.idx, int(L.diff_index) + 1)])
 		if battle.idx + 1 < levels.size():
 			acts.append(["Next level →", "primary", func():
 				close_modal()
@@ -1269,7 +1386,7 @@ func defeat_modal() -> void:
 			open_map()])
 		acts.append(["Retry", "primary", func():
 			close_modal()
-			start_level(battle.idx)])
+			start_level(battle.idx, int(battle.L.diff_index))])
 		_m_actions(b, acts))
 	render_all()
 

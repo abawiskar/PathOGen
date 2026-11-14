@@ -235,7 +235,7 @@ static func comp_icon(id: String, px: int, color := "#2f6d52") -> Texture2D:
 	var key := "icon:%s:%d:%s" % [id, px, color]
 	if _tex.has(key):
 		return _tex[key]
-	var inner: String = GHData.icons.get(id, "")
+	var inner: String = GHData.icons.get(id, GHData.icons.get(GHData.icon_alias.get(id, ""), ""))
 	var svg := '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="%s" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">%s</svg>' % [color, inner.replace("currentColor", color)]
 	var img := Image.new()
 	if img.load_svg_from_string(svg, px / 24.0) != OK:

@@ -22,6 +22,33 @@ The node graph **is** the answer key. The preview is computed live from it by a 
 | `source` | Optional, the Grasshopper file this level was transcribed from |
 | `placeholder` | Optional, `true` while the level is a stand-in waiting for its real script |
 
+## Difficulties
+
+A level can offer several difficulties. Players pick one from the map; progress, stars and XP are saved per difficulty,
+and beating any difficulty unlocks the next level.
+
+```json
+"difficulties": [
+  { "id": "1", "name": "Beginner", "description": "…", "file": "difficulty-1.json", "health": 5, "hand": 3 },
+  { "id": "2", "name": "Easy", "file": "difficulty-2.json" }
+]
+```
+
+- `file` (optional): a definition for this difficulty in the level's folder, in the same format as `level.json`
+  (`params`, `nodes`, `wires`, `order`, text…). Use one per Grasshopper file. Leave it out to reuse the graph in `level.json`.
+- Anything else overrides the level's settings for this difficulty: `objective`, `goal`, `guidance`, `health`,
+  `lifesavers`, `params`, plus these game rules:
+
+| Rule | Meaning |
+| --- | --- |
+| `hand` | Cards in hand per decision (default 4 / 5 / 6 for guided / standard / independent) |
+| `attacks` | Monster attack set, 0–3 (0 = only hits … 3 = every trick). Default: the level's position on the path |
+| `timer` | Seconds per decision; running out costs a heart |
+| `open` | Node ids the player must place; every other node starts on the canvas. Lets easier difficulties pre-place parts of the same graph |
+
+Settings merge in this order: `level.json` → the difficulty's `file` → the difficulty entry itself.
+A level without `difficulties` plays as a single "Standard" difficulty.
+
 ## Nodes
 
 ```json

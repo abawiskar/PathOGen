@@ -35,12 +35,72 @@ static func load_all() -> Dictionary:
 		if not (raw is Dictionary):
 			errors.append("levels/%s/level.json: cannot read or parse" % dir)
 			continue
-		var r := normalize(raw, dir)
+		var stage = load_stage(raw, dir, errors)
+		if stage != null:
+			levels.append(stage)
+	return {"levels": levels, "errors": errors}
+
+
+## Godot-only difficulty lists (e.g. levels converted from .ghx files) live in
+## res://levels_godot/<dir>/difficulties.json and replace the level's own list.
+## Their "file" entries are read from that folder. The web sync never touches it.
+const GODOT_LEVELS := "res://levels_godot"
+
+
+## One path stage: its difficulties, each a full playable level (loader.js loadAll).
+## The stage itself is its first difficulty plus { difficulties: [{id, name, description, level}] }.
+static func load_stage(raw: Dictionary, dir: String, errors: PackedStringArray) -> Variant:
+	var list: Array = raw.get("difficulties", [])
+	var file_dir := source_dir.path_join(dir)
+	var extra = _read_json(GODOT_LEVELS.path_join(dir).path_join("difficulties.json"))
+	if extra is Dictionary and not extra.get("difficulties", []).is_empty():
+		list = extra.difficulties
+		file_dir = GODOT_LEVELS.path_join(dir)
+	if list.is_empty():
+		list = [{"id": "standard", "name": "Standard"}]
+	var base: Dictionary = raw.duplicate(true)
+	base.erase("difficulties")
+	var diffs := []
+	for i in list.size():
+		var entry: Dictionary = list[i]
+		var def := {}
+		if entry.has("file"):
+			var d = _read_json(file_dir.path_join(entry.file))
+			if not (d is Dictionary):
+				errors.append("levels/%s/%s: cannot read or parse" % [dir, entry.file])
+				continue
+			def = d
+		var knobs: Dictionary = entry.duplicate(true)
+		for k in ["file", "id", "name", "description"]:
+			knobs.erase(k)
+		var merged: Dictionary = base.duplicate(true)
+		merged.merge(def, true)
+		merged.merge(knobs, true)
+		# "open": which node ids the player places in this difficulty (the rest start on the canvas)
+		if merged.get("open") is Array:
+			var open: Array = merged.open
+			merged.nodes = merged.get("nodes", []).map(func(n):
+				var c: Dictionary = n.duplicate(true)
+				c.open = open.has(n.id)
+				return c)
+		var r := normalize(merged, dir + (("/" + str(entry.file)) if entry.has("file") else ""))
 		if r.has("error"):
 			errors.append(r.error)
-		else:
-			levels.append(r.level)
-	return {"levels": levels, "errors": errors}
+			continue
+		var lvl: Dictionary = r.level
+		lvl.dir = dir
+		lvl.diff_id = str(entry.get("id", i + 1))
+		lvl.diff_name = str(entry.get("name", "Difficulty %d" % (i + 1)))
+		lvl.diff_desc = str(entry.get("description", ""))
+		lvl.diff_index = diffs.size()
+		diffs.append({"id": lvl.diff_id, "name": lvl.diff_name, "description": lvl.diff_desc, "level": lvl})
+	if diffs.is_empty():
+		return null
+	for d in diffs:
+		d.level.diff_count = diffs.size()
+	var stage: Dictionary = diffs[0].level.duplicate()
+	stage.difficulties = diffs
+	return stage
 
 
 static func _read_json(path: String) -> Variant:
@@ -109,7 +169,7 @@ static func default_distractors(comp_id: String) -> Array:
 
 ## Returns { level } or { error }.
 static func normalize(raw: Dictionary, dir: String) -> Dictionary:
-	var where := "levels/%s/level.json" % dir
+	var where := ("levels/%s" % dir) if dir.contains("/") else ("levels/%s/level.json" % dir)
 	var nodes := []
 	for n in raw.get("nodes", []):
 		if not GHData.components.has(n.get("comp", "")):

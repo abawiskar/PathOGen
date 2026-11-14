@@ -1,0 +1,453 @@
+{
+ "source": "GameLevels/LevelA/A04.ghx",
+ "method": "A04",
+ "params": [
+  {
+   "key": "s1",
+   "label": "Radius",
+   "min": 0.0,
+   "max": 10.0,
+   "step": 1,
+   "value": 10.0
+  },
+  {
+   "key": "s2",
+   "label": "Count",
+   "min": 0.0,
+   "max": 10.0,
+   "step": 1,
+   "value": 5.0
+  },
+  {
+   "key": "s3",
+   "label": "Index",
+   "min": 0.0,
+   "max": 100.0,
+   "step": 1,
+   "value": 0.0
+  },
+  {
+   "key": "s4",
+   "label": "Shift",
+   "min": 0.0,
+   "max": 1.0,
+   "step": 1,
+   "value": 1.0
+  },
+  {
+   "key": "s5",
+   "label": "Radius",
+   "min": 0.0,
+   "max": 10.0,
+   "step": 1,
+   "value": 3.0
+  }
+ ],
+ "nodes": [
+  {
+   "id": "circleCNR",
+   "comp": "circleCNR",
+   "open": false,
+   "x": 392,
+   "y": 56,
+   "set": {
+    "N": [
+     0.0,
+     0.0,
+     1.0
+    ]
+   }
+  },
+  {
+   "id": "constructP",
+   "comp": "constructPoint",
+   "open": true,
+   "x": 0,
+   "y": 0,
+   "set": {
+    "X": 0.0,
+    "Y": 0.0,
+    "Z": 0.0
+   },
+   "question": "A04_Q01",
+   "need": "a component that turns X coordinate, Y coordinate and Z coordinate into Point",
+   "hint": "Look in Vector › Point.",
+   "correct": "Construct Point is the component this method uses here. Builds a point from X, Y and Z numbers.",
+   "distractors": [
+    "deconstruct",
+    "pointPolar",
+    "pointCylindrical",
+    "pointOriented",
+    "numbersToPoints",
+    "pointsToNumbers",
+    "coordinateMask",
+    "closestPoint",
+    "sortPoints",
+    "distance",
+    "vectorXYZ",
+    "plane3Pt"
+   ],
+   "draft": true
+  },
+  {
+   "id": "curve",
+   "comp": "curveParam",
+   "open": false,
+   "x": 1834,
+   "y": 130
+  },
+  {
+   "id": "divideCurv",
+   "comp": "divideCurve",
+   "open": true,
+   "x": 556,
+   "y": 82,
+   "set": {
+    "K": false
+   },
+   "question": "A04_Q02",
+   "need": "a component that turns Curve, Count and Kinks into Points",
+   "hint": "Look in Curve › Division.",
+   "correct": "Divide Curve is the component this method uses here. Splits a curve into N equal-length parts.",
+   "distractors": [
+    "divideLength",
+    "divideDistance",
+    "divideByDeviation",
+    "evaluateLength",
+    "curveFrames",
+    "perpFrames",
+    "shatter",
+    "dashPattern",
+    "curveContour",
+    "horizontalFrames",
+    "evaluateCurve",
+    "curveMiddle"
+   ],
+   "draft": true
+  },
+  {
+   "id": "fillet",
+   "comp": "fillet",
+   "open": false,
+   "x": 2334,
+   "y": 150
+  },
+  {
+   "id": "flattenTre",
+   "comp": "flatten",
+   "open": true,
+   "x": 1932,
+   "y": 199,
+   "question": "A04_Q05",
+   "need": "a component that turns Tree and Path into Tree",
+   "hint": "Look in Sets › Tree.",
+   "correct": "Flatten Tree is the component this method uses here. Collapses all branches into one list.",
+   "distractors": [
+    "graft",
+    "simplifyTree",
+    "trimTree",
+    "unflattenTree",
+    "explodeTree",
+    "flipMatrix",
+    "shiftPaths",
+    "pruneTree",
+    "splitTree",
+    "pathMapper",
+    "treeBranch",
+    "relativeItem"
+   ],
+   "draft": true
+  },
+  {
+   "id": "graftTree",
+   "comp": "graft",
+   "open": false,
+   "x": 1470,
+   "y": 258
+  },
+  {
+   "id": "graftTree2",
+   "comp": "graft",
+   "open": false,
+   "x": 1474,
+   "y": 154
+  },
+  {
+   "id": "joinCurves",
+   "comp": "joinCurves",
+   "open": false,
+   "x": 2026,
+   "y": 139,
+   "set": {
+    "P": false
+   }
+  },
+  {
+   "id": "listItem",
+   "comp": "listItem",
+   "open": false,
+   "x": 701,
+   "y": 45,
+   "set": {
+    "W": true
+   }
+  },
+  {
+   "id": "merge",
+   "comp": "merge",
+   "open": false,
+   "x": 794,
+   "y": 118
+  },
+  {
+   "id": "merge2",
+   "comp": "merge",
+   "open": false,
+   "x": 1601,
+   "y": 198
+  },
+  {
+   "id": "negative",
+   "comp": "negative",
+   "open": false,
+   "x": 1140,
+   "y": 274
+  },
+  {
+   "id": "point",
+   "comp": "pointParam",
+   "open": false,
+   "x": 196,
+   "y": 34
+  },
+  {
+   "id": "point2",
+   "comp": "pointParam",
+   "open": false,
+   "x": 1024,
+   "y": 153
+  },
+  {
+   "id": "polyline",
+   "comp": "polyline",
+   "open": true,
+   "x": 1706,
+   "y": 184,
+   "set": {
+    "C": false
+   },
+   "question": "A04_Q04",
+   "need": "a component that turns Vertices and Closed into Polyline",
+   "hint": "Look in Curve › Spline.",
+   "correct": "PolyLine is the component this method uses here. Create a polyline connecting a number of points.",
+   "distractors": [
+    "interpolate",
+    "nurbsCurve",
+    "curveToPolyline",
+    "polygon",
+    "kinkyCurve",
+    "interpolateT",
+    "nurbsCurvePWK",
+    "polyarc",
+    "bezierSpan",
+    "catenary",
+    "connectCurves",
+    "smoothPolyline"
+   ],
+   "draft": true
+  },
+  {
+   "id": "shiftList",
+   "comp": "shiftList",
+   "open": true,
+   "x": 1326,
+   "y": 122,
+   "set": {
+    "W": false
+   },
+   "question": "A04_Q03",
+   "need": "a component that turns List, Shift and Wrap into List",
+   "hint": "Look in Sets › List.",
+   "correct": "Shift List is the component this method uses here. Offsets the items of a list by an index.",
+   "distractors": [
+    "shiftPaths",
+    "reverseList",
+    "sortList",
+    "flipMatrix",
+    "insertItems",
+    "splitList",
+    "partitionList",
+    "replaceItems",
+    "cullIndex",
+    "dispatch",
+    "explodeTree",
+    "treeItem"
+   ],
+   "draft": true
+  },
+  {
+   "id": "shiftList2",
+   "comp": "shiftList",
+   "open": false,
+   "x": 1326,
+   "y": 240,
+   "set": {
+    "W": false
+   }
+  },
+  {
+   "id": "slider",
+   "comp": "slider",
+   "open": false,
+   "x": 242,
+   "y": 78,
+   "param": "s1",
+   "label": "Radius"
+  },
+  {
+   "id": "slider2",
+   "comp": "slider",
+   "open": false,
+   "x": 402,
+   "y": 111,
+   "param": "s2",
+   "label": "Count"
+  },
+  {
+   "id": "slider3",
+   "comp": "slider",
+   "open": false,
+   "x": 522,
+   "y": 23,
+   "param": "s3",
+   "label": "Index"
+  },
+  {
+   "id": "slider4",
+   "comp": "slider",
+   "open": false,
+   "x": 978,
+   "y": 284,
+   "param": "s4",
+   "label": "Shift"
+  },
+  {
+   "id": "slider5",
+   "comp": "slider",
+   "open": false,
+   "x": 2156,
+   "y": 149,
+   "param": "s5",
+   "label": "Radius"
+  }
+ ],
+ "wires": [
+  {
+   "from": "point.Pt",
+   "to": "circleCNR.C"
+  },
+  {
+   "from": "slider.N",
+   "to": "circleCNR.R"
+  },
+  {
+   "from": "circleCNR.C",
+   "to": "divideCurv.C"
+  },
+  {
+   "from": "slider2.N",
+   "to": "divideCurv.N"
+  },
+  {
+   "from": "point2.Pt",
+   "to": "shiftList.L"
+  },
+  {
+   "from": "slider4.N",
+   "to": "shiftList.S"
+  },
+  {
+   "from": "point2.Pt",
+   "to": "shiftList2.L"
+  },
+  {
+   "from": "negative.y",
+   "to": "shiftList2.S"
+  },
+  {
+   "from": "slider4.N",
+   "to": "negative.x"
+  },
+  {
+   "from": "graftTree2.T",
+   "to": "merge2.D1"
+  },
+  {
+   "from": "graftTree.T",
+   "to": "merge2.D2"
+  },
+  {
+   "from": "shiftList.L",
+   "to": "graftTree2.T"
+  },
+  {
+   "from": "shiftList2.L",
+   "to": "graftTree.T"
+  },
+  {
+   "from": "merge2.R",
+   "to": "polyline.V"
+  },
+  {
+   "from": "divideCurv.P",
+   "to": "listItem.L"
+  },
+  {
+   "from": "slider3.N",
+   "to": "listItem.i"
+  },
+  {
+   "from": "divideCurv.P",
+   "to": "merge.D1"
+  },
+  {
+   "from": "listItem.i",
+   "to": "merge.D2"
+  },
+  {
+   "from": "curve.C",
+   "to": "flattenTre.T"
+  },
+  {
+   "from": "flattenTre.T",
+   "to": "joinCurves.C"
+  },
+  {
+   "from": "joinCurves.C",
+   "to": "fillet.C"
+  },
+  {
+   "from": "slider5.N",
+   "to": "fillet.R"
+  },
+  {
+   "from": "merge.R",
+   "to": "point2.Pt"
+  },
+  {
+   "from": "constructP.Pt",
+   "to": "point.Pt"
+  },
+  {
+   "from": "polyline.Pl",
+   "to": "curve.C"
+  }
+ ],
+ "order": [
+  "constructP",
+  "divideCurv",
+  "shiftList",
+  "polyline",
+  "flattenTre"
+ ]
+}

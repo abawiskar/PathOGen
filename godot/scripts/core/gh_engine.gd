@@ -438,7 +438,10 @@ static func _build_solvers() -> void:
 		var k := roundi(to_num(a[1]))
 		var out := []
 		for i in n:
-			out.append(l[(((i + k) % n) + n) % n])
+			if truthy(a[2]):
+				out.append(l[(((i + k) % n) + n) % n])
+			elif i + k >= 0 and i + k < n:
+				out.append(l[i + k])   # no wrap: items shifted off the end are dropped
 		return [L(out)]}
 	S.move = {"def": [U, vec(Vector3(0, 0, 10))], "fn": func(a, _n, _c):
 		var d := to_vec(a[1])
@@ -514,7 +517,254 @@ static func _build_solvers() -> void:
 					items.append(b.items[i])
 			out.append({"path": [i], "items": items})
 		return [out]}
+	_build_godot_solvers(S)
 	_solvers = S
+
+
+# ───── components used by the .ghx levels (Godot only, tools/ghx_to_level.py) ─────
+static func _build_godot_solvers(S: Dictionary) -> void:
+	# floating parameters pass their input through (unwired, they hold nothing)
+	for id in ["pointParam", "curveParam", "dataParam"]:
+		S[id] = {"fn": func(a, _n, _c): return [a[0]]}
+	S.unitY = {"def": [1.0], "fn": func(a, _n, _c): return [vec(Vector3(0, to_num(a[0]), 0))]}
+	S.division = {"def": [1.0, 1.0], "fn": func(a, _n, _c):
+		var b := to_num(a[1])
+		return [to_num(a[0]) / b if absf(b) > 1e-12 else null]}
+	S.negative = {"fn": func(a, _n, _c): return [-to_num(a[0])]}
+	S.circleCNR = {"def": [[0.0, 0.0, 0.0], vec(Vector3(0, 0, 1)), 1.0], "fn": func(a, _n, _c):
+		var o := to_point(a[0])
+		var z := _unit(to_vec(a[1]))
+		var x := _unit(z.cross(Vector3(0, 1, 0) if absf(z.y) < 0.9 else Vector3(1, 0, 0)).cross(z))
+		var pl := {"t": "pl", "o": o, "x": x, "y": z.cross(x), "z": z}
+		var R := to_num(a[2])
+		var pts := []
+		for i in 64:
+			var t := float(i) / 64.0 * TAU
+			pts.append(_on_plane(pl, R * cos(t), R * sin(t)))
+		return [crv(pts, true)]}
+	S.endPoints = {"fn": func(a, _n, _c):
+		var c = a[0]
+		if not is_geo(c, "crv") or c.pts.is_empty():
+			return [null, null]
+		return [pt(c.pts[0]), pt(c.pts[0] if c.closed else c.pts[-1])]}
+	S.polyline = {"access": ["list"], "def": [U, false], "fn": func(a, _n, _c):
+		var pts: Array = a[0].map(func(v): return to_point(v))
+		if pts.size() < 2:
+			return [null]
+		var closed := truthy(a[1])
+		if closed and pts[0].distance_to(pts[-1]) < 1e-9:
+			pts.pop_back()
+		return [crv(pts, closed)]}
+	S.fillet = {"def": [U, 1.0], "fn": func(a, _n, _c):
+		if not is_geo(a[0], "crv"):
+			return [null]
+		return [_fillet_curve(a[0], to_num(a[1]))]}
+	# Fillet (t): fillets at the given parameters; the .ghx levels feed it every corner, so fillet them all
+	S.filletCtR = {"access": ["item", "list"], "def": [U, [], 1.0], "fn": func(a, _n, _c):
+		if not is_geo(a[0], "crv"):
+			return [null, null]
+		return [_fillet_curve(a[0], to_num(a[2])), null]}
+	S.discontinuity = {"def": [U, 1.0], "fn": func(a, _n, _c):
+		var c = a[0]
+		if not is_geo(c, "crv"):
+			return [null, null]
+		var P := []
+		var T := []
+		var n: int = c.pts.size()
+		for i in n:
+			if not c.closed and (i == 0 or i == n - 1):
+				continue
+			var p0: Vector3 = c.pts[(i - 1 + n) % n]
+			var p1: Vector3 = c.pts[i]
+			var p2: Vector3 = c.pts[(i + 1) % n]
+			if (p1 - p0).length() > 1e-9 and (p2 - p1).length() > 1e-9 and _unit(p1 - p0).dot(_unit(p2 - p1)) < 0.999:
+				P.append(pt(p1))
+				T.append(float(i))
+		return [L(P), L(T)]}
+	S.joinCurves = {"access": ["list"], "def": [U, false], "fn": func(a, _n, _c):
+		var cs: Array = a[0].filter(func(c): return is_geo(c, "crv") and c.pts.size() > 1)
+		if cs.is_empty():
+			return [null]
+		return [L(_join(cs))]}
+	S.merge = {"tree": func(t, _n, _c):
+		return [merge_trees(t.filter(func(x): return x != null and has_data(x)))]}
+	S.trimWithRegion = {"access": ["item", "list"], "def": [U, U, null], "fn": func(a, _n, _c):
+		var c = a[0]
+		var regions: Array = a[1].filter(func(r): return is_geo(r, "crv") and r.closed)
+		if not is_geo(c, "crv") or regions.is_empty():
+			return [null, null]
+		var parts := _trim(c, regions)
+		return [L(parts[0]), L(parts[1])]}
+	S.arcSED = {"fn": func(a, _n, _c):
+		var S0 := to_point(a[0])
+		var E := to_point(a[1])
+		var D := _unit(to_vec(a[2]))
+		var ch := E - S0
+		var nrm := D.cross(ch)
+		if nrm.length() < 1e-9:
+			return [crv([S0, E]), null, null]
+		nrm = nrm.normalized()
+		var perp := nrm.cross(D).normalized()
+		var r := ch.length_squared() / (2.0 * ch.dot(perp))
+		var C := S0 + perp * r
+		var v0 := S0 - C
+		var v1 := E - C
+		var sweep := atan2(v0.cross(v1).dot(nrm), v0.dot(v1))
+		if sweep < 0:
+			sweep += TAU
+		var pts := []
+		var steps := maxi(4, int(sweep / TAU * 64.0))
+		for i in steps + 1:
+			pts.append(C + v0.rotated(nrm, sweep * i / steps))
+		return [crv(pts), null, absf(r)]}
+	S.evaluateCurve = {"def": [U, 0.0], "fn": func(a, _n, _c):
+		var c = a[0]
+		if not is_geo(c, "crv") or c.pts.size() < 2:
+			return [null, null, null]
+		var pts: Array = c.pts + [c.pts[0]] if c.closed else c.pts
+		var t := clampf(to_num(a[1]), 0.0, 1.0)
+		var goal := poly_len(pts) * t
+		for i in range(1, pts.size()):
+			var seg: float = (pts[i] as Vector3).distance_to(pts[i - 1])
+			if goal <= seg or i == pts.size() - 1:
+				var p: Vector3 = (pts[i - 1] as Vector3).lerp(pts[i], clampf(goal / maxf(seg, 1e-12), 0, 1))
+				return [pt(p), vec(_unit(pts[i] - pts[i - 1])), 0.0]
+			goal -= seg
+		return [null, null, null]}
+
+
+## Round every corner of a polyline with arcs of radius R (shrunk where segments are too short).
+static func _fillet_curve(c: Dictionary, R: float) -> Dictionary:
+	var P: Array = c.pts.duplicate()
+	var n := P.size()
+	if R <= 1e-9 or n < 3:
+		return c
+	var out := []
+	for i in n:
+		var corner: bool = c.closed or (i > 0 and i < n - 1)
+		var p1: Vector3 = P[i]
+		if not corner:
+			out.append(p1)
+			continue
+		var p0: Vector3 = P[(i - 1 + n) % n]
+		var p2: Vector3 = P[(i + 1) % n]
+		var u := p0 - p1
+		var w := p2 - p1
+		if u.length() < 1e-9 or w.length() < 1e-9:
+			out.append(p1)
+			continue
+		var ang := u.angle_to(w)
+		if ang > PI - 1e-3:
+			out.append(p1)
+			continue
+		var d := minf(R / tan(ang / 2.0), minf(u.length(), w.length()) / 2.0)
+		var r := d * tan(ang / 2.0)
+		var a0 := p1 + u.normalized() * d
+		var a1 := p1 + w.normalized() * d
+		var bis := (u.normalized() + w.normalized()).normalized()
+		var C := p1 + bis * (r / sin(ang / 2.0))
+		var nrm := (a0 - C).cross(a1 - C)
+		if nrm.length() < 1e-12:
+			out.append(p1)
+			continue
+		nrm = nrm.normalized()
+		var v0 := a0 - C
+		var sweep := v0.angle_to(a1 - C)
+		for k in 9:
+			out.append(C + v0.rotated(nrm, sweep * k / 8.0))
+	return crv(out, c.closed)
+
+
+## Chain curves end to start into as few polylines as possible (Join Curves).
+static func _join(cs: Array) -> Array:
+	var left := cs.map(func(c): return c.pts.duplicate())
+	var out := []
+	while not left.is_empty():
+		var chain: Array = left.pop_front()
+		var grown := true
+		while grown:
+			grown = false
+			for i in left.size():
+				var q: Array = left[i]
+				if (chain[-1] as Vector3).distance_to(q[0]) < 1e-4:
+					chain += q.slice(1)
+				elif (chain[-1] as Vector3).distance_to(q[-1]) < 1e-4:
+					var r := q.duplicate()
+					r.reverse()
+					chain += r.slice(1)
+				elif (chain[0] as Vector3).distance_to(q[-1]) < 1e-4:
+					chain = q + chain.slice(1)
+				elif (chain[0] as Vector3).distance_to(q[0]) < 1e-4:
+					var r2 := q.duplicate()
+					r2.reverse()
+					chain = r2 + chain.slice(1)
+				else:
+					continue
+				left.remove_at(i)
+				grown = true
+				break
+		var closed: bool = chain.size() > 2 and (chain[0] as Vector3).distance_to(chain[-1]) < 1e-4
+		if closed:
+			chain.pop_back()
+		out.append(crv(chain, closed))
+	return out
+
+
+static func _in_regions(p: Vector3, regions: Array) -> bool:
+	for r in regions:
+		var poly := PackedVector2Array()
+		for q in r.pts:
+			poly.append(Vector2(q.x, q.y))
+		if Geometry2D.is_point_in_polygon(Vector2(p.x, p.y), poly):
+			return true
+	return false
+
+
+## Split a curve into the pieces inside / outside closed planar regions (Trim with Region, in plan).
+static func _trim(c: Dictionary, regions: Array) -> Array:
+	var src: Array = c.pts + [c.pts[0]] if c.closed else c.pts
+	var dense := []
+	for i in range(1, src.size()):
+		var a: Vector3 = src[i - 1]
+		var b: Vector3 = src[i]
+		var k := maxi(1, int(a.distance_to(b) / 0.05))
+		for j in k:
+			dense.append(a.lerp(b, float(j) / k))
+	dense.append(src[-1])
+	var flags := dense.map(func(p): return _in_regions(p, regions))
+	# a closed curve starts its runs at a change of side, so the seam doesn't split a piece
+	if c.closed:
+		var start := -1
+		for i in range(1, flags.size()):
+			if flags[i] != flags[i - 1]:
+				start = i
+				break
+		if start > 0:
+			dense = dense.slice(start, dense.size() - 1) + dense.slice(0, start + 1)
+			flags = flags.slice(start, flags.size() - 1) + flags.slice(0, start + 1)
+	var inside := []
+	var outside := []
+	var run := [dense[0]]
+	for i in range(1, dense.size()):
+		run.append(dense[i])
+		if i == dense.size() - 1 or flags[i] != flags[i - 1]:
+			if run.size() > 1:
+				(inside if flags[i - 1] else outside).append(crv(_simplify(run)))
+			run = [dense[i]]
+	return [inside, outside]
+
+
+static func _simplify(pts: Array) -> Array:
+	if pts.size() < 3:
+		return pts
+	var out := [pts[0]]
+	for i in range(1, pts.size() - 1):
+		var d0 := _unit(pts[i] - out[-1])
+		var d1 := _unit(pts[i + 1] - pts[i])
+		if d0.dot(d1) < 0.99999:
+			out.append(pts[i])
+	out.append(pts[-1])
+	return out
 
 
 # ───── baked geometry (JSON) ─────
@@ -706,12 +956,29 @@ static func evaluate(level: Dictionary, ctx: Dictionary) -> Dictionary:
 			for w in wires:
 				if w.to[0] == id and w.to[1] == i and ctx.wire_active.call(w) and res.get(w.from[0]) != null and w.from[1] < res[w.from[0]].size():
 					ts.append(res[w.from[0]][w.from[1]])
-			in_trees.append(merge_trees(ts))
+			in_trees.append(_map_input(merge_trees(ts), node, comp.ins[i][0]))
 		if not ctx.placed.call(node):
 			res[id] = [in_trees[0]] if node.get("passthrough", false) and not in_trees.is_empty() and in_trees[0] != null else null
 			continue
 		res[id] = solve_node(node, comp, in_trees, ctx)
 	return res
+
+
+## Grasshopper's flatten / graft input modifiers (node.in_map: { port nick: "flatten" | "graft" }).
+static func _map_input(t: Variant, node: Dictionary, nick: String) -> Variant:
+	var m = node.get("in_map", {}).get(nick)
+	if m == null or not (t is Array):
+		return t
+	var out := []
+	if m == "flatten":
+		var items := []
+		for b in t:
+			items.append_array(b.items)
+		return [{"path": [0], "items": items}]
+	for b in t:
+		for i in b.items.size():
+			out.append({"path": b.path + [i], "items": [b.items[i]]})
+	return out
 
 
 const QUIET := ["slider", "panel", "toggle"]

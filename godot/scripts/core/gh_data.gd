@@ -11,6 +11,8 @@ static var monsters: Dictionary = {}     # key -> { name, place, img? or art, tr
 static var phases: Array = []            # attack set by level position: { line, intents:{k:w}, frenzy? }
 ## Preview one monster on every level: run with `-- --monster=<key>` (web: ?monster=<key>).
 static var monster_override := ""
+## Godot-only components without an icon of their own borrow one: id -> icon id.
+static var icon_alias: Dictionary = {}
 static var _loaded := false
 
 
@@ -22,8 +24,16 @@ static func ensure_loaded() -> void:
 		components = c.get("components", {})
 		icons = c.get("icons", {})
 		filler = c.get("filler", [])
-		for id in components:
-			components[id]["id"] = id
+	# Godot-only components (from tools/ghx_to_level.py); the web sync never touches this file
+	var gc = _read_json("res://data/components_godot.json")
+	if gc is Dictionary:
+		var extra: Dictionary = gc.get("components", {})
+		for id in extra:
+			if not components.has(id):
+				components[id] = extra[id]
+		icon_alias = gc.get("icon_alias", {})
+	for id in components:
+		components[id]["id"] = id
 	var m = _read_json("res://data/monsters.json")
 	if m is Dictionary:
 		monsters = m.get("options", {})
@@ -58,8 +68,12 @@ static func monster_key(level: Dictionary) -> String:
 static func monster_for(level: Dictionary, level_index: int) -> Dictionary:
 	ensure_loaded()
 	var m: Dictionary = monsters.get(monster_key(level), {}).duplicate(true)
+	# a difficulty can pick the attack set ("attacks"); otherwise the level's place on the path
+	var ph: int = int(level.attacks) if level.get("attacks") != null else level_index
 	if not phases.is_empty():
-		m.merge(phases[mini(level_index, phases.size() - 1)], true)
+		m.merge(phases[clampi(ph, 0, phases.size() - 1)], true)
+	if level.get("timer") != null and float(level.timer) > 0:
+		m.frenzy = float(level.timer)
 	if not m.has("intents"):
 		m.intents = {"hit": 1}
 	return m

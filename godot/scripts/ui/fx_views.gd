@@ -137,3 +137,22 @@ class MapPath extends Control:
 					draw_circle(line[i - 1].lerp(line[i], (k - acc) / seg), 1.4, Color(UIKit.SAGE, 0.7))
 				k += 2.0
 			acc += seg
+
+
+## Map card: one dot per difficulty (filled when beaten) and "n/N", as .mn-diff in the web css.
+class DiffPips extends Control:
+	var done: Array = []
+
+	func _ready() -> void:
+		mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	func _draw() -> void:
+		var x := 5.0
+		for d in done:
+			if d:
+				draw_circle(Vector2(x, 6), 4.5, UIKit.SAGE)
+			else:
+				draw_arc(Vector2(x, 6), 4.0, 0, TAU, 20, Color("6f8a83"), 1.5, true)
+			x += 13.0
+		var n := done.filter(func(v): return v).size()
+		draw_string(UIKit.sans_bold, Vector2(x + 2, 10), "%d/%d" % [n, done.size()], HORIZONTAL_ALIGNMENT_LEFT, -1, 10, UIKit.MUTED)

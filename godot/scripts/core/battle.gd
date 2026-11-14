@@ -149,8 +149,8 @@ func _deal_hand(anim := true) -> void:
 		hand = []
 		return
 	if d.kind == "comp":
-		var ids: Array = [d.step.comp] + d.step.distractors
-		var size := maxi(int(HAND_SIZE.get(L.guidance, 5)), ids.size())
+		var size := maxi(2, int(L.hand) if L.get("hand") != null else int(HAND_SIZE.get(L.guidance, 5)))
+		var ids: Array = ([d.step.comp] + _shuffle(d.step.distractors.duplicate())).slice(0, size)
 		var fill := _shuffle(GHData.filler.filter(func(f): return not ids.has(f)))
 		while ids.size() < size and not fill.is_empty():
 			ids.append(fill.pop_back())
@@ -453,7 +453,7 @@ func _victory() -> void:
 	var total := xp + eff + hp_bonus + perf_bonus
 	var stars := 3 if mistakes == 0 else (2 if mistakes <= 2 else 1)
 	score = {"xp": xp, "eff": eff, "hp_bonus": hp_bonus, "perfect": perfect, "perf_bonus": perf_bonus, "total": total, "stars": stars}
-	SaveData.record(int(L.id), total, stars, idx, level_count)
+	SaveData.record(SaveData.key_for(L), total, stars, idx, level_count)
 	fb = {"cls": "ok", "head": "Definition complete", "title": "Your script runs!", "body": "Drag the sliders in the preview: the whole definition updates live. That is parametric design.", "meta": ""}
 	changed.emit()
 	fx.emit("victory", {})
