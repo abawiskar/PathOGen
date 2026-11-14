@@ -100,7 +100,7 @@ button { font-family: inherit; cursor: pointer; }
 /* Separate Start-only art layers move on independent rhythms. */
 #screen-title .title-monster { position: absolute; inset: 0; pointer-events: none; }
 #screen-title .title-monster img { width: 100%; height: 100%; object-fit: fill; display: block; transform-origin: 70% 25%; animation: title-boss 7s ease-in-out infinite alternate paused; }
-#screen-title .title-hero { position: absolute; left: 24px; bottom: 76px; width: 340px; pointer-events: none; z-index: 2; }
+#screen-title .title-hero { position: absolute; left: 58px; bottom: 84px; width: 300px; pointer-events: none; z-index: 2; }
 /* Only the upper curl moves. The face, body and boots remain planted. */
 #screen-title .title-hero img { display: block; width: 100%; animation: none; clip-path: inset(20% 0 0); }
 #screen-title .title-hero::before { content: ''; position: absolute; inset: 0; background: url('../img/start-hero.webp') center / 100% 100% no-repeat; clip-path: inset(0 0 79%); transform-origin: 60% 20%; animation: title-hair 4.5s ease-in-out infinite alternate paused; }
