@@ -74,6 +74,7 @@ func _ready() -> void:
 	screens.title = _screen(_build_title)
 	screens.map = _screen(_build_map_frame)
 	screens.battle = _screen(_build_battle)
+	screens.about = _screen(_build_about)
 	_build_overlays()
 	var r := LevelLoader.load_all()
 	levels = r.levels
@@ -188,6 +189,9 @@ func _build_title(s: Control) -> void:
 	var help := UIKit.button("How to Play")
 	help.pressed.connect(help_modal)
 	row.add_child(help)
+	var cred := UIKit.button("About Us")
+	cred.pressed.connect(func(): show_screen("about"))
+	row.add_child(cred)
 	# a browser tab can't be closed from the game, so web exports have no Exit
 	if not OS.has_feature("web"):
 		var quit := UIKit.button("Exit", "ghost")
@@ -1394,12 +1398,57 @@ func defeat_modal() -> void:
 func credits() -> void:
 	modal(func(b):
 		_m_h2(b, "Script Master")
-		_m_p(b, "You defeated the Spaghetti Wyrm and built a complete parametric workflow: polygon, series, graph mapping, scale, rotate, move and loft, all driven by a handful of sliders.")
-		_m_p(b, "That chain is real Grasshopper. Open Rhino, place the same components, wire them the same way, and you'll get the same tower.")
-		_m_p(b, "[color=#8fa29b]Replay levels for three stars and a higher rank, or try a perfect run without lifesavers.[/color]")
+		_m_p(b, "You cleared the path and built complete parametric definitions, all driven by a handful of sliders.")
+		_m_p(b, "That chain is real Grasshopper. Open Rhino, place the same components, wire them the same way, and you'll get the same result.")
+		_m_p(b, "[color=#8fa29b]Replay levels for three stars and a higher rank, try a harder difficulty, or go for a perfect run without lifesavers.[/color]")
+		_m_team(b)
 		_m_actions(b, [["Back to the map", "primary", func():
 			close_modal()
 			open_map()]]))
+
+
+## Alphabetical by last name.
+const TEAM := ["Abhishek Bawiskar", "Garrett Herbst", "Joel Hills", "Riku Kanemitsu", "Danny Karas", "Maya Mashiach", "Kazu Tajima"]
+
+
+func _m_team(b: Control) -> void:
+	_m_h4(b, "Made by the PathOGen team at the AECTech Hackathon 2026")
+	_m_p(b, "  ·  ".join(TEAM), 15)
+
+
+# ═════════════════════ about us ═════════════════════
+func _build_about(s: Control) -> void:
+	var title := UIKit.label(s, "About Us", 56, UIKit.GOLD, UIKit.serif, Vector2(0, 90))
+	title.size.x = 1600
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	var ev := UIKit.label(s, "Made at the AECTech Hackathon 2026", 24, UIKit.SAGE, UIKit.serif, Vector2(0, 176))
+	ev.size.x = 1600
+	ev.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	var about := UIKit.rich(s, Vector2(400, 232), Vector2(800, 120), 17)
+	about.text = "[center]PathOGen teaches Grasshopper by playing it: every card you place adds a real component to a working definition, and a live 3D preview shows what your script builds. Get it right to beat the monster.[/center]"
+	var head := UIKit.label(s, "The team", 26, UIKit.GOLD, UIKit.serif, Vector2(0, 372))
+	head.size.x = 1600
+	head.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	# name cards, 4 on the first row and 3 on the second
+	var w := 300.0
+	var h := 70.0
+	var gap := 24.0
+	for i in TEAM.size():
+		var row := 0 if i < 4 else 1
+		var in_row := 4 if row == 0 else TEAM.size() - 4
+		var col := i if row == 0 else i - 4
+		var x0 := (1600.0 - (in_row * w + (in_row - 1) * gap)) / 2.0
+		var card := UIKit.panel(s, Rect2(x0 + col * (w + gap), 428 + row * (h + gap), w, h))
+		var nl := UIKit.label(card, TEAM[i], 22, UIKit.TEXT, UIKit.serif, Vector2(0, 20))
+		nl.size.x = w
+		nl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	var fonts := UIKit.sub(s, "Fonts: Cinzel and Barlow (SIL Open Font License)", Vector2(0, 640), 1600, 11)
+	fonts.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	var back := UIKit.button("← Main Menu", "primary")
+	back.pressed.connect(main_menu)
+	s.add_child(back)
+	back.reset_size()
+	back.position = Vector2((1600 - back.size.x) / 2.0, 700)
 
 
 func help_modal() -> void:
