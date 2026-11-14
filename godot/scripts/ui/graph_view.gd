@@ -12,7 +12,7 @@ var battle: Battle
 var _origin := Vector2.ZERO   # graph-space top-left of the view
 var _scale := 1.0
 var _cur_center := Vector2.INF
-var _cur_r := 0.0
+var _cur_rect := Rect2()
 var _pannable := false
 var _drag = null
 
@@ -37,7 +37,7 @@ func _gui_input(e: InputEvent) -> void:
 	if e is InputEventMouseButton and e.button_index == MOUSE_BUTTON_LEFT:
 		if e.pressed:
 			var gp: Vector2 = e.position / _scale + _origin
-			if _cur_center != Vector2.INF and gp.distance_to(_cur_center) <= _cur_r + 6:
+			if _cur_center != Vector2.INF and _cur_rect.grow(6).has_point(gp):
 				place_requested.emit()
 				return
 			if _pannable:
@@ -50,7 +50,7 @@ func _gui_input(e: InputEvent) -> void:
 		queue_redraw()
 	if e is InputEventMouseMotion:
 		var gp2: Vector2 = e.position / _scale + _origin
-		var over_cur := _cur_center != Vector2.INF and gp2.distance_to(_cur_center) <= _cur_r + 6
+		var over_cur := _cur_center != Vector2.INF and _cur_rect.grow(6).has_point(gp2)
 		mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND if over_cur else (Control.CURSOR_DRAG if _pannable else Control.CURSOR_ARROW)
 
 
@@ -133,11 +133,11 @@ func _draw() -> void:
 		var g: Dictionary = geo[id]
 		var n: Dictionary = g.n
 		var pos := Vector2(n.x, n.y)
+		var x0: float = pos.x - g.size.x / 2
+		var y0: float = pos.y - g.size.y / 2
+		var rows: float = g.size.y
 		if g.placed:
-			var x0: float = pos.x - g.size.x / 2
-			var y0: float = pos.y - g.size.y / 2
 			var ports := {"in": [], "out": []}
-			var rows: float = g.size.y
 			if g.comp.id == "slider":
 				ports.out.append(Vector2(x0 + g.size.x, pos.y))
 			else:
@@ -147,8 +147,16 @@ func _draw() -> void:
 					ports.out.append(Vector2(x0 + g.size.x, y0 + 6 + (i + 0.5) * (rows - 12) / g.comp.outs.size()))
 			g.ports = ports
 		else:
-			var r := 22.0 if (d != null and d.kind == "comp" and d.step.key == n.step) else 18.0
-			g.ports = {"in": g.comp.ins.map(func(_p): return pos - Vector2(r, 0)), "out": g.comp.outs.map(func(_p): return pos + Vector2(r, 0))}
+			# empty slot: same size and port layout as the real component (game.js ghost node)
+			var gin := []
+			var gout := []
+			var ni: int = g.comp.ins.size()
+			var no: int = g.comp.outs.size()
+			for i in ni:
+				gin.append(Vector2(x0, y0 + 6 + (i + 0.5) * (rows - 12) / ni))
+			for i in no:
+				gout.append(Vector2(x0 + g.size.x, y0 + 6 + (i + 0.5) * (rows - 12) / no))
+			g.ports = {"in": gin, "out": gout}
 
 	# wires
 	var wire_col := Color("d9e6d4")
@@ -211,28 +219,20 @@ func _draw() -> void:
 				var rr := Rect2(pos - g.size / 2 - Vector2(5, 5), g.size + Vector2(10, 10))
 				_dashed(PackedVector2Array([rr.position, rr.position + Vector2(rr.size.x, 0), rr.end, rr.position + Vector2(0, rr.size.y), rr.position]), UIKit.GOLD, 1.5, 4, 3)
 		else:
-			var r := 22.0 if is_cur else 18.0
+			_draw_ghost(g, pos, is_cur, t)
+			var y_lab: float = pos.y + g.size.y / 2
 			if is_cur:
 				_cur_center = pos
-				_cur_r = r
-				var pulse := 0.5 + 0.5 * sin(t * TAU / 1.6)
-				draw_arc(pos, r + 4, 0, TAU, 48, Color(UIKit.GOLD, 0.35 - 0.2 * pulse), 8 + 6 * pulse, true)
-				draw_circle(pos, r, Color("3e6a4e") if battle.selected != null else Color("2a4a3c"))
-				draw_arc(pos, r, 0, TAU, 48, UIKit.GOLD, 2.2, true)
-				draw_line(pos - Vector2(8, 0), pos + Vector2(8, 0), UIKit.GOLD, 2.4)
-				draw_line(pos - Vector2(0, 8), pos + Vector2(0, 8), UIKit.GOLD, 2.4)
-				Chip._text(self, pos.x, pos.y + r + 16, "NODE %s" % UIKit.pad2(slot_num.get(n.step, 0)), 9, UIKit.GOLD, UIKit.sans_bold)
-				draw_line(pos + Vector2(-26, r + 21), pos + Vector2(26, r + 21), UIKit.GOLD, 1)
+				_cur_rect = Rect2(pos - g.size / 2, g.size)
+				Chip._text(self, pos.x, y_lab + 14, "NODE %s" % UIKit.pad2(slot_num.get(n.step, 0)), 9, UIKit.GOLD, UIKit.sans_bold)
+				draw_line(Vector2(pos.x - 26, y_lab + 19), Vector2(pos.x + 26, y_lab + 19), UIKit.GOLD, 1)
 				if L.guidance == "guided":
 					var need: String = d.step.need
 					if need.length() > 44:
 						need = need.substr(0, 42) + "…"
-					Chip._text(self, pos.x, pos.y + r + 33, "needs " + need, 9, UIKit.SAGE, UIKit.sans)
+					Chip._text(self, pos.x, y_lab + 31, "needs " + need, 9, UIKit.SAGE, UIKit.sans)
 			else:
-				draw_circle(pos, r, Color(0.118, 0.188, 0.172, 0.9))
-				_dashed(_circle_pts(pos, r), Color("7f958d"), 1.4, 3, 3)
-				Chip._text(self, pos.x, pos.y + 5.5, "?", 16, Color("c5d2c9"), UIKit.sans_bold)
-				Chip._text(self, pos.x, pos.y + r + 14, "OPEN NODE", 9, Color(Color("cfd9cf"), 0.7), UIKit.sans_bold)
+				Chip._text(self, pos.x, y_lab + 13, "OPEN NODE", 9, Color(Color("cfd9cf"), 0.6), UIKit.sans_bold)
 	draw_set_transform(Vector2.ZERO, 0, Vector2.ONE)
 	battle.last_placed = null
 
@@ -242,3 +242,45 @@ static func _circle_pts(c: Vector2, r: float) -> PackedVector2Array:
 	for i in 41:
 		p.append(c + Vector2.from_angle(i / 40.0 * TAU) * r)
 	return p
+
+
+## Greyed-out node of the component's real size: dashed body, port dots, zone dividers
+## and a question mark. The current slot is gold with a pulsing halo (sage once armed).
+func _draw_ghost(g: Dictionary, pos: Vector2, is_cur: bool, t: float) -> void:
+	var sz: Vector2 = g.size
+	var r := Rect2(pos - sz / 2, sz)
+	var ni: int = g.comp.ins.size()
+	var no: int = g.comp.outs.size()
+	var armed: bool = is_cur and battle.selected != null
+	var fill := Color(0.784, 0.816, 0.8, 0.16)
+	var stroke := Color("8a9a94")
+	var sw := 1.4
+	var port_col := Color("6f807a")
+	var q_col := Color("a9b8b2")
+	if is_cur:
+		var pulse := 0.5 + 0.5 * sin(t * TAU / 1.6)
+		var hr := r.grow(4)
+		draw_polyline(_rect_pts(hr), Color(UIKit.GOLD, 0.2 + 0.25 * pulse), 5, true)
+		fill = Color(0.659, 0.776, 0.565, 0.28) if armed else Color(0.91, 0.863, 0.69, 0.14)
+		stroke = UIKit.SAGE if armed else UIKit.GOLD
+		sw = 1.8
+		port_col = Color("c9b26a")
+		q_col = Color(UIKit.GOLD, 0.65 + 0.35 * sin(t * TAU / 1.2))
+	draw_rect(r, fill)
+	_dashed(_rect_pts(r), stroke, sw, 4, 3)
+	var zin := 18.0 if ni > 0 else 6.0
+	var zout := 18.0 if no > 0 else 6.0
+	var div := Color(0.627, 0.686, 0.667, 0.4)
+	if ni > 0:
+		draw_line(Vector2(r.position.x + zin, r.position.y + 4), Vector2(r.position.x + zin, r.end.y - 4), div, 1)
+	if no > 0:
+		draw_line(Vector2(r.end.x - zout, r.position.y + 4), Vector2(r.end.x - zout, r.end.y - 4), div, 1)
+	for p in g.ports.in + g.ports.out:
+		draw_circle(p, 3.2, port_col)
+	var qs := minf(20.0, sz.y - 6)
+	var qx := r.position.x + zin + (sz.x - zin - zout) / 2
+	Chip._text(self, qx, pos.y + qs * 0.36, "?", int(qs), q_col, UIKit.serif)
+
+
+static func _rect_pts(r: Rect2) -> PackedVector2Array:
+	return PackedVector2Array([r.position, Vector2(r.end.x, r.position.y), r.end, Vector2(r.position.x, r.end.y), r.position])

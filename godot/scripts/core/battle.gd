@@ -58,6 +58,7 @@ var hp_max := 0
 var deal_anim := true
 var pan := Vector2.ZERO
 var score := {}                # filled on victory
+var _monster := {}
 
 
 func _init(level: Dictionary, level_index: int, total_levels: int, seed_value := -1) -> void:
@@ -88,7 +89,9 @@ func _init(level: Dictionary, level_index: int, total_levels: int, seed_value :=
 
 # ───── helpers ─────
 func monster() -> Dictionary:
-	return GHData.monsters.get(L.monster, GHData.monsters.get("rootbound", {}))
+	if _monster.is_empty():
+		_monster = GHData.monster_for(L, idx)
+	return _monster
 
 func cur():
 	return decisions[di] if di < decisions.size() else null
@@ -209,7 +212,7 @@ func _on_correct(d: Dictionary, id: String) -> void:
 	fx.emit("float", {"target": "monster", "text": "-%d" % dmg, "cls": ""})
 	fx.emit("float", {"target": "health", "text": "+%d XP" % gain, "cls": "good"})
 	fx.emit("anim", {"target": "monster", "name": "hurt"})
-	fx.emit("anim", {"target": "hero", "name": "cheer"})
+	fx.emit("anim", {"target": "hero", "name": "success"})
 	if d.kind == "comp":
 		var c := GHData.comp(id)
 		fb = {"cls": "ok", "head": "Correct", "title": c.name, "body": d.step.why, "meta": _io_meta(c)}
@@ -292,7 +295,7 @@ func _monster_attack(s: Dictionary) -> void:
 	var dmg := 1
 	fx.emit("anim", {"target": "monster", "name": "attack"})
 	fx.emit("anim", {"target": "flash", "name": "red", "delay": 0.22})
-	fx.emit("anim", {"target": "hero", "name": "hit", "delay": 0.22})
+	fx.emit("anim", {"target": "hero", "name": "damage", "delay": 0.22})
 	match it:
 		"damage":
 			dmg = 2
@@ -341,7 +344,7 @@ func _on_timeout() -> void:
 		health = maxi(0, health - 1)
 		fx.emit("anim", {"target": "monster", "name": "attack"})
 		fx.emit("anim", {"target": "flash", "name": "red"})
-		fx.emit("anim", {"target": "hero", "name": "hit"})
+		fx.emit("anim", {"target": "hero", "name": "damage"})
 		fx.emit("toast", {"msg": "Too slow! The monster strikes.", "cls": "bad"})
 		fx.emit("float", {"target": "hearts", "text": "-1", "cls": "bad"})
 	journal.append({"cls": "bad", "title": "✗ Out of time", "text": "Hesitation cost a heart. Lifesavers like Hint and 50/50 can speed up a tough decision."})
@@ -461,5 +464,6 @@ func _defeat() -> void:
 		return
 	over = true
 	clear_timer()
+	fx.emit("anim", {"target": "hero", "name": "defeat"})
 	changed.emit()
 	fx.emit("defeat", {})

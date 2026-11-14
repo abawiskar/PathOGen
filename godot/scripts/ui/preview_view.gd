@@ -21,12 +21,33 @@ var fresh_t := 0.0
 var blurred := false
 var _drag = null
 var _auto_at := -1.0
+## A still render (the goal thumbnail): no input, no camera easing.
+var static_mode := false
 
 
 func _ready() -> void:
 	clip_contents = true
+	if static_mode:
+		mouse_filter = Control.MOUSE_FILTER_IGNORE
+		set_process(false)
+		return
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	mouse_default_cursor_shape = Control.CURSOR_DRAG
+
+
+## Like Preview.snapshot in preview.js: the default 3/4 view, framed, held still.
+func snapshot(s: Dictionary) -> void:
+	static_mode = true
+	set_scene(s)
+	theta = -0.95
+	goal_theta = theta
+	el = 0.5
+	goal_el = el
+	auto = false
+	target = goal_target
+	radius = goal_radius
+	zoom = 1.25
+	queue_redraw()
 
 
 func set_view(v: String, keep_angles := false) -> void:
