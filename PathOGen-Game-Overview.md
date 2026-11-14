@@ -209,8 +209,18 @@ Monster names and backstory lines are placeholders and can be edited in `web/js/
 
 ## 10. Team
 
-Made at the AECTech Hackathon 2026 by Abhishek Bawiskar, Garrett Herbst, Joel Hills, Riku Kanemitsu, Danny Karas,
-Maya Mashiach and Kazu Tajima (shown on the About Us page and the end-of-game screen; `TEAM` in `web/js/game.js`).
+Made at the AECTech Hackathon 2026. On the About Us page, clicking a name shows that person's title and workplace;
+the names also appear on the end-of-game screen. Edit them in `TEAM` in `web/js/game.js`.
+
+| Name | Title | Organisation |
+| --- | --- | --- |
+| Abhishek Bawiskar | Senior Associate Application Developer | Thornton Tomasetti |
+| Garrett Herbst | Director of Emerging Technologies | Little |
+| Joel Hills | Senior Digital Design Technologist | Thornton Tomasetti |
+| Riku Kanemitsu | Graduate Student | Waseda University & ADL Intern |
+| Danny Karas | Associate Computational Designer | Thornton Tomasetti |
+| Maya Mashiach | Design Technology Specialist | LPA Design Studios |
+| Kazu Tajima | Graduate Student | Waseda University & ADL Intern |
 
 ## 11. Open items
 

@@ -503,14 +503,22 @@
     () => { if (monster().frenzy && !st.over && !st.timer) startTimer(monster().frenzy); });
   }
 
-  /* the team (alphabetical by last name), as in the Godot build's TEAM list */
-  const TEAM = ['Abhishek Bawiskar', 'Garrett Herbst', 'Joel Hills', 'Riku Kanemitsu', 'Danny Karas', 'Maya Mashiach', 'Kazu Tajima'];
+  /* the team (alphabetical by last name, as in the Godot build's TEAM list); click a name on About Us for the details */
+  const TEAM = [
+    { name: 'Abhishek Bawiskar', title: 'Senior Associate Application Developer', org: 'Thornton Tomasetti' },
+    { name: 'Garrett Herbst', title: 'Director of Emerging Technologies', org: 'Little' },
+    { name: 'Joel Hills', title: 'Senior Digital Design Technologist', org: 'Thornton Tomasetti' },
+    { name: 'Riku Kanemitsu', title: 'Graduate Student', org: 'Waseda University & ADL Intern' },
+    { name: 'Danny Karas', title: 'Associate Computational Designer', org: 'Thornton Tomasetti' },
+    { name: 'Maya Mashiach', title: 'Design Technology Specialist', org: 'LPA Design Studios' },
+    { name: 'Kazu Tajima', title: 'Graduate Student', org: 'Waseda University & ADL Intern' },
+  ];
   function credits() {
     modal(`<h2>Script Master</h2>
       <p>You cleared the path and built complete parametric definitions, all driven by a handful of sliders.</p>
       <p>That chain is real Grasshopper. Open Rhino, place the same components, wire them the same way, and you’ll get the same result.</p>
       <p class="muted">Replay levels for three stars and a higher rank, try a harder difficulty, or go for a perfect run without lifesavers.</p>
-      <h4>Made by the PathOGen team at the AECTech Hackathon 2026</h4><p>${TEAM.map(esc).join(' &nbsp;·&nbsp; ')}</p>
+      <h4>Made by the PathOGen team at the AECTech Hackathon 2026</h4><p>${TEAM.map(t => esc(t.name)).join(' &nbsp;·&nbsp; ')}</p>
       <div class="actions"><button class="btn primary" data-act="map">Back to the map</button></div>`);
   }
 
@@ -955,7 +963,14 @@
       <p class="muted">Levels are loaded with fetch(), so the game must be served over http — e.g. <code>python -m http.server 5173 --directory web</code> — not opened as a file.</p>`);
   });
   $('#btn-title-help').onclick = helpModal;
-  $('#team').innerHTML = TEAM.map(n => `<div class="team-card">${esc(n)}</div>`).join('');
+  $('#team').innerHTML = TEAM.map(t => `<button class="team-card" aria-expanded="false">
+      <span class="tc-name">${esc(t.name)}</span>
+      <span class="tc-more"><b>${esc(t.title)}</b>${esc(t.org)}</span>
+      <span class="tc-hint">Click for more</span></button>`).join('');
+  $$('#team .team-card').forEach(c => c.onclick = () => {
+    const open = !c.classList.contains('open');
+    c.classList.toggle('open', open); c.setAttribute('aria-expanded', open);
+  });
   $('#btn-about').onclick = () => show('screen-about');
   $('#btn-about-back').onclick = () => openTitle();
   /* Exit: browsers only let a page close a tab that a script opened, so try it and fall back to a farewell screen. */
