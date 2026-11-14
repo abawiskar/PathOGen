@@ -18,6 +18,8 @@ The node graph **is** the answer key. The preview is computed live from it by a 
 | `params` | Sliders shown in the preview: `{ key, label, min, max, step, value }` |
 | `order` | Optional build order of open node ids. Default: topological order of the graph |
 | `boss` | Optional, `true` for the boss level |
+| `source` | Optional, the Grasshopper file this level was transcribed from |
+| `placeholder` | Optional, `true` while the level is a stand-in waiting for its real script |
 
 ## Nodes
 
@@ -38,6 +40,8 @@ The node graph **is** the answer key. The preview is computed live from it by a 
 - `graph`: Graph Mapper curve, `{ "type": "linear" | "pinch" | "sine" | "bell", "param": "<slider key>" }`.
 - `baked`: fixed geometry for referenced Rhino geometry, or for any component too complex to simulate, e.g. `{ "curve": [[x,y,z], …], "smooth": true }`, `{ "point": [x,y,z] }`.
 - `preview`: force this node's geometry on (`true`) or off (`false`). By default only "leaf" nodes preview.
+- `ghost`: draw this node's geometry faintly, as context (e.g. the tower mass behind the panels).
+- `degrees`: on Rotate, read the angle in degrees (Grasshopper's Degrees option on the A input).
 - `passthrough`: while this open node is empty, data flows straight through it (used to show "before Graft" behaviour).
 - Text: `need`, `hint`, `correct`, `wrong`. Card hands default to components of the same category when `distractors` is omitted.
 - `draft`: `true` while the text is unreviewed. `review.html` lists every draft entry.
@@ -55,7 +59,7 @@ treated as disconnected, so the preview shows the component's default behaviour.
 ## Supported components (solver)
 
 Number Slider, Panel, Boolean Toggle, Point/Curve (baked), XY Plane, Construct Point, Unit X/Z, Vector 2Pt, Amplitude,
-Line, Line SDL, Circle, Rectangle, Polygon, Interpolate, Divide Curve, Loft, Extrude, Pipe (thick curve), Boundary
+Line, Line SDL, Circle, Rectangle, Polygon (with fillet), Interpolate, Contour, Cap Holes, Divide Curve, Loft, Extrude, Pipe (thick curve), Boundary
 Surfaces, Divide Domain², Isotrim, Area, Series, Range, Cull Pattern, List Item, Reverse/Sort/Shift List, Graft, Flatten,
 Flip Matrix, Move, Rotate, Scale, Mirror, Sine, Multiplication, Addition, Radians, Remap, Graph Mapper.
 Any other component needs a solver added to `js/engine.js` (and an entry in `js/data.js`), or `baked` output.

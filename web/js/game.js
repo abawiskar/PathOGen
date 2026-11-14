@@ -551,7 +551,7 @@
       if (g.placed) {
         const hl = quizCur && quizCur.target === n.id && selPort != null ? { hlSide: quizCur.side, hlIdx: selPort } : {};
         const p = L.params.find(pp => pp.key === n.param);
-        const c = chip(comp, n.x, n.y, { label: n.label, value: n.param ? st.params[n.param] : null, frac: p ? (st.params[p.key] - p.min) / (p.max - p.min) : null,
+        const c = chip(comp, n.x, n.y, { label: n.label, value: n.param ? st.params[n.param] : (n.value != null ? n.value : null), frac: p ? (st.params[p.key] - p.min) / (p.max - p.min) : null,
           locked: lockedId === n.id, anim: st.lastPlaced === n.step && !n.given, ...hl });
         g.ports = c.ports;
         const name = lockedId === n.id ? '???' : (n.label && comp.id !== 'slider' ? n.label : comp.id === 'slider' ? '' : comp.name);
