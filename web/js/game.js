@@ -899,7 +899,7 @@
   $('#btn-start').onclick = () => { if (LEVELS.length) openMap(); else toast('Levels are still loading…'); };
   LevelLoader.loadAll().then(ls => {
     LEVELS = ls;
-    $('#title-monster').innerHTML = monsterArt(monsterKey(LEVELS[LEVELS.length - 1]));
+    $('#title-monster').innerHTML = monsterArt('spaghetti');
     if (/[?&]all\b/.test(location.search)) save.unlocked = LEVELS.length;
   }).catch(err => {
     console.error(err);
