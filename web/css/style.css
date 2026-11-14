@@ -70,7 +70,26 @@ button { font-family: inherit; cursor: pointer; }
 
 /* ───────── Title ───────── */
 /* Only the Start screen uses the illustrated plate; text and controls stay live. */
-#screen-title { background: url('../img/start-confrontation.webp') center / cover no-repeat; }
+#screen-title { overflow: hidden; }
+#screen-title::before {
+  content: ''; position: absolute; inset: -16px; pointer-events: none;
+  background: url('../img/start-confrontation.webp') center / cover no-repeat;
+  transform-origin: 65% 25%; animation: title-drift 18s ease-in-out infinite alternate paused;
+}
+#screen-title.active::before, #screen-title.active .title-wrap::before { animation-play-state: running; }
+@keyframes title-drift {
+  from { transform: scale(1) translate(0, 0); }
+  to { transform: scale(1.025) translate(-6px, 4px); }
+}
+#screen-title .title-wrap::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse at 65% 22%, var(--gold), transparent 16%);
+  mix-blend-mode: screen; opacity: .025; animation: title-glow 4.8s ease-in-out infinite alternate paused;
+}
+@keyframes title-glow { to { opacity: .1; } }
+@media (prefers-reduced-motion: reduce) {
+  #screen-title::before, #screen-title .title-wrap::before { animation: none; }
+}
 #screen-title::after { content: ''; position: absolute; inset: 14px; border: 1px solid var(--line-soft); pointer-events: none; }
 #screen-title .title-wrap { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding-top: 330px; isolation: isolate; }
 .logo { font-family: var(--serif); font-size: 128px; margin: 0; color: var(--gold); letter-spacing: .04em; text-shadow: 0 6px 0 #0b1312, 0 0 40px rgba(168,198,144,.25); z-index: 2; }
