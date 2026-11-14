@@ -1,0 +1,32 @@
+/* Use the existing Cinzel / Barlow font variables and game palette. */
+#screen-map .campaign-land { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+#screen-map .continent { fill:var(--panel); stroke:var(--line); stroke-width:3; }
+#screen-map .regions { fill:none; stroke:var(--line); stroke-width:2; opacity:.7; }
+#screen-map #map-path { pointer-events:none; }
+#screen-map .campaign-route { fill:none; stroke:var(--gold); stroke-width:5; stroke-dasharray:1 17; stroke-linecap:round; }
+#screen-map .campaign-route.future { stroke:var(--muted); opacity:.4; }
+#screen-map .map-node { width:220px; min-height:0; height:150px; padding:0; background:none; border:0; border-radius:0; box-shadow:none; text-align:center; }
+#screen-map .map-node:hover { transform:translate(-50%,-50%); }
+#screen-map .campaign-marker { display:flex; align-items:center; justify-content:center; width:82px; height:82px; margin:34px auto 15px; border:3px solid var(--gold); border-radius:50%; background:var(--bg2); color:var(--gold); font:600 36px var(--sans); }
+#screen-map .selected .campaign-marker { background:var(--gold); color:var(--bg); outline:5px solid var(--sage); outline-offset:7px; }
+#screen-map .map-node:focus-visible { outline:2px solid var(--sage); outline-offset:8px; border-radius:8px; }
+#screen-map .completed .campaign-marker::after { content:'\2691'; position:absolute; top:0; color:var(--sage); font-size:34px; }
+#screen-map .map-node .mn-title { font:700 19px/1.3 var(--serif); margin:0; overflow-wrap:normal; }
+#screen-map .map-node .mn-num, #screen-map .map-node .mn-obj, #screen-map .map-node .mn-stars, #screen-map .map-node .mn-diff { display:none; }
+#screen-map .map-node .mn-art { display:none; }
+#screen-map .map-node.selected .mn-art { display:block; left:78px; top:-14px; width:64px; transform:none; pointer-events:none; }
+#screen-map .map-node.selected .mn-art .monster-img { height:60px; }
+#screen-map .map-node .lock { top:5px; right:93px; font-size:22px; }
+#screen-map .campaign-detail { position:absolute; left:60px; right:60px; bottom:45px; min-height:135px; display:flex; align-items:center; gap:32px; border-top:1px solid var(--line); padding-top:25px; }
+#screen-map .campaign-summary { flex:1.3; min-width:0; }
+#screen-map .campaign-summary h3 { font:700 27px var(--serif); color:var(--gold); margin:0 0 9px; }
+#screen-map .campaign-detail p { margin:0; font:400 17px/1.4 var(--sans); color:var(--text); }
+#screen-map .campaign-info { flex:1; padding-left:30px; border-left:1px solid var(--line); }
+#screen-map .campaign-info span { display:block; color:var(--sage); font:600 16px var(--sans); margin-bottom:10px; }
+#screen-map .campaign-info p { font-size:14px; color:var(--muted); }
+#screen-map .campaign-challenge { min-width:260px; min-height:70px; font:700 25px var(--serif); }
+#screen-map .campaign-challenge:disabled { opacity:.4; cursor:not-allowed; }
+#screen-map .campaign-progress { position:absolute; left:60px; bottom:220px; color:var(--sage); font:600 19px var(--sans); letter-spacing:.08em; }
+
+#screen-map .map-node.selected .mn-art { left:66px; top:-43px; width:88px; }
+#screen-map .campaign-hero { display:block; width:88px; height:88px; object-fit:contain; filter:drop-shadow(0 3px 4px rgba(0,0,0,.35)); }

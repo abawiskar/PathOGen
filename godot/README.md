@@ -16,7 +16,8 @@ The web version is the source of truth. Godot reads the same files:
 | `web/levels/**/level.json`, `index.json` | `levels/` | `tools/sync_from_web.py` (copied as-is) |
 | `web/js/data.js` (components, icons, filler) | `data/components.json` | `tools/sync_from_web.py` |
 | `web/js/monsters.js` (options + phases) | `data/monsters.json` | `tools/sync_from_web.py` |
-| `web/img/*` (hero sprite, monster paintings) | `img/` | `tools/sync_from_web.py` |
+| `web/js/components_extra.js`, `web/js/gh_icons.js` | merged into `data/components.json` | `tools/sync_from_web.py` |
+| `web/img/**` (hero, monsters, start-screen art, `gh-icons/`) | `img/` | `tools/sync_from_web.py` |
 
 **When you run from the editor inside the repo, levels load straight from `../web/levels`**, so level edits
 made for the web version show up without syncing. Run the sync script before exporting a build, or when
@@ -55,7 +56,8 @@ Other web files are ported by hand, so check them when the web version changes:
 
 ## Team
 
-Made at the AECTech Hackathon 2026 by Maya Mashiach, Riku Kanemitsu, Kazu Tajima, Garrett Herbst, Joel Hills, Abhishek Bawiskar, Danny Karas.
+Made at the AECTech Hackathon 2026 by Abhishek Bawiskar, Garrett Herbst, Joel Hills, Riku Kanemitsu, Danny Karas,
+Maya Mashiach and Kazu Tajima (alphabetical by last name).
 The names are in `TEAM` in `scripts/main.gd` (the About Us page from the title screen, and the end-of-game screen).
 
 ## Difficulties
@@ -66,27 +68,14 @@ difficulty, and beating any one unlocks the next level. `hand`, `attacks`, `time
 
 ## Levels from Grasshopper files (.ghx)
 
-`tools/ghx_to_level.py` turns the quiz canvases in `GameLevels/` into playable difficulties, following
-`grasshopper_game_structure.md` (white `A##` method group, red `A##_Q##` answers, blue `A##_Q##_Choices`):
+The web version now carries the .ghx levels itself (`web/levels/*/A01.json` ... `D03.json`, with the extra components
+in `web/js/components_extra.js` and Grasshopper's icons in `web/js/gh_icons.js` + `web/img/gh-icons/`), so Godot gets
+them through `tools/sync_from_web.py` like any other level.
 
-```
-python godot/tools/ghx_to_level.py GameLevels/LevelA 01-base-shape
-```
-
-- Each `.ghx` becomes one difficulty, easiest first: A01 Hopper Hatchling, A02 Shape Scout, A03 Pattern Pouncer,
-  A04 Geometry Wizard, A05 Grasshopper Legend. The rules for each (hearts, hand size, attacks, timer, lifesavers)
-  are `DIFFICULTY_RULES` at the top of the script.
-- The method group's components, wires and slider values become the node graph. Each red component is an open
-  node, asked in Q01, Q02... order, and its blue group's 12 components are the wrong cards for it.
-- Output, all Godot-only (the web sync never touches it): `levels_godot/<level>/A##.json` and
-  `difficulties.json` (replaces that level's difficulty list), and `data/components_godot.json` (card data
-  for components the web library doesn't have; they borrow a similar icon).
-- The script prints a `check:` line for anything that doesn't match the guide (e.g. a choices group without 12).
-- Hint and explanation text for these nodes is generated from Grasshopper's own descriptions and marked draft.
-- The preview solver knows the components these files use (Unit Y, Circle CNR, End Points, PolyLine, Fillet,
-  Discontinuity, Join Curves, Merge, Trim with Region, Arc SED, Evaluate Curve, Division, Negative...).
-  A new file that uses other components will play, but those nodes preview nothing until a solver is added
-  in `scripts/core/gh_engine.gd` (`_build_godot_solvers`).
+`tools/ghx_to_level.py` is still here for trying a new .ghx canvas in Godot before the web has it:
+`python godot/tools/ghx_to_level.py GameLevels/LevelX 0N-level-folder` writes `levels_godot/<level>/` and
+`data/components_godot.json`. A `levels_godot/<level>/difficulties.json` with a non-empty list replaces that level's
+difficulties in Godot only; delete the folder (or empty the list) to go back to the web's levels.
 
 ## Layout
 

@@ -772,6 +772,29 @@
         </button>`;
       }).join('')}</div>`);
   }
+  /* Free Play: every level and difficulty, unlocked, so players can start anywhere.
+   * Wins still count (stars, XP) and unlock the path up to that level. */
+  function freePlayModal() {
+    if (!LEVELS.length) { toast('Levels are still loading…'); return; }
+    const MODE = { guided: 'Guided', standard: 'Standard', independent: 'Independent' };
+    modal(`<button class="x-close">&times;</button><div class="sub">Free Play</div>
+      <h2>Pick any level and difficulty</h2>
+      <p class="muted">Everything is open here, so you can skip ahead or replay a favourite. Wins still earn stars and XP, and unlock the path up to that level.</p>
+      <div class="fp-grid">${LEVELS.map((S, i) => {
+        const m = MONSTER_OPTIONS[monsterKey(S)];
+        return `<div class="fp-level">
+          <div class="fp-head"><div class="fp-art">${monsterArt(monsterKey(S))}</div>
+            <div><div class="fp-num">Level ${S.id} &middot; ${esc(m.name)}</div><div class="fp-title">${esc(S.title)}</div>
+            <div class="fp-obj">${esc(S.objective)}</div></div></div>
+          <div class="fp-diffs">${S.difficulties.map((df, d) => {
+            const L = df.level, b = save.best[bestKey(L)];
+            return `<button class="fp-diff" data-act="diff:${i}:${d}" title="${esc(df.description || df.name)}">
+              <span class="fp-dn">${d + 1}</span><span class="fp-db"><b>${esc(df.name)}</b>
+              <em>${MODE[L.guidance] || L.guidance} &middot; ${L.health} hearts &middot; ${L.steps.length} steps${L.timer ? ' &middot; ' + L.timer + 's timer' : ''}</em></span>
+              <span class="fp-stars">${[1, 2, 3].map(s => `<span class="${b && s <= b.stars ? 'on' : ''}">★</span>`).join('')}</span></button>`;
+          }).join('')}</div></div>`;
+      }).join('')}</div>`, null, true);
+  }
   const shortNeed = (s) => s.length > 44 ? s.slice(0, 42) + '…' : s;
 
   function cardHTML(id, opts = {}) {
@@ -981,6 +1004,8 @@
     c.classList.toggle('open', open); c.setAttribute('aria-expanded', open);
   });
   $('#btn-about').onclick = () => show('screen-about');
+  $('#btn-free').onclick = freePlayModal;
+  $('#btn-map-free').onclick = freePlayModal;
   $('#btn-about-back').onclick = () => openTitle();
   /* Exit: browsers only let a page close a tab that a script opened, so try it and fall back to a farewell screen. */
   $('#btn-exit').onclick = () => modal(`<h2>Leave PathOGen?</h2><p>Your progress is saved on this device, so you can pick up where you left off.</p>

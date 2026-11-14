@@ -20,7 +20,8 @@ var toast_box: VBoxContainer
 
 # battle widgets
 var graph: GraphView
-var graph_sub: Label
+var graph_sub: RichTextLabel
+var graph_title: RichTextLabel
 var graph_foot: RichTextLabel
 var preview: PreviewView
 var view_btn: OptionButton
@@ -49,11 +50,12 @@ var fb_body: RichTextLabel
 var fb_meta: RichTextLabel
 var ls_buttons := {}
 var hero: HeroView
-var title_monster: ArtView
+var title_boss: TextureRect
 var goal_box: PanelContainer
 var curse_banner: PanelContainer
 var curse_text: RichTextLabel
 var _goal_scenes := {}
+var modal_w := 652.0
 var hand_box: Control
 var hand_sub: Label
 var flash: FxViews.Flash
@@ -81,8 +83,6 @@ func _ready() -> void:
 	load_errors = r.errors
 	if unlock_all:
 		SaveData.unlocked = levels.size()
-	if not levels.is_empty():
-		title_monster.set_texture(UIKit.monster_texture(GHData.monster_key(levels[-1])))
 	show_screen("title")
 	if not load_errors.is_empty():
 		modal(func(b):
@@ -93,6 +93,11 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	if title_boss and screens.title.visible:
+		var k := 0.5 - 0.5 * cos(Time.get_ticks_msec() / 1000.0 * PI / 7.0)
+		title_boss.pivot_offset = Vector2(1120, 225)
+		title_boss.position.y = 3.0 * k
+		title_boss.scale = Vector2.ONE * (1.0 + 0.006 * k)
 	if battle != null and screens.battle.visible:
 		battle.tick(delta, modal_layer.visible)
 		_render_timer()
@@ -147,18 +152,38 @@ func _build_background() -> void:
 
 # ═════════════════════ title ═════════════════════
 func _build_title(s: Control) -> void:
-	# the last level's monster (set once levels load), and the hero
-	title_monster = ArtView.new()
-	title_monster.position = Vector2(1150, 90)
-	title_monster.size = Vector2(400, 300)
-	title_monster.bob_period = 3.4
-	title_monster.modulate.a = 0.9
-	s.add_child(title_monster)
-	var hr := HeroView.new()
-	hr.fit_width = true
-	hr.position = Vector2(70, 568)
-	hr.size = Vector2(290, 300)
-	s.add_child(hr)
+	# illustrated Start screen (web: start-environment / start-boss / start-hero.webp): the ruins stay still,
+	# the boss breathes behind them, the lower ruins mask the boss's tendrils, the menu sits on a dark pool
+	var full := Rect2(0, 0, 1600, 900)
+	var env := _title_layer(s, "res://img/start-environment.webp", full)
+	if env != null:
+		title_boss = _title_layer(s, "res://img/start-boss.webp", full)
+		var mask := _title_layer(s, "res://img/start-environment.webp", full)
+		var sh := Shader.new()
+		sh.code = "shader_type canvas_item;\nvoid fragment() { COLOR = texture(TEXTURE, UV); COLOR.a *= smoothstep(0.28, 0.69, UV.y); }"
+		var mat := ShaderMaterial.new()
+		mat.shader = sh
+		mask.material = mat
+		var g := Gradient.new()
+		var bg := Color(0.043, 0.075, 0.071)
+		g.offsets = PackedFloat32Array([0.0, 0.45, 1.0])
+		g.colors = PackedColorArray([bg, bg, Color(bg, 0.0)])
+		var gt := GradientTexture2D.new()
+		gt.gradient = g
+		gt.fill = GradientTexture2D.FILL_RADIAL
+		gt.fill_from = Vector2(0.5, 0.5)
+		gt.fill_to = Vector2(1.0, 0.5)
+		gt.width = 256
+		gt.height = 256
+		var pool := TextureRect.new()
+		pool.texture = gt
+		pool.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		pool.stretch_mode = TextureRect.STRETCH_SCALE
+		pool.position = Vector2(800 - 672, 495 - 261)
+		pool.size = Vector2(1344, 522)
+		pool.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		s.add_child(pool)
+		_title_layer(s, "res://img/start-hero.webp", Rect2(58, 436, 300, 380))
 	var logo := RichTextLabel.new()
 	logo.bbcode_enabled = true
 	logo.fit_content = true
@@ -170,16 +195,16 @@ func _build_title(s: Control) -> void:
 	logo.add_theme_constant_override("shadow_offset_y", 6)
 	logo.add_theme_color_override("font_shadow_color", Color("0b1312"))
 	logo.text = "[center]Path[color=#a8c690]O[/color]Gen[/center]"
-	logo.position = Vector2(0, 250)
+	logo.position = Vector2(0, 320)
 	logo.size = Vector2(1600, 170)
 	logo.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	s.add_child(logo)
-	var tag := UIKit.label(s, "Build the Script. Survive the Monster. Master Grasshopper.", 22, UIKit.GOLD_DIM, UIKit.serif, Vector2(0, 430))
+	var tag := UIKit.label(s, "Build the Script. Survive the Monster. Master Grasshopper.", 22, UIKit.GOLD_DIM, UIKit.serif, Vector2(0, 492))
 	tag.size.x = 1600
 	tag.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 18)
-	row.position = Vector2(0, 500)
+	row.position = Vector2(0, 556)
 	row.size = Vector2(1600, 60)
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
 	s.add_child(row)
@@ -195,8 +220,26 @@ func _build_title(s: Control) -> void:
 	# a browser tab can't be closed from the game, so web exports have no Exit
 	if not OS.has_feature("web"):
 		var quit := UIKit.button("Exit", "ghost")
-		quit.pressed.connect(quit_game)
+		quit.pressed.connect(func(): modal(func(b):
+			_m_h2(b, "Leave PathOGen?")
+			_m_p(b, "Your progress is saved on this device, so you can pick up where you left off.")
+			_m_actions(b, [["Stay", "", close_modal], ["Exit", "warm", quit_game]])))
 		row.add_child(quit)
+
+
+func _title_layer(s: Control, path: String, r: Rect2) -> TextureRect:
+	var tex := UIKit.png_texture(path)
+	if tex == null:
+		return null
+	var tr := TextureRect.new()
+	tr.texture = tex
+	tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	tr.stretch_mode = TextureRect.STRETCH_SCALE
+	tr.position = r.position
+	tr.size = r.size
+	tr.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	s.add_child(tr)
+	return tr
 
 
 # ═════════════════════ map ═════════════════════
@@ -212,8 +255,9 @@ func _build_map_frame(s: Control) -> void:
 	var stat := func(title: String, x: float) -> Label:
 		UIKit.sub(s, title, Vector2(x, 44), 0, 10)
 		return UIKit.label(s, "0", 26, UIKit.GOLD, UIKit.serif, Vector2(x, 58))
-	_map_xp = stat.call("Total XP", 1010)
-	_map_rank = stat.call("Rank", 1120)
+	# stats sit left of the buttons; the rank shrinks to fit so long ranks never run under "Main Menu"
+	_map_xp = stat.call("Total XP", 880)
+	_map_rank = stat.call("Rank", 990)
 	var menu := UIKit.button("Main Menu", "ghost", "small")
 	menu.position = Vector2(1328, 66)
 	menu.pressed.connect(main_menu)
@@ -249,6 +293,10 @@ func open_map() -> void:
 	var xp := SaveData.total_xp()
 	_map_xp.text = str(xp)
 	_map_rank.text = SaveData.rank_for(xp)
+	var fs := 26
+	while fs > 14 and UIKit.serif.get_string_size(_map_rank.text, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x > 1310 - 990:
+		fs -= 1
+	_map_rank.add_theme_font_size_override("font_size", fs)
 	for c in _map_nodes.get_children():
 		c.queue_free()
 	var pts: Array = []
@@ -332,11 +380,22 @@ func open_map() -> void:
 func _build_battle(s: Control) -> void:
 	# graph
 	var pg := UIKit.panel(s, Rect2(45, 48, 503, 325))
-	UIKit.label(pg, "Build your definition", 19, UIKit.GOLD, UIKit.serif, Vector2(18, 12))
-	graph_sub = UIKit.sub(pg, "", Vector2(18, 38), 470, 10)
+	graph_title = UIKit.rich(pg, Vector2(18, 10), Vector2(330, 26), 19, UIKit.GOLD)
+	graph_title.add_theme_font_override("normal_font", UIKit.serif)
+	# stage hint: what this step does to the definition (node "stage" text in the level files)
+	graph_sub = UIKit.rich(pg, Vector2(18, 38), Vector2(468, 36), 12)
+	graph_sub.fit_content = false
+	graph_sub.clip_contents = true
+	var defb := UIKit.button("▦ Completed definition", "ghost", "small")
+	defb.tooltip_text = "See the finished definition and its output"
+	defb.add_theme_font_size_override("font_size", 10)
+	defb.pressed.connect(func(): if battle: definition_modal())
+	pg.add_child(defb)
+	defb.reset_size()
+	defb.position = Vector2(503 - 14 - defb.size.x, 10)
 	graph = GraphView.new()
-	graph.position = Vector2(10, 58)
-	graph.size = Vector2(483, 235)
+	graph.position = Vector2(10, 76)
+	graph.size = Vector2(483, 217)
 	graph.place_requested.connect(func():
 		if battle.selected != null:
 			battle.place()
@@ -752,7 +811,24 @@ func render_all() -> void:
 	if battle == null:
 		return
 	var d = battle.cur()
-	graph_sub.text = str(battle.L.objective).to_upper()
+	var L := battle.L
+	var si := -1
+	if d != null and d.kind == "comp":
+		si = L.steps.find(d.step)
+	elif d != null:
+		for i in L.steps.size():
+			if L.steps[i].quizzes.has(d.quiz):
+				si = i
+	if d != null:
+		graph_title.text = "Stage %d of %d [font_size=12][color=#8fa29b] · BUILD YOUR DEFINITION[/color][/font_size]" % [si + 1, L.steps.size()]
+	else:
+		graph_title.text = "Definition complete" if battle.won else "Build your definition"
+	if d == null:
+		graph_sub.text = "Your definition runs. Drag the sliders in the preview to explore it." if battle.won else str(L.objective)
+	elif d.kind == "quiz":
+		graph_sub.text = "[color=#e8dcb0][b]Wire check.[/b][/color] " + str(d.quiz.prompt)
+	else:
+		graph_sub.text = str(d.step.get("stage", "")) if str(d.step.get("stage", "")) != "" else "Fill the glowing node to extend the definition."
 	if d == null:
 		graph_foot.text = "[color=#e8dcb0][b]DEFINITION COMPLETE[/b][/color] • Drag the sliders in the preview to explore your result." if battle.won else ""
 	elif d.kind == "quiz":
@@ -1103,9 +1179,12 @@ func float_text(pos: Vector2, text: String, cls := "") -> void:
 
 
 # ═════════════════════ modal ═════════════════════
-func modal(builder: Callable, on_close = null) -> void:
+func modal(builder: Callable, on_close = null, wide := false) -> void:
 	for c in modal_box.get_children():
 		c.queue_free()
+	modal_w = 1172.0 if wide else 652.0
+	modal_box.custom_minimum_size.x = modal_w
+	modal_panel.custom_minimum_size.x = modal_w + 68
 	builder.call(modal_box)
 	modal_on_close = on_close
 	modal_layer.visible = true
@@ -1113,7 +1192,7 @@ func modal(builder: Callable, on_close = null) -> void:
 	await get_tree().process_frame
 	await get_tree().process_frame
 	modal_scroll.scroll_vertical = 0
-	modal_scroll.custom_minimum_size = Vector2(652, minf(modal_box.get_combined_minimum_size().y, 760))
+	modal_scroll.custom_minimum_size = Vector2(modal_w, minf(modal_box.get_combined_minimum_size().y, 760))
 	modal_panel.reset_size()
 	modal_panel.position = (Vector2(1600, 900) - modal_panel.size) / 2.0
 	var tw := create_tween()
@@ -1293,6 +1372,52 @@ func goal_modal() -> void:
 		_m_actions(b, [["Back to building", "primary", close_modal]]))
 
 
+## The finished definition (every node placed, every wire live) beside its output, as definitionModal() in game.js.
+## A level can show its own picture instead with "definition_image": "<file>.png".
+func definition_modal() -> void:
+	var L := battle.L
+	modal(func(b):
+		_m_sub(b, "Level %d%s · Completed definition" % [int(L.id), (" · " + str(L.diff_name)) if int(L.get("diff_count", 1)) > 1 else ""])
+		_m_h2(b, L.title)
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 18)
+		b.add_child(row)
+		var canvas := PanelContainer.new()
+		canvas.add_theme_stylebox_override("panel", UIKit.box(Color("182826"), UIKit.LINE, 6, 1))
+		canvas.custom_minimum_size = Vector2(854, 0)
+		row.add_child(canvas)
+		var cbox := VBoxContainer.new()
+		canvas.add_child(cbox)
+		var img := str(L.get("definition_image", ""))
+		var tex := UIKit.png_texture(LevelLoader.source_dir.path_join(L.dir).path_join(img)) if img != "" else null
+		if tex:
+			var tr := TextureRect.new()
+			tr.texture = tex
+			tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			tr.custom_minimum_size = Vector2(854, 480)
+			cbox.add_child(tr)
+		else:
+			var done_b := Battle.new(L, battle.idx, levels.size())
+			for st in L.steps:
+				done_b.done[st.key] = true
+			done_b.di = done_b.decisions.size()
+			var gv := GraphView.new()
+			gv.fit = true
+			gv.battle = done_b
+			gv.custom_minimum_size = Vector2(854, 480)
+			gv.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			cbox.add_child(gv)
+		UIKit.sub(cbox, "The finished definition. Nodes outlined in gold are the ones you place.", Vector2.ZERO, 0, 10)
+		var side := VBoxContainer.new()
+		side.custom_minimum_size.x = 300
+		row.add_child(side)
+		UIKit.sub(side, "Output", Vector2.ZERO, 0, 10)
+		side.add_child(goal_view(L, 300.0))
+		_m_p(side, "[color=#8fa29b]What the definition produces with the default slider values.[/color]", 13, 300)
+		_m_actions(b, [["Back to building", "primary", close_modal]]), null, true)
+
+
 func briefing() -> void:
 	var L := battle.L
 	var m := battle.monster()
@@ -1407,13 +1532,21 @@ func credits() -> void:
 			open_map()]]))
 
 
-## Alphabetical by last name.
-const TEAM := ["Abhishek Bawiskar", "Garrett Herbst", "Joel Hills", "Riku Kanemitsu", "Danny Karas", "Maya Mashiach", "Kazu Tajima"]
+## Alphabetical by last name (web: TEAM in game.js). Click a name on About Us for the details.
+const TEAM := [
+	{"name": "Abhishek Bawiskar", "title": "Senior Associate Application Developer", "org": "Thornton Tomasetti"},
+	{"name": "Garrett Herbst", "title": "Director of Emerging Technologies", "org": "Little"},
+	{"name": "Joel Hills", "title": "Senior Digital Design Technologist", "org": "Thornton Tomasetti"},
+	{"name": "Riku Kanemitsu", "title": "Graduate Student", "org": "Waseda University & ADL Intern"},
+	{"name": "Danny Karas", "title": "Associate Computational Designer", "org": "Thornton Tomasetti"},
+	{"name": "Maya Mashiach", "title": "Design Technology Specialist", "org": "LPA Design Studios"},
+	{"name": "Kazu Tajima", "title": "Graduate Student", "org": "Waseda University & ADL Intern"},
+]
 
 
 func _m_team(b: Control) -> void:
 	_m_h4(b, "Made by the PathOGen team at the AECTech Hackathon 2026")
-	_m_p(b, "  ·  ".join(TEAM), 15)
+	_m_p(b, "  ·  ".join(TEAM.map(func(t): return t.name)), 15)
 
 
 # ═════════════════════ about us ═════════════════════
@@ -1429,26 +1562,74 @@ func _build_about(s: Control) -> void:
 	var head := UIKit.label(s, "The team", 26, UIKit.GOLD, UIKit.serif, Vector2(0, 372))
 	head.size.x = 1600
 	head.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	# name cards, 4 on the first row and 3 on the second
-	var w := 300.0
-	var h := 70.0
-	var gap := 24.0
+	# name cards, 4 on the first row and 3 on the second; click a card for the person's role
+	_team_cards = []
 	for i in TEAM.size():
-		var row := 0 if i < 4 else 1
-		var in_row := 4 if row == 0 else TEAM.size() - 4
-		var col := i if row == 0 else i - 4
-		var x0 := (1600.0 - (in_row * w + (in_row - 1) * gap)) / 2.0
-		var card := UIKit.panel(s, Rect2(x0 + col * (w + gap), 428 + row * (h + gap), w, h))
-		var nl := UIKit.label(card, TEAM[i], 22, UIKit.TEXT, UIKit.serif, Vector2(0, 20))
-		nl.size.x = w
+		var t: Dictionary = TEAM[i]
+		var card := Panel.new()
+		card.add_theme_stylebox_override("panel", UIKit.box(UIKit.PANEL_HI, UIKit.LINE, 6, 1, 12))
+		card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+		card.clip_contents = true
+		s.add_child(card)
+		var nl := UIKit.label(card, t.name, 22, UIKit.TEXT, UIKit.serif, Vector2(0, 12), 300)
 		nl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	var fonts := UIKit.sub(s, "Fonts: Cinzel and Barlow (SIL Open Font License)", Vector2(0, 640), 1600, 11)
+		var hint := UIKit.label(card, "CLICK FOR MORE", 9, UIKit.MUTED, UIKit.sans_bold, Vector2(0, 44), 300)
+		hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		var role := UIKit.label(card, t.title, 14, UIKit.GOLD, UIKit.sans_bold, Vector2(10, 44), 280)
+		role.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		role.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		var org := UIKit.label(card, t.org, 13, UIKit.TEXT, UIKit.sans, Vector2(10, 64), 280)
+		org.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		role.visible = false
+		org.visible = false
+		var entry := {"card": card, "hint": hint, "role": role, "org": org, "open": false}
+		_team_cards.append(entry)
+		card.gui_input.connect(func(e):
+			if e is InputEventMouseButton and e.pressed and e.button_index == MOUSE_BUTTON_LEFT:
+				entry.open = not entry.open
+				entry.hint.visible = not entry.open
+				entry.role.visible = entry.open
+				entry.org.visible = entry.open
+				card.add_theme_stylebox_override("panel", UIKit.box(UIKit.PANEL_HI, UIKit.GOLD_DIM if entry.open else UIKit.LINE, 6, 1, 12))
+				_layout_team())
+	_about_bottom = []
+	var fonts := UIKit.sub(s, "Fonts: Cinzel and Barlow (SIL Open Font License)  ·  Grasshopper component icons by David Rutten / Robert McNeel & Associates", Vector2(0, 640), 1600, 11)
 	fonts.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_about_bottom.append(fonts)
 	var back := UIKit.button("← Main Menu", "primary")
 	back.pressed.connect(main_menu)
 	s.add_child(back)
 	back.reset_size()
 	back.position = Vector2((1600 - back.size.x) / 2.0, 700)
+	_about_bottom.append(back)
+	_layout_team()
+
+
+var _team_cards: Array = []
+var _about_bottom: Array = []
+
+
+## Lay the team cards out in rows of 4 and 3; an opened card makes its row taller, pushing the rest down.
+func _layout_team() -> void:
+	var w := 300.0
+	var gap := 24.0
+	var y := 428.0
+	var rows := [_team_cards.slice(0, 4), _team_cards.slice(4)]
+	for r in rows:
+		var n_r: int = r.size()
+		var x0: float = (1600.0 - (n_r * w + (n_r - 1) * gap)) / 2.0
+		var rh := 70.0
+		for e in r:
+			if e.open:
+				rh = 92.0
+		for i in r.size():
+			var e: Dictionary = r[i]
+			e.card.position = Vector2(x0 + i * (w + gap), y)
+			e.card.size = Vector2(w, 92.0 if e.open else 70.0)
+		y += rh + gap
+	if _about_bottom.size() == 2:
+		_about_bottom[0].position.y = y + 14
+		_about_bottom[1].position.y = y + 60
 
 
 func help_modal() -> void:

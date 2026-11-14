@@ -48,7 +48,8 @@ Other pages: `web/review.html` lists every hint and explanation still marked as 
 | **Your hand** (bottom) | The component cards (or port cards during a wire check) to choose from. |
 | **Hero** (bottom left) | The guide character; reacts to success, damage and defeat. |
 | **Moves / Help** (bottom right) | Moves opens a log of every decision with its explanation; Help explains the rules. |
-| **Title screen** | Begin the Hunt, How to Play, About Us, and Exit (asks first; closes the tab where the browser allows it, otherwise shows a goodbye message). |
+| **Title screen** | Begin the Hunt, Free Play, How to Play, About Us, and Exit (asks first; closes the tab where the browser allows it, otherwise shows a goodbye message). |
+| **Free Play** (title screen and map) | Every level and difficulty, unlocked, so players can start anywhere instead of from the beginning. Wins still earn stars and XP and unlock the path. |
 | **Main Menu / ← Map** (bottom right) | Leave the battle for the title screen or the map; asks first if the level is in progress. The map also has a Main Menu button. |
 
 ---

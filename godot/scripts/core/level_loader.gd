@@ -212,6 +212,7 @@ static func normalize(raw: Dictionary, dir: String) -> Dictionary:
 			"distractors": distractors.filter(func(d): return GHData.components.has(d) and d != n.comp),
 			"hint": n.get("hint", "Look in the %s panel." % str(c.cat).replace(" / ", " › ")),
 			"why": n.get("correct", "%s: %s" % [c.name, c.desc]),
+			"stage": str(n.get("stage", "")),
 			"wrong": n.get("wrong", {}), "quizzes": [],
 		})
 	var pos := func(id: String) -> int:

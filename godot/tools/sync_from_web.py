@@ -8,8 +8,10 @@ Run from anywhere after pulling web changes:
 What it does:
   web/levels/**            -> godot/levels/**            (copied as-is)
   web/js/data.js           -> godot/data/components.json  (COMPONENTS, ICONS, FILLER)
+  web/js/components_extra.js  (EXTRA, ICON_ALIAS)   merged into components.json
+  web/js/gh_icons.js          (GH_ICONS)            -> components.json "gh_icons" (Grasshopper icon file per id)
   web/js/monsters.js       -> godot/data/monsters.json    (MONSTER_OPTIONS, MONSTER_PHASES)
-  web/img/*.png            -> godot/img/                  (monster art, hero sprite frames)
+  web/img/**               -> godot/img/**                (monster art, hero frames, start art, img/gh-icons)
 
 The JS files are plain object literals, so they are converted with a small
 tokenizer (no Node.js needed). If the web team changes those files into
@@ -144,6 +146,19 @@ def main():
     monsters = {"options": read_const(monsters_js, "MONSTER_OPTIONS"),
                 "phases": read_const(monsters_js, "MONSTER_PHASES")}
 
+    extra_js = WEB / "js" / "components_extra.js"
+    if extra_js.is_file():
+        src_x = extra_js.read_text(encoding="utf-8")
+        alias = read_const(src_x, "ICON_ALIAS")
+        for cid, c in read_const(src_x, "EXTRA").items():
+            if cid not in comps:
+                comps[cid] = c
+        for cid, a in alias.items():
+            if cid not in icons and a in icons:
+                icons[cid] = icons[a]
+    gh_js = WEB / "js" / "gh_icons.js"
+    gh_icons = read_const(gh_js.read_text(encoding="utf-8"), "GH_ICONS") if gh_js.is_file() else {}
+
     for cid, c in comps.items():
         for key in ("name", "cat", "ins", "outs", "desc"):
             if key not in c:
@@ -152,7 +167,7 @@ def main():
     out_dir = GODOT / "data"
     out_dir.mkdir(exist_ok=True)
     (out_dir / "components.json").write_text(
-        json.dumps({"components": comps, "icons": icons, "filler": filler}, indent=1, ensure_ascii=False),
+        json.dumps({"components": comps, "icons": icons, "filler": filler, "gh_icons": gh_icons}, indent=1, ensure_ascii=False),
         encoding="utf-8")
     (out_dir / "monsters.json").write_text(json.dumps(monsters, indent=1, ensure_ascii=False), encoding="utf-8")
 
@@ -163,10 +178,12 @@ def main():
         if img_dst.exists():
             shutil.rmtree(img_dst)
         img_dst.mkdir()
-        for f in sorted(img_src.iterdir()):
+        for f in sorted(img_src.rglob("*")):
             if f.is_file():
-                shutil.copy2(f, img_dst / f.name)
-                (img_dst / (f.name + ".import")).write_text('[remap]\n\nimporter="keep"\n', encoding="utf-8")
+                out = img_dst / f.relative_to(img_src)
+                out.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(f, out)
+                out.with_name(out.name + ".import").write_text('[remap]\n\nimporter="keep"\n', encoding="utf-8")
                 n_img += 1
 
     src, dst = WEB / "levels", GODOT / "levels"
@@ -175,10 +192,10 @@ def main():
     shutil.copytree(src, dst)
     n_levels = len(json.loads((dst / "index.json").read_text(encoding="utf-8"))["levels"])
 
-    for d in dst.iterdir():   # level folders may hold a goal image: keep it as a raw file too
-        for f in d.glob("*.png") if d.is_dir() else []:
+    for d in dst.iterdir():   # level folders may hold goal / definition images: keep them as raw files too
+        for f in [g for ext in ("*.png", "*.jpg", "*.webp") for g in d.glob(ext)] if d.is_dir() else []:
             (d / (f.name + ".import")).write_text('[remap]\n\nimporter="keep"\n', encoding="utf-8")
-    print(f"components: {len(comps)}  icons: {len(icons)}  monsters: {len(monsters['options'])}  "
+    print(f"components: {len(comps)}  icons: {len(icons)}  gh icons: {len(gh_icons)}  monsters: {len(monsters['options'])}  "
           f"phases: {len(monsters['phases'])}  images: {n_img}  levels: {n_levels}")
     print(f"written to {out_dir} and {dst}")
 

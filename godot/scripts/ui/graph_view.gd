@@ -9,6 +9,8 @@ const VW := 540.0
 const VH := 262.0
 
 var battle: Battle
+## Completed-definition picture: fit the whole graph in the view, frame the nodes the player places.
+var fit := false
 var _origin := Vector2.ZERO   # graph-space top-left of the view
 var _scale := 1.0
 var _cur_center := Vector2.INF
@@ -116,6 +118,12 @@ func _draw() -> void:
 		focus = battle.node_by_id(d.step.key) if d.kind == "comp" else battle.node_by_id(d.quiz.target)
 	var b0 := mn - Vector2(pad, pad)
 	var b1 := mx + Vector2(pad, pad)
+	if fit:
+		_scale = minf(size.x / (b1.x - b0.x), size.y / (b1.y - b0.y))
+		_origin = (b0 + b1) / 2.0 - size / (2.0 * _scale)
+		_pannable = false
+		_draw_graph(L, d, geo, slot_num, locked_id, blur, null, null)
+		return
 	var base := Vector2(focus.x, focus.y) if focus != null else (b0 + b1) / 2.0
 	var f := base + battle.pan
 	f.x = (b0.x + b1.x) / 2.0 if b1.x - b0.x <= VW else clampf(f.x, b0.x + VW / 2, b1.x - VW / 2)
@@ -123,6 +131,10 @@ func _draw() -> void:
 	battle.pan = f - base
 	_pannable = b1.x - b0.x > VW or b1.y - b0.y > vh
 	_origin = f - Vector2(VW / 2, vh / 2)
+	_draw_graph(L, d, geo, slot_num, locked_id, blur, quiz_cur, sel_port)
+
+
+func _draw_graph(L: Dictionary, d, geo: Dictionary, slot_num: Dictionary, locked_id, blur: bool, quiz_cur, sel_port) -> void:
 	draw_set_transform(-_origin * _scale, 0, Vector2(_scale, _scale))
 
 	var t := Time.get_ticks_msec() / 1000.0
@@ -211,6 +223,10 @@ func _draw() -> void:
 					var o2: Dictionary = opts.duplicate()
 					o2.alpha = 0.25
 					Chip.draw(self, comp, pos + off, o2)
+			if fit and not n.given:
+				var fr := Rect2(pos - g.size / 2 - Vector2(5, 5), g.size + Vector2(10, 10))
+				draw_rect(fr, Color(0.9, 0.765, 0.353, 0.18))
+				draw_rect(fr, Color("e6c35a"), false, 3.0)
 			Chip.draw(self, comp, pos, opts)
 			var name := "???" if locked_id == n.id else (str(n.label) if n.get("label") != null and comp.id != "slider" else ("" if comp.id == "slider" else str(comp.name)))
 			if name != "":

@@ -13,6 +13,8 @@ static var phases: Array = []            # attack set by level position: { line,
 static var monster_override := ""
 ## Godot-only components without an icon of their own borrow one: id -> icon id.
 static var icon_alias: Dictionary = {}
+## Grasshopper's own component icons (img/gh-icons/<file>.svg, David Rutten's artwork): id -> file.
+static var gh_icons: Dictionary = {}
 static var _loaded := false
 
 
@@ -24,6 +26,7 @@ static func ensure_loaded() -> void:
 		components = c.get("components", {})
 		icons = c.get("icons", {})
 		filler = c.get("filler", [])
+		gh_icons = c.get("gh_icons", {})
 	# Godot-only components (from tools/ghx_to_level.py); the web sync never touches this file
 	var gc = _read_json("res://data/components_godot.json")
 	if gc is Dictionary:
