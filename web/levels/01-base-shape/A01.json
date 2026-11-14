@@ -1,0 +1,153 @@
+{
+ "source": "GameLevels/LevelA/A01.ghx",
+ "method": "A01",
+ "params": [
+  {
+   "key": "s1",
+   "label": "Segments",
+   "min": 0.0,
+   "max": 10.0,
+   "step": 1,
+   "value": 5.0
+  },
+  {
+   "key": "s2",
+   "label": "Fillet Radius",
+   "min": 0.0,
+   "max": 10.0,
+   "step": 1,
+   "value": 3.0
+  },
+  {
+   "key": "s3",
+   "label": "Radius",
+   "min": 0.0,
+   "max": 10.0,
+   "step": 1,
+   "value": 10.0
+  }
+ ],
+ "nodes": [
+  {
+   "id": "constructP",
+   "comp": "constructPoint",
+   "open": true,
+   "x": 0,
+   "y": 29,
+   "set": {
+    "X": 0.0,
+    "Y": 0.0,
+    "Z": 0.0
+   },
+   "question": "A01_Q01",
+   "need": "a component that turns X coordinate, Y coordinate and Z coordinate into Point",
+   "hint": "Look in Vector › Point.",
+   "correct": "Construct Point is the component this method uses here. Builds a point from X, Y and Z numbers.",
+   "distractors": [
+    "deconstruct",
+    "pointPolar",
+    "pointCylindrical",
+    "pointOriented",
+    "numbersToPoints",
+    "pointsToNumbers",
+    "coordinateMask",
+    "closestPoint",
+    "sortPoints",
+    "distance",
+    "vectorXYZ",
+    "plane3Pt"
+   ],
+   "draft": true,
+   "stage": "Every shape starts somewhere. Turn the X, Y and Z values into the point the floor plate will sit on.",
+   "stage_draft": true
+  },
+  {
+   "id": "point",
+   "comp": "pointParam",
+   "open": false,
+   "x": 191,
+   "y": 0
+  },
+  {
+   "id": "polygon",
+   "comp": "polygon",
+   "open": true,
+   "x": 404,
+   "y": 30,
+   "question": "A01_Q02",
+   "need": "a component that turns Plane, Radius, Segments and Fillet into Polygon",
+   "hint": "Look in Curve › Primitive.",
+   "correct": "Polygon is the component this method uses here. Draws a regular polygon with S sides.",
+   "distractors": [
+    "polygonCenter",
+    "rectangle",
+    "circleCNR",
+    "ellipse",
+    "polygonEdge",
+    "rectangle2Pt",
+    "rectangle3Pt",
+    "circle",
+    "circle3Pt",
+    "incircle",
+    "inellipse",
+    "curveToPolyline"
+   ],
+   "draft": true,
+   "stage": "Grow the floor plate around that point: five sides with rounded corners, sized by the Radius slider.",
+   "stage_draft": true
+  },
+  {
+   "id": "slider",
+   "comp": "slider",
+   "open": false,
+   "x": 226,
+   "y": 77,
+   "param": "s1",
+   "label": "Segments"
+  },
+  {
+   "id": "slider2",
+   "comp": "slider",
+   "open": false,
+   "x": 226,
+   "y": 111,
+   "param": "s2",
+   "label": "Fillet Radius"
+  },
+  {
+   "id": "slider3",
+   "comp": "slider",
+   "open": false,
+   "x": 244,
+   "y": 43,
+   "param": "s3",
+   "label": "Radius"
+  }
+ ],
+ "wires": [
+  {
+   "from": "point.Pt",
+   "to": "polygon.P"
+  },
+  {
+   "from": "slider3.N",
+   "to": "polygon.R"
+  },
+  {
+   "from": "slider.N",
+   "to": "polygon.S"
+  },
+  {
+   "from": "slider2.N",
+   "to": "polygon.Rf"
+  },
+  {
+   "from": "constructP.Pt",
+   "to": "point.Pt"
+  }
+ ],
+ "order": [
+  "constructP",
+  "polygon"
+ ]
+}

@@ -106,10 +106,13 @@ button { font-family: inherit; cursor: pointer; }
 
 /* ───────── Battle: graph ───────── */
 #p-graph { left: 45px; top: 48px; width: 503px; height: 325px; }
-#graph { position: absolute; left: 10px; right: 10px; top: 58px; bottom: 32px; width: calc(100% - 20px); height: calc(100% - 90px); cursor: grab; }
+#graph { position: absolute; left: 10px; right: 10px; top: 76px; bottom: 32px; width: calc(100% - 20px); height: calc(100% - 108px); cursor: grab; }
 #graph-foot { position: absolute; left: 18px; right: 18px; bottom: 9px; border-top: 1px solid var(--line-soft); padding-top: 6px; font-size: 10.5px; color: var(--text); letter-spacing: .04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #graph-foot b { color: var(--gold); letter-spacing: .14em; text-transform: uppercase; font-weight: 700; }
-#graph-sub { max-width: 470px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#graph-title small { font-size: 12px; color: var(--muted); letter-spacing: .06em; }
+#graph-sub.stage-hint { margin-top: 3px; max-width: 468px; font-size: 12.5px; line-height: 1.32; color: var(--text); font-weight: 500;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+#graph-sub.stage-hint b { color: var(--gold); font-weight: 700; }
 .g-wire { fill: none; stroke: #d9e6d4; stroke-width: 1.8; }
 .g-wire.pending { stroke: #9fb3aa; stroke-dasharray: 4 5; stroke-width: 1.4; opacity: .55; }
 .g-wire.quiz { stroke: #e8dcb0; stroke-dasharray: 6 5; stroke-width: 2.2; animation: dash 1s linear infinite; }

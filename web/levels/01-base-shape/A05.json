@@ -1,0 +1,568 @@
+{
+ "source": "GameLevels/LevelA/A05.ghx",
+ "method": "A05",
+ "params": [
+  {
+   "key": "s1",
+   "label": "Radius",
+   "min": 0.0,
+   "max": 10.0,
+   "step": 1,
+   "value": 10.0
+  },
+  {
+   "key": "s2",
+   "label": "Count",
+   "min": 0.0,
+   "max": 10.0,
+   "step": 1,
+   "value": 5.0
+  },
+  {
+   "key": "s3",
+   "label": "B",
+   "min": 0.0,
+   "max": 10.0,
+   "step": 1,
+   "value": 2.0
+  },
+  {
+   "key": "s4",
+   "label": "A",
+   "min": 0.0,
+   "max": 10.0,
+   "step": 1,
+   "value": 3.0
+  },
+  {
+   "key": "s5",
+   "label": "Parameter",
+   "min": 0.0,
+   "max": 100.0,
+   "step": 1,
+   "value": 0.0
+  }
+ ],
+ "nodes": [
+  {
+   "id": "arcSED",
+   "comp": "arcSED",
+   "open": true,
+   "x": 1743,
+   "y": 142,
+   "question": "A05_Q04",
+   "need": "a component that turns Start, End and Direction into Arc",
+   "hint": "Look in Curve › Primitive.",
+   "correct": "Arc SED is the component this method uses here. Create an arc defined by start point, end point and a tangent vector.",
+   "distractors": [
+    "arc",
+    "arc3Pt",
+    "biarc",
+    "modifiedArc",
+    "tangentArcs",
+    "swingArc",
+    "polyarc",
+    "circle3Pt",
+    "circleTanTan",
+    "deconstructArc",
+    "circleFit",
+    "incircle"
+   ],
+   "draft": true,
+   "stage": "Bridge each cut corner with an arc that leaves in the direction of the edge: the rounded corner.",
+   "stage_draft": true
+  },
+  {
+   "id": "booleanTog",
+   "comp": "toggle",
+   "open": false,
+   "x": 905,
+   "y": 135,
+   "value": true
+  },
+  {
+   "id": "circleCNR",
+   "comp": "circleCNR",
+   "open": false,
+   "x": 325,
+   "y": 145,
+   "set": {
+    "N": [
+     0.0,
+     0.0,
+     1.0
+    ]
+   }
+  },
+  {
+   "id": "circleCNR2",
+   "comp": "circleCNR",
+   "open": false,
+   "x": 1089,
+   "y": 9,
+   "set": {
+    "N": [
+     0.0,
+     0.0,
+     1.0
+    ]
+   }
+  },
+  {
+   "id": "constructP",
+   "comp": "constructPoint",
+   "open": true,
+   "x": 0,
+   "y": 115,
+   "set": {
+    "X": 0.0,
+    "Y": 0.0,
+    "Z": 0.0
+   },
+   "question": "A05_Q01",
+   "need": "a component that turns X coordinate, Y coordinate and Z coordinate into Point",
+   "hint": "Look in Vector › Point.",
+   "correct": "Construct Point is the component this method uses here. Builds a point from X, Y and Z numbers.",
+   "distractors": [
+    "deconstruct",
+    "pointPolar",
+    "pointCylindrical",
+    "pointOriented",
+    "numbersToPoints",
+    "pointsToNumbers",
+    "coordinateMask",
+    "closestPoint",
+    "sortPoints",
+    "distance",
+    "vectorXYZ",
+    "plane3Pt"
+   ],
+   "draft": true,
+   "stage": "Place the centre point. A circle is drawn around it.",
+   "stage_draft": true
+  },
+  {
+   "id": "curve",
+   "comp": "curveParam",
+   "open": false,
+   "x": 1426,
+   "y": 99
+  },
+  {
+   "id": "curve2",
+   "comp": "curveParam",
+   "open": false,
+   "x": 1839,
+   "y": 79
+  },
+  {
+   "id": "curve3",
+   "comp": "curveParam",
+   "open": false,
+   "x": 2365,
+   "y": 96,
+   "label": "Linear segments"
+  },
+  {
+   "id": "curve4",
+   "comp": "curveParam",
+   "open": false,
+   "x": 2365,
+   "y": 148,
+   "label": "Arcs"
+  },
+  {
+   "id": "divideCurv",
+   "comp": "divideCurve",
+   "open": true,
+   "x": 620,
+   "y": 193,
+   "set": {
+    "K": false
+   },
+   "question": "A05_Q02",
+   "need": "a component that turns Curve, Count and Kinks into Points",
+   "hint": "Look in Curve › Division.",
+   "correct": "Divide Curve is the component this method uses here. Splits a curve into N equal-length parts.",
+   "distractors": [
+    "divideLength",
+    "divideDistance",
+    "divideByDeviation",
+    "evaluateLength",
+    "curveFrames",
+    "perpFrames",
+    "shatter",
+    "dashPattern",
+    "curveContour",
+    "horizontalFrames",
+    "evaluateCurve",
+    "curveMiddle"
+   ],
+   "draft": true,
+   "stage": "Divide the circle to get the corner points, joined into a sharp-cornered polyline.",
+   "stage_draft": true
+  },
+  {
+   "id": "division",
+   "comp": "division",
+   "open": false,
+   "x": 980,
+   "y": 12
+  },
+  {
+   "id": "endPoints",
+   "comp": "endPoints",
+   "open": false,
+   "x": 1614,
+   "y": 65
+  },
+  {
+   "id": "endPoints2",
+   "comp": "endPoints",
+   "open": false,
+   "x": 2064,
+   "y": 45
+  },
+  {
+   "id": "endPoints3",
+   "comp": "endPoints",
+   "open": false,
+   "x": 2092,
+   "y": 165
+  },
+  {
+   "id": "evaluateCu",
+   "comp": "evaluateCurve",
+   "open": false,
+   "x": 1606,
+   "y": 137
+  },
+  {
+   "id": "flattenTre",
+   "comp": "flatten",
+   "open": false,
+   "x": 1916,
+   "y": 135
+  },
+  {
+   "id": "joinCurves",
+   "comp": "joinCurves",
+   "open": false,
+   "x": 2614,
+   "y": 131,
+   "set": {
+    "P": false
+   }
+  },
+  {
+   "id": "line",
+   "comp": "line",
+   "open": false,
+   "x": 2186,
+   "y": 105
+  },
+  {
+   "id": "merge",
+   "comp": "merge",
+   "open": true,
+   "x": 2488,
+   "y": 121,
+   "question": "A05_Q06",
+   "need": "a component that turns Data 1, Data 2 and Data 3 into Result",
+   "hint": "Look in Sets › Sets.",
+   "correct": "Merge is the component this method uses here. Merge a bunch of data streams.",
+   "distractors": [
+    "entwine",
+    "weave",
+    "combineData",
+    "streamFilter",
+    "streamGate",
+    "longestList",
+    "shortestList",
+    "dispatch",
+    "crossReference",
+    "treeBranch",
+    "flipMatrix",
+    "partitionList"
+   ],
+   "draft": true,
+   "stage": "Merge the straight segments and the arcs into one stream, ready to join into the finished outline.",
+   "stage_draft": true
+  },
+  {
+   "id": "point",
+   "comp": "pointParam",
+   "open": false,
+   "x": 787,
+   "y": 119
+  },
+  {
+   "id": "polyline",
+   "comp": "polyline",
+   "open": false,
+   "x": 1020,
+   "y": 116
+  },
+  {
+   "id": "shiftList",
+   "comp": "shiftList",
+   "open": true,
+   "x": 1989,
+   "y": 202,
+   "set": {
+    "S": 1.0,
+    "W": true
+   },
+   "question": "A05_Q05",
+   "need": "a component that turns List, Shift and Wrap into List",
+   "hint": "Look in Sets › List.",
+   "correct": "Shift List is the component this method uses here. Offsets the items of a list by an index.",
+   "distractors": [
+    "shiftPaths",
+    "reverseList",
+    "sortList",
+    "flipMatrix",
+    "insertItems",
+    "splitList",
+    "partitionList",
+    "replaceItems",
+    "cullIndex",
+    "dispatch",
+    "explodeTree",
+    "treeItem"
+   ],
+   "draft": true,
+   "stage": "Shift the pieces by one so each segment's end meets the next one's start.",
+   "stage_draft": true
+  },
+  {
+   "id": "slider",
+   "comp": "slider",
+   "open": false,
+   "x": 180,
+   "y": 177,
+   "param": "s1",
+   "label": "Radius"
+  },
+  {
+   "id": "slider2",
+   "comp": "slider",
+   "open": false,
+   "x": 480,
+   "y": 229,
+   "param": "s2",
+   "label": "Count"
+  },
+  {
+   "id": "slider3",
+   "comp": "slider",
+   "open": false,
+   "x": 812,
+   "y": 69,
+   "param": "s3",
+   "label": "B"
+  },
+  {
+   "id": "slider4",
+   "comp": "slider",
+   "open": false,
+   "x": 822,
+   "y": 0,
+   "param": "s4",
+   "label": "A"
+  },
+  {
+   "id": "slider5",
+   "comp": "slider",
+   "open": false,
+   "x": 1444,
+   "y": 144,
+   "param": "s5",
+   "label": "Parameter"
+  },
+  {
+   "id": "trimWithRe",
+   "comp": "trimWithRegion",
+   "open": true,
+   "x": 1268,
+   "y": 109,
+   "question": "A05_Q03",
+   "need": "a component that turns Curve, Region and Plane into Inside",
+   "hint": "Look in Intersect › Region.",
+   "correct": "Trim with Region is the component this method uses here. Trim a curve with a region.",
+   "distractors": [
+    "trimWithBrep",
+    "splitWithBrep",
+    "regionDifference",
+    "regionUnion",
+    "trimWithBreps",
+    "splitWithBreps",
+    "regionIntersection",
+    "regionSlits",
+    "trimSolid",
+    "splitBrep",
+    "copyTrim",
+    "retrim"
+   ],
+   "draft": true,
+   "stage": "Cut every corner off with a small circle around it, leaving the straight middle of each edge.",
+   "stage_draft": true
+  },
+  {
+   "id": "xyPlane",
+   "comp": "xyPlane",
+   "open": false,
+   "x": 1186,
+   "y": 172,
+   "set": {
+    "O": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   }
+  }
+ ],
+ "wires": [
+  {
+   "from": "constructP.Pt",
+   "to": "circleCNR.C"
+  },
+  {
+   "from": "slider.N",
+   "to": "circleCNR.R"
+  },
+  {
+   "from": "circleCNR.C",
+   "to": "divideCurv.C"
+  },
+  {
+   "from": "slider2.N",
+   "to": "divideCurv.N"
+  },
+  {
+   "from": "point.Pt",
+   "to": "circleCNR2.C"
+  },
+  {
+   "from": "division.R",
+   "to": "circleCNR2.R"
+  },
+  {
+   "from": "slider4.N",
+   "to": "division.A"
+  },
+  {
+   "from": "slider3.N",
+   "to": "division.B"
+  },
+  {
+   "from": "point.Pt",
+   "to": "polyline.V"
+  },
+  {
+   "from": "booleanTog.B",
+   "to": "polyline.C"
+  },
+  {
+   "from": "polyline.Pl",
+   "to": "trimWithRe.C"
+  },
+  {
+   "from": "circleCNR2.C",
+   "to": "trimWithRe.R"
+  },
+  {
+   "from": "xyPlane.P",
+   "to": "trimWithRe.P"
+  },
+  {
+   "from": "endPoints.S",
+   "to": "arcSED.S"
+  },
+  {
+   "from": "endPoints.E",
+   "to": "arcSED.E"
+  },
+  {
+   "from": "evaluateCu.T",
+   "to": "arcSED.D"
+  },
+  {
+   "from": "curve.C",
+   "to": "endPoints.C"
+  },
+  {
+   "from": "trimWithRe.Ci",
+   "to": "curve.C"
+  },
+  {
+   "from": "curve.C",
+   "to": "evaluateCu.C"
+  },
+  {
+   "from": "slider5.N",
+   "to": "evaluateCu.t"
+  },
+  {
+   "from": "curve2.C",
+   "to": "flattenTre.T"
+  },
+  {
+   "from": "flattenTre.T",
+   "to": "shiftList.L"
+  },
+  {
+   "from": "shiftList.L",
+   "to": "endPoints3.C"
+  },
+  {
+   "from": "flattenTre.T",
+   "to": "endPoints2.C"
+  },
+  {
+   "from": "endPoints2.E",
+   "to": "line.A"
+  },
+  {
+   "from": "endPoints3.S",
+   "to": "line.B"
+  },
+  {
+   "from": "curve3.C",
+   "to": "merge.D1"
+  },
+  {
+   "from": "curve4.C",
+   "to": "merge.D2"
+  },
+  {
+   "from": "merge.R",
+   "to": "joinCurves.C"
+  },
+  {
+   "from": "divideCurv.P",
+   "to": "point.Pt"
+  },
+  {
+   "from": "arcSED.A",
+   "to": "curve2.C"
+  },
+  {
+   "from": "flattenTre.T",
+   "to": "curve4.C"
+  },
+  {
+   "from": "line.L",
+   "to": "curve3.C"
+  }
+ ],
+ "order": [
+  "constructP",
+  "divideCurv",
+  "trimWithRe",
+  "arcSED",
+  "shiftList",
+  "merge"
+ ]
+}

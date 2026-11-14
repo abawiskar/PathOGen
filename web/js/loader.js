@@ -62,6 +62,7 @@ const LevelLoader = (() => {
         distractors: (n.distractors || defaultDistractors(n.comp)).filter(d => COMPONENTS[d] && d !== n.comp),
         hint: n.hint || `Look in the ${c.cat.replace(' / ', ' › ')} panel.`,
         why: n.correct || `${c.name}: ${c.desc}`,
+        stage: n.stage || '',
         wrong: n.wrong || {}, quizzes: [],
       };
     });

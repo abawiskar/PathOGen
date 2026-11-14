@@ -77,7 +77,7 @@ const Engine = (() => {
     slider: { fn: (a, n, ctx) => [n.param != null ? ctx.params[n.param] : (n.value != null ? n.value : 5)] },
     panel: { def: [null], fn: (a, n) => [L(n.values || [])] },
     toggle: { fn: (a, n) => [n.value != null ? n.value : true] },
-    pointParam: { fn: () => [null] }, curveParam: { fn: () => [null] },
+    pointParam: { fn: ([v]) => [v] }, curveParam: { fn: ([v]) => [v] }, dataParam: { fn: ([v]) => [v] },
     xyPlane: { def: [[0, 0, 0]], fn: ([o]) => { const p = PLANES.XY(); p.o = toPoint(o); return [p]; } },
     constructPoint: { def: [0, 0, 0], fn: ([x, y, z]) => [pt([toNum(x), toNum(y), toNum(z)])] },
     unitZ: { def: [1], fn: ([f]) => [vec([0, 0, toNum(f)])] },
@@ -138,7 +138,14 @@ const Engine = (() => {
     listItem: { access: ['list'], def: [undefined, 0, true], fn: ([l, i]) => [l.length ? l[((Math.round(toNum(i)) % l.length) + l.length) % l.length] : null] },
     reverseList: { access: ['list'], fn: ([l]) => [L(l.slice().reverse())] },
     sortList: { access: ['list', 'list'], fn: ([k, a]) => { const idx = k.map((_, i) => i).sort((x, y) => toNum(k[x]) - toNum(k[y])); return [L(idx.map(i => k[i])), L(idx.map(i => a[i]))]; } },
-    shiftList: { access: ['list'], def: [undefined, 1, true], fn: ([l, s]) => { const n = l.length, k = Math.round(toNum(s)); return [L(l.map((_, i) => l[(((i + k) % n) + n) % n]))]; } },
+    shiftList: { access: ['list'], def: [undefined, 1, true], fn: ([l, s, w]) => {
+      const n = l.length, k = Math.round(toNum(s)), out = [];
+      for (let i = 0; i < n; i++) {
+        if (w) out.push(l[(((i + k) % n) + n) % n]);
+        else if (i + k >= 0 && i + k < n) out.push(l[i + k]);   // no wrap: items shifted off the end are dropped
+      }
+      return [L(out)];
+    } },
     move: { def: [undefined, vec([0, 0, 10])], fn: ([g, t]) => { const d = toVec(t); return [mapGeo(g, p => V.add(p, d)), null]; } },
     rotate: { def: [undefined, Math.PI / 2, null], fn: ([g, a, p], n) => { const pl = toPlane(p), ang = toNum(a) * (n.degrees ? Math.PI / 180 : 1); return [mapGeo(g, q => rotAxis(q, pl.o, pl.z, ang)), null]; } },
     scale: { def: [undefined, [0, 0, 0], 0.5], fn: ([g, c, f]) => { const o = toPoint(c), k = toNum(f); return [mapGeo(g, q => V.add(o, V.mul(V.sub(q, o), k))), null]; } },
@@ -155,11 +162,172 @@ const Engine = (() => {
       const f = { linear: t => t, pinch: t => 1 - k * Math.sin(Math.PI * t), sine: t => 0.5 + 0.5 * Math.sin(Math.PI * 2 * t), bell: t => Math.exp(-Math.pow((t - 0.5) / (0.2 + k * 0.3), 2)) }[g.type] || (t => t);
       return [L(nums.map(x => f(hi > lo ? (x - lo) / (hi - lo) : 0)))];
     } },
+    /* ───── components used by the .ghx levels (ported from the Godot build's gh_engine.gd) ───── */
+    unitY: { def: [1], fn: ([f]) => [vec([0, toNum(f), 0])] },
+    division: { def: [1, 1], fn: ([a, b]) => { const B = toNum(b); return [Math.abs(B) > 1e-12 ? toNum(a) / B : null]; } },
+    negative: { fn: ([x]) => [-toNum(x)] },
+    circleCNR: { def: [[0, 0, 0], vec([0, 0, 1]), 1], fn: ([c, n, r]) => {
+      const o = toPoint(c), z = V.unit(toVec(n)), x = V.unit(V.cross(V.cross(z, Math.abs(z[1]) < 0.9 ? [0, 1, 0] : [1, 0, 0]), z));
+      const pl = { t: 'pl', o, x, y: V.cross(z, x), z }, R = toNum(r), pts = [];
+      for (let i = 0; i < 64; i++) { const t = i / 64 * Math.PI * 2; pts.push(onPlane(pl, R * Math.cos(t), R * Math.sin(t))); }
+      return [crv(pts, true)];
+    } },
+    endPoints: { fn: ([c]) => (!c || c.t !== 'crv' || !c.pts.length ? [null, null] : [pt(c.pts[0]), pt(c.closed ? c.pts[0] : c.pts[c.pts.length - 1])]) },
+    polyline: { access: ['list'], def: [undefined, false], fn: ([v, closed]) => {
+      const pts = v.map(toPoint); if (pts.length < 2) return [null];
+      const cl = !!closed; if (cl && V.len(V.sub(pts[0], pts[pts.length - 1])) < 1e-9) pts.pop();
+      return [crv(pts, cl)];
+    } },
+    fillet: { def: [undefined, 1], fn: ([c, r]) => [c && c.t === 'crv' ? filletCurve(c, toNum(r)) : null] },
+    // Fillet (t): the .ghx levels feed it every corner, so fillet them all
+    filletCtR: { access: ['item', 'list'], def: [undefined, [], 1], fn: ([c, , r]) => (c && c.t === 'crv' ? [filletCurve(c, toNum(r)), null] : [null, null]) },
+    discontinuity: { def: [undefined, 1], fn: ([c]) => {
+      if (!c || c.t !== 'crv') return [null, null];
+      const P = [], T = [], n = c.pts.length;
+      for (let i = 0; i < n; i++) {
+        if (!c.closed && (i === 0 || i === n - 1)) continue;
+        const p0 = c.pts[(i - 1 + n) % n], p1 = c.pts[i], p2 = c.pts[(i + 1) % n];
+        const a = V.sub(p1, p0), b = V.sub(p2, p1);
+        if (V.len(a) > 1e-9 && V.len(b) > 1e-9 && V.dot(V.unit(a), V.unit(b)) < 0.999) { P.push(pt(p1)); T.push(i); }
+      }
+      return [L(P), L(T)];
+    } },
+    joinCurves: { access: ['list'], def: [undefined, false], fn: ([cs]) => {
+      const curves = cs.filter(c => c && c.t === 'crv' && c.pts.length > 1);
+      return [curves.length ? L(joinCurves(curves)) : null];
+    } },
+    merge: { tree: (ts) => [mergeTrees(ts.filter(t => t && hasData(t))) || []] },
+    trimWithRegion: { access: ['item', 'list'], def: [undefined, undefined, null], fn: ([c, regions]) => {
+      const R = regions.filter(r => r && r.t === 'crv' && r.closed);
+      if (!c || c.t !== 'crv' || !R.length) return [null, null];
+      const [inside, outside] = trimCurve(c, R);
+      return [L(inside), L(outside)];
+    } },
+    arcSED: { fn: ([s, e, d]) => {
+      const S0 = toPoint(s), E = toPoint(e), D = V.unit(toVec(d)), ch = V.sub(E, S0);
+      let nrm = V.cross(D, ch);
+      if (V.len(nrm) < 1e-9) return [crv([S0, E]), null, null];
+      nrm = V.unit(nrm);
+      const perp = V.unit(V.cross(nrm, D)), r = V.dot(ch, ch) / (2 * V.dot(ch, perp));
+      const C = V.add(S0, V.mul(perp, r)), v0 = V.sub(S0, C), v1 = V.sub(E, C);
+      let sweep = Math.atan2(V.dot(V.cross(v0, v1), nrm), V.dot(v0, v1)); if (sweep < 0) sweep += Math.PI * 2;
+      const steps = Math.max(4, Math.floor(sweep / (Math.PI * 2) * 64)), pts = [];
+      for (let i = 0; i <= steps; i++) pts.push(rotAxis(S0, C, nrm, sweep * i / steps));
+      return [crv(pts), null, Math.abs(r)];
+    } },
+    evaluateCurve: { def: [undefined, 0], fn: ([c, tt]) => {
+      if (!c || c.t !== 'crv' || c.pts.length < 2) return [null, null, null];
+      const P = c.closed ? [...c.pts, c.pts[0]] : c.pts, t = Math.max(0, Math.min(1, toNum(tt)));
+      let goal = polyLen(P) * t;
+      for (let i = 1; i < P.length; i++) {
+        const seg = V.len(V.sub(P[i], P[i - 1]));
+        if (goal <= seg || i === P.length - 1) {
+          const f = Math.max(0, Math.min(1, goal / Math.max(seg, 1e-12)));
+          return [pt(V.add(P[i - 1], V.mul(V.sub(P[i], P[i - 1]), f))), vec(V.unit(V.sub(P[i], P[i - 1]))), 0];
+        }
+        goal -= seg;
+      }
+      return [null, null, null];
+    } },
     graft: { tree: ([t]) => [t.flatMap(b => b.items.map((it, i) => ({ path: [...b.path, i], items: [it] })))] },
     flatten: { tree: ([t]) => [[{ path: [0], items: t.flatMap(b => b.items) }]] },
     flipMatrix: { tree: ([t]) => { const n = Math.max(0, ...t.map(b => b.items.length)); return [G.range(n).map(i => ({ path: [i], items: t.map(b => b.items[i]).filter(x => x !== undefined) }))]; } },
   };
   const polyLen = (P) => P.reduce((a, p, i) => i ? a + V.len(V.sub(p, P[i - 1])) : 0, 0);
+  const angleBetween = (a, b) => Math.acos(Math.max(-1, Math.min(1, V.dot(V.unit(a), V.unit(b)))));
+
+  /* Round every corner of a polyline with arcs of radius R (shrunk where segments are too short). */
+  function filletCurve(c, R) {
+    const P = c.pts, n = P.length;
+    if (R <= 1e-9 || n < 3) return c;
+    const out = [];
+    for (let i = 0; i < n; i++) {
+      const p1 = P[i];
+      if (!(c.closed || (i > 0 && i < n - 1))) { out.push(p1); continue; }
+      const p0 = P[(i - 1 + n) % n], p2 = P[(i + 1) % n], u = V.sub(p0, p1), w = V.sub(p2, p1);
+      if (V.len(u) < 1e-9 || V.len(w) < 1e-9) { out.push(p1); continue; }
+      const ang = angleBetween(u, w);
+      if (ang > Math.PI - 1e-3) { out.push(p1); continue; }
+      const d = Math.min(R / Math.tan(ang / 2), Math.min(V.len(u), V.len(w)) / 2), r = d * Math.tan(ang / 2);
+      const a0 = V.add(p1, V.mul(V.unit(u), d)), a1 = V.add(p1, V.mul(V.unit(w), d));
+      const bis = V.unit(V.add(V.unit(u), V.unit(w))), C = V.add(p1, V.mul(bis, r / Math.sin(ang / 2)));
+      let nrm = V.cross(V.sub(a0, C), V.sub(a1, C));
+      if (V.len(nrm) < 1e-12) { out.push(p1); continue; }
+      nrm = V.unit(nrm);
+      const v0 = V.sub(a0, C), sweep = angleBetween(v0, V.sub(a1, C));
+      for (let k = 0; k <= 8; k++) out.push(rotAxis(a0, C, nrm, sweep * k / 8));
+    }
+    return crv(out, c.closed);
+  }
+
+  /* Chain curves end to start into as few polylines as possible (Join Curves). */
+  function joinCurves(cs) {
+    const near = (a, b) => V.len(V.sub(a, b)) < 1e-4;
+    const left = cs.map(c => c.pts.slice()), out = [];
+    while (left.length) {
+      let chain = left.shift(), grown = true;
+      while (grown) {
+        grown = false;
+        for (let i = 0; i < left.length; i++) {
+          const q = left[i], last = chain[chain.length - 1];
+          if (near(last, q[0])) chain = chain.concat(q.slice(1));
+          else if (near(last, q[q.length - 1])) chain = chain.concat(q.slice().reverse().slice(1));
+          else if (near(chain[0], q[q.length - 1])) chain = q.concat(chain.slice(1));
+          else if (near(chain[0], q[0])) chain = q.slice().reverse().concat(chain.slice(1));
+          else continue;
+          left.splice(i, 1); grown = true; break;
+        }
+      }
+      const closed = chain.length > 2 && near(chain[0], chain[chain.length - 1]);
+      if (closed) chain.pop();
+      out.push(crv(chain, closed));
+    }
+    return out;
+  }
+
+  /* Split a curve into the pieces inside / outside closed planar regions (Trim with Region, in plan). */
+  function inPoly(p, poly) {
+    let inside = false;
+    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+      const a = poly[i], b = poly[j];
+      if ((a[1] > p[1]) !== (b[1] > p[1]) && p[0] < (b[0] - a[0]) * (p[1] - a[1]) / (b[1] - a[1]) + a[0]) inside = !inside;
+    }
+    return inside;
+  }
+  function simplifyPts(pts) {
+    if (pts.length < 3) return pts;
+    const out = [pts[0]];
+    for (let i = 1; i < pts.length - 1; i++) if (V.dot(V.unit(V.sub(pts[i], out[out.length - 1])), V.unit(V.sub(pts[i + 1], pts[i]))) < 0.99999) out.push(pts[i]);
+    out.push(pts[pts.length - 1]);
+    return out;
+  }
+  function trimCurve(c, regions) {
+    const src = c.closed ? [...c.pts, c.pts[0]] : c.pts;
+    let dense = [];
+    for (let i = 1; i < src.length; i++) {
+      const a = src[i - 1], b = src[i], k = Math.max(1, Math.floor(V.len(V.sub(b, a)) / 0.05));
+      for (let j = 0; j < k; j++) dense.push(V.add(a, V.mul(V.sub(b, a), j / k)));
+    }
+    dense.push(src[src.length - 1]);
+    let flags = dense.map(p => regions.some(r => inPoly(p, r.pts)));
+    if (c.closed) {   // start the runs at a change of side so the seam doesn't split a piece
+      const start = flags.findIndex((f, i) => i > 0 && f !== flags[i - 1]);
+      if (start > 0) {
+        dense = dense.slice(start, dense.length - 1).concat(dense.slice(0, start + 1));
+        flags = flags.slice(start, flags.length - 1).concat(flags.slice(0, start + 1));
+      }
+    }
+    const inside = [], outside = [];
+    let run = [dense[0]];
+    for (let i = 1; i < dense.length; i++) {
+      run.push(dense[i]);
+      if (i === dense.length - 1 || flags[i] !== flags[i - 1]) {
+        if (run.length > 1) (flags[i - 1] ? inside : outside).push(crv(simplifyPts(run)));
+        run = [dense[i]];
+      }
+    }
+    return [inside, outside];
+  }
 
   /* ───── baked geometry (JSON) ───── */
   function parseBaked(b) {
@@ -223,6 +391,14 @@ const Engine = (() => {
     return outs;
   }
 
+  /* Grasshopper's flatten / graft input modifiers (node.in_map: { port nick: "flatten" | "graft" }). */
+  function mapInput(t, node, nick) {
+    const m = node.in_map && node.in_map[nick];
+    if (!m || !t) return t;
+    if (m === 'flatten') return [{ path: [0], items: t.flatMap(b => b.items) }];
+    return t.flatMap(b => b.items.map((it, i) => ({ path: [...b.path, i], items: [it] })));
+  }
+
   /* level: normalised level; ctx: { placed(node), wireActive(wire), params } → { nodeId: [outTree, …] } */
   function evaluate(level, ctx) {
     const ids = level.nodes.map(n => n.id), indeg = Object.fromEntries(ids.map(i => [i, 0]));
@@ -232,9 +408,9 @@ const Engine = (() => {
     const res = {};
     order.forEach(id => {
       const node = level.nodes.find(n => n.id === id), comp = COMPONENTS[node.comp];
-      const inTrees = comp.ins.map((_, i) => mergeTrees(level.wires
+      const inTrees = comp.ins.map((p, i) => mapInput(mergeTrees(level.wires
         .filter(w => w.to[0] === id && w.to[1] === i && ctx.wireActive(w) && res[w.from[0]] && res[w.from[0]][w.from[1]])
-        .map(w => res[w.from[0]][w.from[1]])));
+        .map(w => res[w.from[0]][w.from[1]])), node, p[0]));
       if (!ctx.placed(node)) { res[id] = node.passthrough && inTrees[0] ? [inTrees[0]] : null; return; }
       res[id] = solveNode(node, comp, inTrees, ctx);
     });

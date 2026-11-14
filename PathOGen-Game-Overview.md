@@ -6,8 +6,8 @@ PathOGen is a browser game that teaches Grasshopper 3D. Each level is a real Gra
 Players pick the right component cards, wire them correctly, and complete the definition before the monster defeats them.
 A live 3D preview shows the geometry growing with every correct move.
 
-*Status as of 14 Nov 2026: playable prototype. Levels 1–2 are transcribed from `GH definitions/Twisty_Simple.gh`;
-levels 3–4 and level 1's five difficulties are placeholders until the real `.ghx` files arrive.*
+*Status as of 14 Nov 2026: playable prototype. Level 1's five difficulties come from the LevelA `.ghx` files; level 2 is
+transcribed from `GH definitions/Twisty_Simple.gh`; levels 3–4 are placeholders until their `.ghx` files arrive.*
 
 ---
 
@@ -141,15 +141,16 @@ Each level can offer several difficulties, chosen from the map. Level 1 has five
 | `timer` | Seconds per decision |
 | `open` | Which nodes the player must place; the rest start on the canvas |
 
-Level 1's placeholder difficulties (all using the Twisty_Simple definition for now):
+Level 1's difficulties are five **methods** for building the same rounded pentagon floor plate, transcribed from
+`GameLevels/LevelA/A01–A05.ghx` by the Godot build's `tools/ghx_to_level.py` (files `web/levels/01-base-shape/A01–A05.json`):
 
-| Difficulty | You place | Mode | Hearts | Cards | Attacks | Extra |
+| Difficulty | Method (components you place) | Mode | Hearts | Cards | Attacks | Extra |
 | --- | --- | --- | --- | --- | --- | --- |
-| Beginner | Polygon only | Guided | 5 | 3 | 0 | Generous lifesavers |
-| Easy | Point + Polygon | Guided | 4 | 4 | 0 | |
-| Medium | Point + Polygon | Standard | 4 | 5 | 1 | |
-| Hard | Point + Polygon | Independent | 3 | 6 | 2 | Fewer lifesavers |
-| Expert | Point + Polygon | Independent | 3 | 6 | 3 | 30-second timer |
+| A01 Hopper Hatchling | Construct Point → Polygon | Guided | 5 | 3 | 0 | Generous lifesavers |
+| A02 Shape Scout | Construct Point → Line SDL → Rotate → End Points → Fillet | Guided | 4 | 4 | 0 | |
+| A03 Pattern Pouncer | Construct Point → Move → Series → Rotate → Discontinuity | Standard | 4 | 5 | 1 | |
+| A04 Geometry Wizard | Construct Point → Divide Curve → Shift List → PolyLine → Flatten Tree | Independent | 3 | 6 | 2 | Fewer lifesavers |
+| A05 Grasshopper Legend | Construct Point → Divide Curve → Trim with Region → Arc SED → Shift List → Merge | Independent | 3 | 6 | 3 | 30-second timer |
 
 ### Learning progression
 
@@ -194,6 +195,7 @@ Monster names and backstory lines are placeholders and can be edited in `web/js/
 | `web/js/engine.js` | Grasshopper-style solver and preview builder |
 | `web/js/loader.js` | Loads and validates levels and difficulties |
 | `web/js/data.js` | Component library (inputs, outputs, descriptions, icons) |
+| `web/js/components_extra.js` | ~150 more components generated from the Godot build's library, for `.ghx` levels |
 | `web/js/monsters.js` | Monsters and attack sets |
 | `web/js/preview.js` | Wireframe 3D viewport and goal snapshots |
 | `web/js/art.js` | Lifesaver icons, hearts, placeholder SVG monster |
@@ -205,7 +207,6 @@ Monster names and backstory lines are placeholders and can be edited in `web/js/
 
 ## 10. Open items
 
-- **Level 1 difficulties:** replace the five placeholders with definitions from their `.ghx` files.
 - **Levels 3–4:** replace placeholder definitions with the real scripts; decide how many difficulties each has.
 - **Hero wire-attack animation:** needs evenly spaced frames on the sheet.
 - **Text review:** all hints and explanations are drafts written by Claude.

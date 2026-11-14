@@ -34,10 +34,11 @@
     <span id="summary">Loading&hellip;</span>
     <label><input type="checkbox" id="only-draft" checked> Show only entries marked <code>"draft": true</code></label>
   </div>
-  <p class="bar">Edit the text in <code>web/levels/&lt;level&gt;/level.json</code>, then delete the <code>"draft": true</code> line once an entry has been reviewed.</p>
+  <p class="bar">Edit the text in <code>web/levels/&lt;level&gt;/level.json</code>, then delete the <code>"draft": true</code> (and <code>"stage_draft": true</code>) line once an entry has been reviewed.</p>
 </header>
 <main id="list"></main>
 <script src="js/data.js"></script>
+<script src="js/components_extra.js"></script>
 <script>
 const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 let data = [];
@@ -48,14 +49,15 @@ function wrongList(w) {
 function render() {
   const only = document.getElementById('only-draft').checked;
   let total = 0, drafts = 0, html = '';
-  data.forEach(({ dir, L, err }) => {
-    if (err) { html += `<h2>${esc(dir)}</h2><p class="err">${esc(err)}</p>`; return; }
+  data.forEach(({ dir, file, title, L, err }) => {
+    if (err) { html += `<h2>${esc(title || dir)}</h2><p class="err">${esc(err)}</p>`; return; }
     let body = '';
     L.nodes.filter(n => n.open).forEach(n => {
-      total++; if (n.draft) drafts++;
-      if (only && !n.draft) return;
-      body += `<div class="entry${n.draft ? ' draft' : ''}"><h3>Node <code>${esc(n.id)}</code> — ${esc(compName(n.comp))}${n.draft ? '<span class="tag">DRAFT</span>' : ''}</h3>
-        <dl><dt>Needs</dt><dd>${esc(n.need)}</dd><dt>Hint</dt><dd>${esc(n.hint)}</dd><dt>Correct</dt><dd>${esc(n.correct)}</dd>
+      const dr = n.draft || n.stage_draft;
+      total++; if (dr) drafts++;
+      if (only && !dr) return;
+      body += `<div class="entry${dr ? ' draft' : ''}"><h3>Node <code>${esc(n.id)}</code> — ${esc(compName(n.comp))}${dr ? '<span class="tag">DRAFT</span>' : ''}</h3>
+        <dl>${n.stage ? `<dt>Stage</dt><dd>${esc(n.stage)}</dd>` : ''}<dt>Needs</dt><dd>${esc(n.need)}</dd><dt>Hint</dt><dd>${esc(n.hint)}</dd><dt>Correct</dt><dd>${esc(n.correct)}</dd>
         <dt>Wrong</dt><dd class="wrong">${wrongList(n.wrong)}</dd></dl></div>`;
     });
     (L.wires || []).filter(w => w.check).forEach(w => {
@@ -65,7 +67,7 @@ function render() {
         <dl><dt>Prompt</dt><dd>${esc(c.prompt)}</dd><dt>Hint</dt><dd>${esc(c.hint)}</dd><dt>Correct</dt><dd>${esc(c.correct)}</dd>
         <dt>Wrong</dt><dd class="wrong">${wrongList(c.wrong)}</dd></dl></div>`;
     });
-    html += `<h2>${esc(L.title)}<small>levels/${esc(dir)}/level.json</small></h2>${body || '<p style="color:var(--muted)">Nothing to review.</p>'}`;
+    html += `<h2>${esc(title)}<small>levels/${esc(dir)}/${esc(file)}</small></h2>${body || '<p style="color:var(--muted)">Nothing to review.</p>'}`;
   });
   document.getElementById('list').innerHTML = html;
   document.getElementById('summary').textContent = `${drafts} of ${total} text entries still marked draft`;
@@ -74,8 +76,15 @@ function render() {
   try {
     const idx = await (await fetch('levels/index.json', { cache: 'no-cache' })).json();
     for (const dir of idx.levels) {
-      try { data.push({ dir, L: await (await fetch(`levels/${dir}/level.json`, { cache: 'no-cache' })).json() }); }
-      catch (e) { data.push({ dir, err: 'Could not read level.json: ' + e.message }); }
+      let L;
+      try { L = await (await fetch(`levels/${dir}/level.json`, { cache: 'no-cache' })).json(); }
+      catch (e) { data.push({ dir, title: dir, err: 'Could not read level.json: ' + e.message }); continue; }
+      const withFiles = (L.difficulties || []).filter(d => d.file);
+      if (!withFiles.length) { data.push({ dir, file: 'level.json', title: L.title, L }); continue; }
+      for (const d of withFiles) {   // one section per difficulty definition file
+        try { data.push({ dir, file: d.file, title: `${L.title} — ${d.name}`, L: await (await fetch(`levels/${dir}/${d.file}`, { cache: 'no-cache' })).json() }); }
+        catch (e) { data.push({ dir, title: `${L.title} — ${d.name}`, err: `Could not read ${d.file}: ` + e.message }); }
+      }
     }
   } catch (e) { document.getElementById('summary').textContent = 'Could not load levels/index.json — serve the web folder over http.'; return; }
   render();
