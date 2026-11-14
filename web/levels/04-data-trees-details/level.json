@@ -182,7 +182,9 @@
         "shatter",
         "listItem"
       ],
-      "draft": true
+      "draft": true,
+      "stage": "Place the same number of points on every floor. The result is a data tree: one branch per floor.",
+      "stage_draft": true
     },
     {
       "id": "flip",
@@ -205,7 +207,9 @@
         "reverseList",
         "shiftList"
       ],
-      "draft": true
+      "draft": true,
+      "stage": "Regroup the points so each branch holds one column: the same position on every floor.",
+      "stage_draft": true
     },
     {
       "id": "itp",
@@ -228,7 +232,9 @@
         "loft",
         "divideCurve"
       ],
-      "draft": true
+      "draft": true,
+      "stage": "Draw a curve through each column. The mullions climb and twist with the tower.",
+      "stage_draft": true
     },
     {
       "id": "pipe",
@@ -254,7 +260,9 @@
         "boundary",
         "loft"
       ],
-      "draft": true
+      "draft": true,
+      "stage": "Give every mullion real thickness.",
+      "stage_draft": true
     }
   ],
   "wires": [

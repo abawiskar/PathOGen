@@ -172,7 +172,9 @@
         "isotrim",
         "offset"
       ],
-      "draft": true
+      "draft": true,
+      "stage": "Slice the tower mass into floors, one cut every floor height.",
+      "stage_draft": true
     },
     {
       "id": "su",
@@ -213,7 +215,9 @@
         "divideCurve",
         "graft"
       ],
-      "draft": true
+      "draft": true,
+      "stage": "Plan the facade grid: split the surface's U × V space into panel cells.",
+      "stage_draft": true
     },
     {
       "id": "iso",
@@ -236,7 +240,9 @@
         "boundary",
         "listItem"
       ],
-      "draft": true
+      "draft": true,
+      "stage": "Cut the facade surface into panels along that grid.",
+      "stage_draft": true
     }
   ],
   "wires": [

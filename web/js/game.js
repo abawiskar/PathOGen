@@ -657,7 +657,13 @@
     st.lastPlaced = null;
 
     // footer + subtitle
-    $('#graph-sub').textContent = level().objective;
+    // stage hint: what this step does to the definition (node "stage" text in level.json)
+    const si = d ? L.steps.indexOf(d.step) : -1;
+    $('#graph-title').innerHTML = d ? `Stage ${si + 1} of ${L.steps.length} <small>&middot; Build your definition</small>`
+      : (st.won ? 'Definition complete' : 'Build your definition');
+    $('#graph-sub').innerHTML = !d ? esc(st.won ? 'Your definition runs. Drag the sliders in the preview to explore it.' : L.objective)
+      : d.kind === 'quiz' ? `<b>Wire check.</b> ${esc(d.quiz.prompt)}`
+      : esc(d.step.stage || 'Fill the glowing node to extend the definition.');
     let foot;
     if (!d) foot = st.won ? '<b>Definition complete</b> &bull; Drag the sliders in the preview to explore your result.' : '';
     else if (d.kind === 'quiz') foot = `<b>Wire check</b> &bull; ${esc(d.quiz.prompt)}`;
@@ -894,12 +900,12 @@
   }
 
   /* ───────── Wiring ───────── */
-  $('#title-hero').innerHTML = '<img class="hero-title" src="img/hero-main.png" alt="">';
+  $('#title-hero').innerHTML = '<img class="hero-title" src="img/start-hero.webp" alt="">';
   $('#hero').innerHTML = '<img class="hero-main" src="img/hero-main.png" alt="">';
   $('#btn-start').onclick = () => { if (LEVELS.length) openMap(); else toast('Levels are still loading…'); };
   LevelLoader.loadAll().then(ls => {
     LEVELS = ls;
-    $('#title-monster').innerHTML = monsterArt(monsterKey(LEVELS[LEVELS.length - 1]));
+    $('#title-monster').innerHTML = '<img src="img/start-boss.webp" alt="The Spaghetti Boss">';
     if (/[?&]all\b/.test(location.search)) save.unlocked = LEVELS.length;
   }).catch(err => {
     console.error(err);
