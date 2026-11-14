@@ -65,7 +65,8 @@ const G = {
 };
 
 class Preview {
-  constructor(canvas) {
+  constructor(canvas, opts = {}) {
+    this.fixed = opts.size || null;
     this.c = canvas; this.ctx = canvas.getContext('2d');
     this.theta = -0.95; this.el = 0.55; this.goalTheta = this.theta; this.goalEl = this.el;
     this.target = [0, 0, 0]; this.goalTarget = [0, 0, 0];
@@ -73,6 +74,7 @@ class Preview {
     this.view = 'perspective'; this.auto = true;
     this.scene = { lines: [], points: [], labels: [], arrows: [] };
     this.fresh = null; this.freshT = 0;
+    if (opts.static) return;
     this.bindEvents();
     const loop = () => { this.frame(); requestAnimationFrame(loop); };
     requestAnimationFrame(loop);
@@ -132,9 +134,9 @@ class Preview {
   frame() {
     const c = this.c, rect = c.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
-    const lw = c.clientWidth, lh = c.clientHeight;
+    const lw = this.fixed ? this.fixed[0] : c.clientWidth, lh = this.fixed ? this.fixed[1] : c.clientHeight;
     if (!lw || !lh) return;
-    const k = (rect.width / lw) * dpr;
+    const k = this.fixed ? (this.fixed[2] || 1) : (rect.width / lw) * dpr;
     if (c.width !== Math.round(lw * k) || c.height !== Math.round(lh * k)) { c.width = Math.round(lw * k); c.height = Math.round(lh * k); }
     const ctx = this.ctx; ctx.setTransform(k, 0, 0, k, 0, 0);
     // ease camera
@@ -217,6 +219,17 @@ class Preview {
     this.ctx.beginPath(); this.ctx.moveTo(p[0], p[1]); this.ctx.lineTo(q[0], q[1]); this.ctx.stroke();
   }
 }
+
+/* Render a scene once, off screen, from the default 3/4 view; returns a PNG data URL. */
+Preview.snapshot = function (scene, w = 480, h = 360, scale = 2) {
+  const c = document.createElement('canvas');
+  const p = new Preview(c, { static: true, size: [w, h, scale] });
+  p.setScene(scene);
+  p.theta = p.goalTheta = -0.95; p.el = p.goalEl = 0.5; p.auto = false;
+  p.target = p.goalTarget.slice(); p.radius = p.goalRadius; p.zoom = 1.25;
+  p.frame();
+  return c.toDataURL('image/png');
+};
 
 function sub(a, b) { return [a[0] - b[0], a[1] - b[1], a[2] - b[2]]; }
 function dot(a, b) { return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]; }

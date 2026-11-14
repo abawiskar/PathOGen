@@ -479,6 +479,7 @@
           <p><b>${esc(m.name)}</b> blocks the path. ${esc(m.trait)} ${esc(m.line)}</p>
           <div class="kv">
             <span>Challenge</span><div>${esc(L.objective)}</div>
+            <span>Goal</span><div><img class="goal-brief" src="${goalImage(L)}" alt="Finished result"></div>
             <span>You’ll learn</span><div>${esc(L.learn)}</div>
             <span>Mode</span><div>${mode}</div>
             <span>Decisions</span><div>${st.decisions.length} (${L.steps.length} components${st.decisions.length > L.steps.length ? ' + ' + (st.decisions.length - L.steps.length) + ' wire checks' : ''})</div>
@@ -542,6 +543,9 @@
     renderGraph(); renderHand(); renderFeatured(); renderFeedback(); renderHealth(); renderEffects(); renderMonster(); renderLifesavers(); renderTimer();
     const d = cur();
     $('#hand-sub').textContent = !d ? (st.won ? 'Definition complete' : '') : d.kind === 'quiz' ? 'Wire check — choose a port' : 'Choose a component';
+    const cb = $('#curse-banner'), n = st.effects.icon;
+    cb.classList.toggle('on', n > 0 && !st.over);
+    cb.innerHTML = n > 0 ? `<b>Icon Curse!</b> ${esc(monster().name)} has stolen the card names. They return after <b>${n}</b> correct placement${n > 1 ? 's' : ''} — or use <b>Clear Vision</b>.` : '';
   }
 
   function ioMeta(c) {
@@ -581,18 +585,27 @@
         if (name) nodesSVG += `<text class="g-label" x="${n.x}" y="${n.y + g.h / 2 + 13}" text-anchor="middle"${filt}>${esc(name)}</text>`;
         if (quizCur && quizCur.target === n.id) nodesSVG += `<rect x="${n.x - g.w / 2 - 5}" y="${n.y - g.h / 2 - 5}" width="${g.w + 10}" height="${g.h + 10}" rx="8" fill="none" stroke="#e8dcb0" stroke-width="1.5" stroke-dasharray="4 3"/>`;
       } else {
-        const r = isCur ? 22 : 18;
-        g.ports = { in: comp.ins.map(() => [n.x - r, n.y]), out: comp.outs.map(() => [n.x + r, n.y]) };
+        // empty slot: a greyed-out node of the right size and port layout, with a question mark
+        const w = g.w, h = g.h, x0 = n.x - w / 2, y0 = n.y - h / 2;
+        const py = (i, cnt) => y0 + 6 + (i + 0.5) * (h - 12) / cnt;
+        g.ports = { in: comp.ins.map((_, i) => [x0, py(i, comp.ins.length)]), out: comp.outs.map((_, i) => [x0 + w, py(i, comp.outs.length)]) };
+        const dots = [...g.ports.in, ...g.ports.out].map(([px, pyy]) => `<circle class="g-ghost-port" cx="${px}" cy="${pyy}" r="3.2"/>`).join('');
+        const zin = comp.ins.length ? 18 : 6, zout = comp.outs.length ? 18 : 6;
+        const divs = (comp.ins.length ? `<line class="g-ghost-div" x1="${x0 + zin}" y1="${y0 + 4}" x2="${x0 + zin}" y2="${y0 + h - 4}"/>` : '') +
+          (comp.outs.length ? `<line class="g-ghost-div" x1="${x0 + w - zout}" y1="${y0 + 4}" x2="${x0 + w - zout}" y2="${y0 + h - 4}"/>` : '');
+        const qx = x0 + zin + (w - zin - zout) / 2, qs = Math.min(20, h - 6);
         if (isCur) {
-          nodesSVG += `<g class="g-cur${st.selected ? ' armed' : ''}" data-act="place-node">
-            <circle class="halo" cx="${n.x}" cy="${n.y}" r="${r + 4}"/><circle class="ring" cx="${n.x}" cy="${n.y}" r="${r}"/>
-            <path class="plus" d="M${n.x - 8} ${n.y}h16M${n.x} ${n.y - 8}v16"/></g>
-            <text class="g-label cur" x="${n.x}" y="${n.y + r + 16}" text-anchor="middle">Node ${pad2(slotNum[n.step])}</text>
-            <line x1="${n.x - 26}" x2="${n.x + 26}" y1="${n.y + r + 21}" y2="${n.y + r + 21}" stroke="#e8dcb0" stroke-width="1"/>`;
-          if (L.guidance === 'guided') nodesSVG += `<text class="g-need" x="${n.x}" y="${n.y + r + 33}" text-anchor="middle">needs ${esc(shortNeed(d.step.need))}</text>`;
+          nodesSVG += `<g class="g-ghost cur${st.selected ? ' armed' : ''}" data-act="place-node">
+            <rect class="halo" x="${x0 - 4}" y="${y0 - 4}" width="${w + 8}" height="${h + 8}" rx="8"/>
+            <rect class="body" x="${x0}" y="${y0}" width="${w}" height="${h}" rx="5"/>${divs}${dots}
+            <text class="q" x="${qx}" y="${n.y + qs * 0.36}" text-anchor="middle" font-size="${qs}">?</text></g>
+            <text class="g-label cur" x="${n.x}" y="${y0 + h + 14}" text-anchor="middle">Node ${pad2(slotNum[n.step])}</text>
+            <line x1="${n.x - 26}" x2="${n.x + 26}" y1="${y0 + h + 19}" y2="${y0 + h + 19}" stroke="#e8dcb0" stroke-width="1"/>`;
+          if (L.guidance === 'guided') nodesSVG += `<text class="g-need" x="${n.x}" y="${y0 + h + 31}" text-anchor="middle">needs ${esc(shortNeed(d.step.need))}</text>`;
         } else {
-          nodesSVG += `<circle class="g-slot" cx="${n.x}" cy="${n.y}" r="${r}"/><text class="g-slot-q" x="${n.x}" y="${n.y + 5.5}" text-anchor="middle">?</text>
-            <text class="g-label" x="${n.x}" y="${n.y + r + 14}" text-anchor="middle" opacity=".7">Open node</text>`;
+          nodesSVG += `<g class="g-ghost"><rect class="body" x="${x0}" y="${y0}" width="${w}" height="${h}" rx="5"/>${divs}${dots}
+            <text class="q" x="${qx}" y="${n.y + qs * 0.36}" text-anchor="middle" font-size="${qs}">?</text></g>
+            <text class="g-label" x="${n.x}" y="${y0 + h + 13}" text-anchor="middle" opacity=".6">Open node</text>`;
         }
       }
     });
@@ -641,6 +654,29 @@
     else foot = `<b>Selected slot ${pad2(slotNum[d.step.key])}</b> &bull; Place a card here to extend the definition.`;
     $('#graph-foot').innerHTML = foot;
   }
+  const curseNote = () => (st && st.effects.icon > 0 ? `<div class="curse-note">\u2726 Icon Curse<small>name hidden \u00B7 ${st.effects.icon} more</small></div>` : '');
+  /* The level's finished result: a custom image (level.json "goal") or a render of the complete definition. */
+  const goalCache = {};
+  function goalImage(L) {
+    if (L.goal) return `levels/${L.dir}/${L.goal}`;
+    if (!goalCache[L.dir]) {
+      const params = Object.fromEntries((L.params || []).map(p => [p.key, p.value]));
+      const ctx = { params, placed: () => true, wireActive: () => true };
+      const sc = Engine.scene(L, Engine.evaluate(L, ctx), ctx);
+      sc.labels = [];
+      sc.lines.forEach(l => { l.k = null; });
+      goalCache[L.dir] = Preview.snapshot(sc, 480, 360);
+    }
+    return goalCache[L.dir];
+  }
+  function goalModal() {
+    const L = level();
+    modal(`<button class="x-close">&times;</button><div class="sub">Level ${L.id} &middot; Goal</div><h2>${esc(L.title)}</h2>
+      <p>${esc(L.objective)}</p>
+      <img class="goal-big" src="${goalImage(L)}" alt="Finished result for ${esc(L.title)}">
+      <p class="muted">This is what the finished definition produces with the default slider values. Build it piece by piece to get here.</p>
+      <div class="actions"><button class="btn primary" data-act="close">Back to building</button></div>`);
+  }
   const shortNeed = (s) => s.length > 44 ? s.slice(0, 42) + '…' : s;
 
   function cardHTML(id, opts = {}) {
@@ -653,7 +689,7 @@
         <div class="card-tier">${esc(p[0])}</div>
         <div class="card-chip"><div class="tag">${esc(comp.name)}</div>${svgWrap(c)}</div>
         <div class="card-name">${esc(p[0])} &middot; ${esc(p[1])}</div>
-        <div class="card-desc">${side === 'in' ? 'Expects' : 'Carries'} ${esc(p[2])}.</div></div>`;
+        <div class="card-desc">${side === 'in' ? 'Expects' : 'Carries'} ${esc(p[2])}.</div>${curseNote()}</div>`;
     }
     const comp = COMPONENTS[id];
     const c = chip(comp, 0, 0, { w: 150, big: true, label: comp.id === 'slider' ? 'Slider' : null, value: comp.id === 'slider' ? 5 : null, frac: 0.5 });
@@ -663,7 +699,7 @@
       <div class="card-tier">${comp.tier}</div>
       <div class="card-chip"><div class="tag">${esc(comp.name)}</div>${svgWrap(c)}</div>
       <div class="card-name">${esc(comp.name)}</div>
-      <div class="card-desc">${showDesc ? esc(comp.desc) : '<i>Read the icon and ports.</i>'}</div></div>`;
+      <div class="card-desc">${showDesc ? esc(comp.desc) : '<i>Read the icon and ports.</i>'}</div>${curseNote()}</div>`;
   }
   function svgWrap(c) {
     return `<svg viewBox="${-c.w / 2 - 7} ${-c.h / 2 - 3} ${c.w + 14} ${c.h + 6}" xmlns="http://www.w3.org/2000/svg">${c.svg}</svg>`;
@@ -753,7 +789,7 @@
 
   function renderLifesavers() {
     const el = $('#lifesavers');
-    el.innerHTML = Object.keys(LS_INFO).map(k => `<button class="ls${k === 'shield' && st.shield ? ' active' : ''}${k === 'second' && canUse('second') ? ' ready' : ''}" data-ls="${k}" ${canUse(k) ? '' : 'disabled'}>${ART.lsIcon(k)}<i>${st.ls[k] || 0}</i></button>`).join('');
+    el.innerHTML = Object.keys(LS_INFO).map(k => `<button class="ls${k === 'shield' && st.shield ? ' active' : ''}${(k === 'second' || k === 'clear') && canUse(k) ? ' ready' : ''}" data-ls="${k}" ${canUse(k) ? '' : 'disabled'}>${ART.lsIcon(k)}<i>${st.ls[k] || 0}</i></button>`).join('');
     $$('.ls', el).forEach(b => {
       b.onclick = () => useLifesaver(b.dataset.ls);
       b.onmouseenter = () => showTip(b, `<b>${LS_INFO[b.dataset.ls][0]}</b>${LS_INFO[b.dataset.ls][1]}`);
@@ -776,6 +812,7 @@
       updatePreview(); renderGraph();
     }));
     $('#preview-foot').textContent = `World XY • ${L.title} preview`;
+    $('#goal').innerHTML = `<div class="ph">Goal <span>click to enlarge</span></div><img src="${goalImage(L)}" alt="Finished result">`;
   }
 
   function updatePreview(freshKey) {
@@ -840,6 +877,7 @@
   $('#btn-map-help').onclick = helpModal;
   $('#btn-help').onclick = helpModal;
   $('#btn-moves').onclick = movesModal;
+  $('#goal').onclick = () => { if (st) goalModal(); };
   $('#btn-map').onclick = () => { if (st && !st.over && st.di > 0) { modal(`<h2>Leave the battle?</h2><p>Your progress in this level will be lost.</p><div class="actions"><button class="btn" data-act="close">Stay</button><button class="btn warm" data-act="map">Leave</button></div>`); } else openMap(); };
   $('#btn-reset').onclick = () => modal(`<h2>Reset progress?</h2><p>This clears all XP, stars and unlocked levels on this device.</p><div class="actions"><button class="btn" data-act="close">Cancel</button><button class="btn warm" data-act="reset">Reset</button></div>`);
   let gDrag = null;

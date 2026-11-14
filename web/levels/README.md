@@ -18,6 +18,7 @@ The node graph **is** the answer key. The preview is computed live from it by a 
 | `params` | Sliders shown in the preview: `{ key, label, min, max, step, value }` |
 | `order` | Optional build order of open node ids. Default: topological order of the graph |
 | `boss` | Optional, `true` for the boss level |
+| `goal` | Optional image of the finished result, e.g. `"goal.png"` placed in the level's folder (a Rhino render or viewport capture). Without it, the game renders the complete definition itself with the default slider values. Shown in the briefing and as a click-to-enlarge thumbnail in the preview |
 | `source` | Optional, the Grasshopper file this level was transcribed from |
 | `placeholder` | Optional, `true` while the level is a stand-in waiting for its real script |
 

@@ -147,7 +147,7 @@ button { font-family: inherit; cursor: pointer; }
 .view-menu.open { display: block; }
 .view-menu button { display: block; width: 100%; text-align: left; background: none; border: 0; padding: 5px 10px; font-size: 13px; color: #10264a; }
 .view-menu button:hover { background: #c7d6ea; }
-.params { position: absolute; right: 8px; top: 8px; width: 196px; background: rgba(240,243,244,.82); border: 1px solid rgba(80,95,100,.35); border-radius: 4px; padding: 6px 9px 4px; z-index: 2; }
+.params { position: relative; width: 196px; background: rgba(240,243,244,.82); border: 1px solid rgba(80,95,100,.35); border-radius: 4px; padding: 6px 9px 4px; z-index: 2; }
 .params .ph { font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: #4a5a5e; font-weight: 700; margin-bottom: 2px; }
 .param { display: grid; grid-template-columns: 62px 1fr 30px; align-items: center; gap: 6px; font-size: 11px; color: #263235; font-weight: 600; height: 21px; }
 .param input { width: 100%; accent-color: #2f6d52; height: 14px; }
@@ -347,3 +347,41 @@ button { font-family: inherit; cursor: pointer; }
 .title-monster .monster-img { height: auto; }
 .map-node .mn-art .monster-img { height: 76px; }
 .modal-card .brief .art .monster-img { height: 190px; }
+
+/* Icon Curse: say why the names are gone */
+.curse-note { display: none; }
+.fx-icon .curse-note {
+  display: flex; flex-direction: column; align-items: center; position: absolute; left: 10px; right: 10px; bottom: 22px;
+  padding: 6px 4px; border: 1.5px dashed #8f2f3a; border-radius: 5px; background: rgba(143,47,58,.08);
+  font-family: var(--serif); font-weight: 700; font-size: 14px; color: #8f2f3a; letter-spacing: .04em; text-align: center;
+}
+.fx-icon .curse-note small { font-family: var(--sans); font-weight: 600; font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; opacity: .85; }
+.fx-icon .card { border-color: #8f2f3a; }
+#curse-banner {
+  display: none; position: absolute; left: 562px; top: 600px; width: 536px; z-index: 35; padding: 7px 14px; border-radius: 4px;
+  background: rgba(40,16,20,.92); border: 1px solid #c4555e; color: #f6d4d4; font-size: 13px; text-align: center; box-shadow: 0 6px 18px rgba(0,0,0,.45);
+}
+#curse-banner.on { display: block; animation: fadein .3s; }
+#curse-banner b { color: #ffd98a; }
+
+/* Goal: the finished result for this level */
+.preview-side { position: absolute; right: 8px; top: 8px; width: 196px; display: flex; flex-direction: column; gap: 6px; z-index: 2; }
+.goal { background: rgba(240,243,244,.86); border: 1px solid rgba(80,95,100,.35); border-radius: 4px; padding: 5px 6px 6px; cursor: zoom-in; transition: box-shadow .15s; }
+.goal:hover { box-shadow: 0 0 0 2px #2f6d52; }
+.goal .ph { font-size: 9px; letter-spacing: .16em; text-transform: uppercase; color: #4a5a5e; font-weight: 700; margin-bottom: 3px; display: flex; justify-content: space-between; }
+.goal .ph span { letter-spacing: .04em; text-transform: none; font-weight: 600; opacity: .7; }
+.goal img { display: block; width: 100%; border-radius: 2px; }
+.goal-brief { display: block; width: 300px; border-radius: 4px; border: 1px solid var(--line); }
+.goal-big { display: block; width: 100%; border-radius: 6px; border: 1px solid var(--line); margin: 10px 0; }
+
+/* empty slot: greyed-out node with a question mark */
+.g-ghost .body { fill: rgba(200,208,204,.16); stroke: #8a9a94; stroke-width: 1.4; stroke-dasharray: 4 3; }
+.g-ghost .g-ghost-div { stroke: rgba(160,175,170,.4); stroke-width: 1; }
+.g-ghost .g-ghost-port { fill: #6f807a; }
+.g-ghost .q { font-family: var(--serif); font-weight: 900; fill: #a9b8b2; }
+.g-ghost.cur { cursor: pointer; }
+.g-ghost.cur .body { fill: rgba(232,220,176,.14); stroke: var(--gold); stroke-width: 1.8; }
+.g-ghost.cur .halo { fill: none; stroke: rgba(232,220,176,.35); stroke-width: 5; animation: halo 1.6s ease-in-out infinite; }
+.g-ghost.cur .q { fill: var(--gold); animation: pulse 1.2s infinite; }
+.g-ghost.cur .g-ghost-port { fill: #c9b26a; }
+.g-ghost.cur.armed .body { fill: rgba(168,198,144,.28); stroke: var(--sage); }
