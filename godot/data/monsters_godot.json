@@ -1,0 +1,20 @@
+{
+ "_note": "Godot-only monster options, merged over data/monsters.json (which sync_from_web.py regenerates). A key that already exists overrides just the fields given here. Move an option into web/js/monsters.js once the web version uses it, then delete it here.",
+ "options": {
+  "spaghetti": {
+   "img": "art/monster-spaghetti-v2.png"
+  },
+  "staris": {
+   "name": "The Staris",
+   "img": "art/monster-staris.png",
+   "place": "The Stairwell",
+   "trait": "A staircase that crawled off its tower. Every step is a rotated copy of the last, and it wants yours out of order."
+  },
+  "voronoi": {
+   "name": "The Voronoi Golem",
+   "img": "art/monster-voronoi.png",
+   "place": "The Cell Quarry",
+   "trait": "A body of cells grown around stolen points. Feed it the wrong points and it only gets bigger."
+  }
+ }
+}
