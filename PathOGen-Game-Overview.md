@@ -1,0 +1,211 @@
+# PathOGen — Game Overview
+
+**Build the Script. Survive the Monster. Master Grasshopper.**
+
+PathOGen is a browser game that teaches Grasshopper 3D. Each level is a real Grasshopper definition guarded by a monster.
+Players pick the right component cards, wire them correctly, and complete the definition before the monster defeats them.
+A live 3D preview shows the geometry growing with every correct move.
+
+*Status as of 14 Nov 2026: playable prototype. Levels 1–2 are transcribed from `GH definitions/Twisty_Simple.gh`;
+levels 3–4 and level 1's five difficulties are placeholders until the real `.ghx` files arrive.*
+
+---
+
+## 1. Running the game
+
+The game is plain HTML/CSS/JavaScript in `web/` — no build step, no install. It must be served over http
+(levels are loaded with `fetch`), not opened as a file:
+
+```bash
+python -m http.server 5173 --directory web
+```
+
+Then open <http://localhost:5173>.
+
+| URL option | Effect |
+| --- | --- |
+| `?all` | Unlocks every level (for testing) |
+| `?monster=tower` (or `spaghetti`, `tree`, `placeholder`) | Shows one monster on every level |
+
+Other pages: `web/review.html` lists every hint and explanation still marked as draft, for the team to review.
+
+---
+
+## 2. The screen
+
+| Area | What it shows |
+| --- | --- |
+| **Build your definition** (top left) | A simplified Grasshopper canvas: placed components, wires, and empty nodes still to fill. Empty nodes appear as greyed-out components with a `?`; the one you're filling glows gold. Drag to pan on big graphs. |
+| **Preview** (centre) | Live wireframe 3D of the definition so far. Drag to orbit, scroll to zoom, double-click to reset. Perspective / Top / Front views. |
+| **Sliders** (preview, top right) | The definition's sliders — drag them and the whole definition re-runs. |
+| **Goal** (under the sliders) | Thumbnail of the finished result; click to enlarge. |
+| **Your health** (top right) | Hearts, current level and difficulty, XP. Active penalties appear underneath. |
+| **Monster** (right) | Monster art, health bar, and its *intent* — the attack it will use on your next mistake. |
+| **Featured card + Field notes** (left) | The selected card up close, with a Place button; explanations of every move. |
+| **Lifesavers** (left) | Six support cards with remaining counts. |
+| **Your hand** (bottom) | The component cards (or port cards during a wire check) to choose from. |
+| **Hero** (bottom left) | The guide character; reacts to success, damage and defeat. |
+| **Moves / Help** (bottom right) | Moves opens a log of every decision with its explanation; Help explains the rules. |
+
+---
+
+## 3. How a turn works
+
+1. **Pick a card** from your hand — it appears in the featured slot.
+2. **Place it**: click Place, the glowing node, or the card again. Keyboard: `1`–`6` select, `Enter` places, `H` uses a hint.
+3. **Wire checks**: after some components, the cards turn into *ports* and you choose which input (or output) a wire
+   connects to — e.g. the slider goes into Polygon's `S` (segments), not `R` (radius). Until answered, the wire counts as
+   unplugged and the preview shows the component's default behaviour.
+4. **Read the field notes**: every choice explains why it works or doesn't, what the component expects and what it outputs.
+
+A correct choice advances the definition, damages the monster and awards XP. A wrong choice costs health, removes that
+card from your hand, and triggers the monster's attack.
+
+---
+
+## 4. Monster attacks
+
+A wrong pick costs one heart plus the monster's telegraphed intent. Penalties wear off as you place correct components.
+
+| Attack | Effect |
+| --- | --- |
+| Strike | Lose 1 heart |
+| Heavy Strike | Lose 2 hearts |
+| Blurred Vision | Card names and the preview blur for 2 correct placements |
+| Icon Curse | Card names and descriptions vanish (only icons and ports remain) for 2 correct placements. Cards show an "Icon Curse" label and a banner explains it. |
+| Scramble | Your hand is shuffled |
+| Locked Component | A placed node hides its label for 3 placements |
+| Time Pressure | 15 seconds for the next decision, or take a hit |
+
+**Attack sets escalate** along the path (or per difficulty, see §7):
+
+| Set | Attacks used |
+| --- | --- |
+| 0 | Strikes only |
+| 1 | Strikes, Scramble, Blur |
+| 2 | Blur, Icon Curse, Locked Component, Strike |
+| 3 | Heavy Strike plus every trick, including Time Pressure |
+
+---
+
+## 5. Lifesavers
+
+| Lifesaver | Effect |
+| --- | --- |
+| Hint | Reveals a clue about the missing component or port |
+| Health Potion | Restores one heart |
+| 50/50 | Removes two incorrect cards from your hand |
+| Clear Vision | Removes Blur, Icon Curse and Locked Component (pulses when useful) |
+| Shield | Blocks the next monster attack completely |
+| Second Chance | Undoes your last mistake — health, penalty and card restored (also offered on the defeat screen) |
+
+Every 3 correct picks in a row can award a bonus lifesaver (up to 2 per level).
+
+---
+
+## 6. Scoring and progress
+
+- **+100 XP** per correct component, **+60** per wire check, **+40** for getting it right first time.
+- On victory: **efficiency bonus** (decisions ÷ picks × 200), **+50 per heart** remaining, **+500** for a perfect run
+  (no mistakes, no lifesavers).
+- **Stars**: 3 with no mistakes, 2 with up to two, otherwise 1.
+- Progress, stars and best XP are saved **per level and difficulty** in the browser. Beating any difficulty unlocks the
+  next level. Total XP sets your rank: Novice → Apprentice → Wirebender → Definition Smith → Parametric Ranger → Script Master.
+
+---
+
+## 7. Levels and difficulties
+
+### The path
+
+| # | Level | Monster | What the player builds | Source |
+| --- | --- | --- | --- | --- |
+| 1 | **Build the Base Shape** | The Spaghetti Boss | Construct Point → Polygon (5 sides, filleted corners), driven by sliders | Twisty_Simple.gh |
+| 2 | **Build the Mass** | The Twisted Tower | Unit Z → Move → Rotate (degrees) → Loft → Cap Holes: a twisted tower mass | Twisty_Simple.gh |
+| 3 | **Panels & Floors** | *Placeholder* (Blightmoth) | Contour (floors), Divide Domain² + Isotrim (facade panels) | Placeholder |
+| 4 | **Data Trees & Details** | The Branch Tree | Divide Curve per floor → Flip Matrix → Interpolate → Pipe: twisting mullions | Placeholder |
+
+### Difficulties
+
+Each level can offer several difficulties, chosen from the map. Level 1 has five; the others currently have one
+("Standard"). Each difficulty can load its **own definition file** (one per Grasshopper file) and adjust the rules:
+
+| Rule | Meaning |
+| --- | --- |
+| `guidance` | `guided` (open node says what it needs) · `standard` · `independent` (card descriptions hidden) |
+| `health`, `lifesavers` | Hearts and lifesaver counts |
+| `hand` | Cards in hand per decision |
+| `attacks` | Attack set 0–3 |
+| `timer` | Seconds per decision |
+| `open` | Which nodes the player must place; the rest start on the canvas |
+
+Level 1's placeholder difficulties (all using the Twisty_Simple definition for now):
+
+| Difficulty | You place | Mode | Hearts | Cards | Attacks | Extra |
+| --- | --- | --- | --- | --- | --- | --- |
+| Beginner | Polygon only | Guided | 5 | 3 | 0 | Generous lifesavers |
+| Easy | Point + Polygon | Guided | 4 | 4 | 0 | |
+| Medium | Point + Polygon | Standard | 4 | 5 | 1 | |
+| Hard | Point + Polygon | Independent | 3 | 6 | 2 | Fewer lifesavers |
+| Expert | Point + Polygon | Independent | 3 | 6 | 3 | 30-second timer |
+
+### Learning progression
+
+Early difficulties show descriptions and tell you what each open node needs; later ones hide descriptions, offer more
+cards and pre-place less — moving players from **recognition → understanding → application → independent scripting**.
+
+---
+
+## 8. Art
+
+| Asset | Source | In game |
+| --- | --- | --- |
+| Hero | `Images/Hero/Material Seat for the hero_v3 - upscale.png` | Main pose (idle), Success, Damage and Defeat frames, cut to `web/img/hero-*.png` |
+| The Spaghetti Boss | `Images/Monster/Spaghetti Boss_v1.png` | `web/img/monster-spaghetti.png` |
+| The Twisted Tower | `Images/Monster/Twisted Tower Monster_v3.png` (dark background removed) | `web/img/monster-tower.png` |
+| The Branch Tree | `Images/Monster/Tree Branch Monster_v1.png` | `web/img/monster-tree.png` |
+| Level 3 monster | *Awaiting artwork* — built-in SVG placeholder | — |
+
+Monster names and backstory lines are placeholders and can be edited in `web/js/monsters.js`.
+
+---
+
+## 9. How levels are built (for the team)
+
+- **No Grasshopper at runtime.** Each Grasshopper script is transcribed once into JSON; the game never reads `.gh`/`.ghx` files.
+- Each level is a folder `web/levels/<nn-name>/` with a `level.json`; `web/levels/index.json` sets the play order.
+- The **node graph is the answer key**: nodes (pre-placed or open), wires (some marked as wire checks), and per-node text —
+  `need`, `hint`, `correct`, `wrong` (per wrong card, plus a `*` fallback). Card hands default to same-category distractors.
+- Text drafted by Claude is marked `"draft": true` until reviewed; `review.html` lists all drafts.
+- The **preview is computed live** by a small Grasshopper-style solver (`web/js/engine.js`): data trees, longest-list
+  matching, and about 50 components (Point, Polygon with fillet, Divide Curve, Series, Move, Rotate, Scale, Loft,
+  Cap Holes, Contour, Isotrim, Graft, Flatten, Flip Matrix, Pipe…). Anything too complex can use baked geometry.
+- Each level shows a **goal image**: rendered automatically from the finished definition, or a custom image (`"goal": "goal.png"`).
+- Full format reference: `web/levels/README.md`.
+
+### Project files
+
+| Path | Purpose |
+| --- | --- |
+| `web/index.html`, `web/css/style.css` | Page and styling (fixed 1600×900 stage, scaled to fit) |
+| `web/js/game.js` | Game engine: turns, attacks, lifesavers, scoring, difficulties, saves, rendering |
+| `web/js/engine.js` | Grasshopper-style solver and preview builder |
+| `web/js/loader.js` | Loads and validates levels and difficulties |
+| `web/js/data.js` | Component library (inputs, outputs, descriptions, icons) |
+| `web/js/monsters.js` | Monsters and attack sets |
+| `web/js/preview.js` | Wireframe 3D viewport and goal snapshots |
+| `web/js/art.js` | Lifesaver icons, hearts, placeholder SVG monster |
+| `web/levels/` | Level data, format README |
+| `web/img/` | Web-sized hero and monster art |
+| `web/review.html` | Draft text review page |
+
+---
+
+## 10. Open items
+
+- **Level 1 difficulties:** replace the five placeholders with definitions from their `.ghx` files.
+- **Levels 3–4:** replace placeholder definitions with the real scripts; decide how many difficulties each has.
+- **Level 3 monster:** add the fourth monster's artwork.
+- **Hero wire-attack animation:** needs evenly spaced frames on the sheet.
+- **Text review:** all hints and explanations are drafts written by Claude.
+- **Monster names and lines:** placeholders.

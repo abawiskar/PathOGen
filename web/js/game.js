@@ -16,8 +16,9 @@
 
   /* ───────── Save data ───────── */
   const SAVE_KEY = 'pathogen.save.v1';
-  let save = { best: {}, unlocked: 1 };
+  let save = { best: {}, unlocked: 1, diff: {} };
   try { save = Object.assign(save, JSON.parse(localStorage.getItem(SAVE_KEY) || '{}')); } catch (e) { /* storage unavailable */ }
+  save.diff = save.diff || {};
   const writeSave = () => { try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) { /* ignore */ } };
   const totalXP = () => Object.values(save.best).reduce((a, b) => a + (b.xp || 0), 0);
   const RANKS = [[0, 'Novice'], [600, 'Apprentice'], [1500, 'Wirebender'], [3000, 'Definition Smith'], [5000, 'Parametric Ranger'], [7500, 'Script Master']];
@@ -113,7 +114,7 @@
   /* the path's single monster, with this level's phase of attacks */
   const phaseOf = (idx) => MONSTER_PHASES[Math.min(idx, MONSTER_PHASES.length - 1)];
   const monsterKey = (L) => MONSTER_OVERRIDE || L.monster;
-  const monster = () => Object.assign({}, MONSTER_OPTIONS[monsterKey(st.L)], phaseOf(st.idx));
+  const monster = () => Object.assign({}, MONSTER_OPTIONS[monsterKey(st.L)], phaseOf(st.L.attacks != null ? st.L.attacks : st.idx), st.L.timer ? { frenzy: st.L.timer } : {});
   const monsterArt = (key) => { const m = MONSTER_OPTIONS[key]; return m.img ? `<img class="monster-img" src="${m.img}" alt="${esc(m.name)}">` : ART.monster(m.art); };
   const levelHP = (L) => buildDecisions(L).reduce((a, d) => a + (d.kind === 'comp' ? 10 : 5), 0);
   /* hero sprite reactions (frames cut from the hero sheet) */
@@ -153,8 +154,11 @@
     return out;
   }
 
-  function startLevel(idx) {
-    const L = LEVELS[idx];
+  function startLevel(idx, d) {
+    const stage = LEVELS[idx];
+    if (d == null) d = Math.min(save.diff[stage.id] != null ? save.diff[stage.id] : 0, stage.difficulties.length - 1);
+    save.diff[stage.id] = d; writeSave();
+    const L = stage.difficulties[d].level;
     if (st) clearTimer();
     st = {
       idx, L, health: L.health, max: L.health, di: 0, decisions: buildDecisions(L), done: new Set(),
@@ -183,8 +187,8 @@
   function dealHand(anim = true) {
     const d = cur(); if (!d) { st.hand = []; return; }
     if (d.kind === 'comp') {
-      const ids = [d.step.comp, ...d.step.distractors];
-      const size = Math.max(HAND_SIZE[level().guidance], ids.length);
+      const size = Math.max(2, level().hand || HAND_SIZE[level().guidance] || 5);
+      const ids = [d.step.comp, ...shuffle(d.step.distractors.slice())].slice(0, size);
       const fill = shuffle(FILLER.filter(f => !ids.includes(f)));
       while (ids.length < size && fill.length) ids.push(fill.pop());
       st.hand = shuffle(ids.slice(0, size));
@@ -409,8 +413,8 @@
     const hpBonus = st.health * 50, perfBonus = perfect ? 500 : 0;
     const total = st.xp + eff + hpBonus + perfBonus;
     const stars = st.mistakes === 0 ? 3 : st.mistakes <= 2 ? 2 : 1;
-    const prev = save.best[L.id] || { xp: 0, stars: 0 };
-    save.best[L.id] = { xp: Math.max(prev.xp, total), stars: Math.max(prev.stars, stars) };
+    const bk = bestKey(L), prev = save.best[bk] || { xp: 0, stars: 0 };
+    save.best[bk] = { xp: Math.max(prev.xp, total), stars: Math.max(prev.stars, stars) };
     save.unlocked = Math.max(save.unlocked, Math.min(LEVELS.length, st.idx + 2));
     writeSave();
     st.fb = { cls: 'ok', head: 'Definition complete', title: 'Your script runs!', body: 'Drag the sliders in the preview — the whole definition updates live. That is parametric design.', meta: '' };
@@ -432,6 +436,7 @@
       <div class="actions">
         <button class="btn ghost" data-act="explore">Explore result</button>
         <button class="btn" data-act="map">Map</button>
+        ${L.diffIndex < L.diffCount - 1 ? '<button class="btn warm" data-act="harder">Try harder ↑</button>' : ''}
         ${next ? '<button class="btn primary" data-act="next">Next level →</button>' : '<button class="btn primary" data-act="credits">Finish</button>'}
       </div>`), 1100);
   }
@@ -453,17 +458,19 @@
   }
 
   function modalAction(a) {
+    if (a.startsWith('diff:')) { const [, i, d] = a.split(':'); closeModal(); startLevel(+i, +d); return; }
     switch (a) {
       case 'close': closeModal(); break;
       case 'fight': closeModal(); break;
       case 'map': clearTimer(); closeModal(); openMap(); break;
-      case 'retry': closeModal(); startLevel(st.idx); break;
+      case 'retry': closeModal(); startLevel(st.idx, st.L.diffIndex); break;
+      case 'harder': closeModal(); startLevel(st.idx, st.L.diffIndex + 1); break;
       case 'next': closeModal(); startLevel(st.idx + 1); break;
       case 'explore': closeModal(); break;
       case 'second': useLifesaver('second'); break;
       case 'start': closeModal(); openMap(); break;
       case 'credits': closeModal(); credits(); break;
-      case 'reset': save = { best: {}, unlocked: 1 }; writeSave(); closeModal(); openMap(); break;
+      case 'reset': save = { best: {}, unlocked: 1, diff: {} }; writeSave(); closeModal(); openMap(); break;
     }
   }
 
@@ -481,6 +488,7 @@
             <span>Challenge</span><div>${esc(L.objective)}</div>
             <span>Goal</span><div><img class="goal-brief" src="${goalImage(L)}" alt="Finished result"></div>
             <span>You’ll learn</span><div>${esc(L.learn)}</div>
+            ${L.diffCount > 1 ? `<span>Difficulty</span><div><b>${esc(L.diffName)}</b> (${L.diffIndex + 1} of ${L.diffCount})${L.diffDesc ? ' — ' + esc(L.diffDesc) : ''}</div>` : ''}
             <span>Mode</span><div>${mode}</div>
             <span>Decisions</span><div>${st.decisions.length} (${L.steps.length} components${st.decisions.length > L.steps.length ? ' + ' + (st.decisions.length - L.steps.length) + ' wire checks' : ''})</div>
           </div>
@@ -659,15 +667,16 @@
   const goalCache = {};
   function goalImage(L) {
     if (L.goal) return `levels/${L.dir}/${L.goal}`;
-    if (!goalCache[L.dir]) {
+    const gk = L.dir + ':' + L.diffId;
+    if (!goalCache[gk]) {
       const params = Object.fromEntries((L.params || []).map(p => [p.key, p.value]));
       const ctx = { params, placed: () => true, wireActive: () => true };
       const sc = Engine.scene(L, Engine.evaluate(L, ctx), ctx);
       sc.labels = [];
       sc.lines.forEach(l => { l.k = null; });
-      goalCache[L.dir] = Preview.snapshot(sc, 480, 360);
+      goalCache[gk] = Preview.snapshot(sc, 480, 360);
     }
-    return goalCache[L.dir];
+    return goalCache[gk];
   }
   function goalModal() {
     const L = level();
@@ -676,6 +685,26 @@
       <img class="goal-big" src="${goalImage(L)}" alt="Finished result for ${esc(L.title)}">
       <p class="muted">This is what the finished definition produces with the default slider values. Build it piece by piece to get here.</p>
       <div class="actions"><button class="btn primary" data-act="close">Back to building</button></div>`);
+  }
+  const bestKey = (L) => `${L.id}:${L.diffId}`;
+  function stageBest(S) {
+    const rs = S.difficulties.map(df => save.best[bestKey(df.level)]).filter(Boolean);
+    return rs.length ? { xp: Math.max(...rs.map(r => r.xp)), stars: Math.max(...rs.map(r => r.stars)) } : null;
+  }
+  function difficultyPicker(i) {
+    const S = LEVELS[i], last = save.diff[S.id] != null ? save.diff[S.id] : 0;
+    const MODE = { guided: 'Guided', standard: 'Standard', independent: 'Independent' };
+    modal(`<button class="x-close">&times;</button><div class="sub">Level ${S.id} &middot; ${esc(MONSTER_OPTIONS[monsterKey(S)].name)}</div>
+      <h2>${esc(S.title)}</h2><p class="muted">Choose a difficulty. Each one is its own definition to build.</p>
+      <div class="diff-list">${S.difficulties.map((df, d) => {
+        const L = df.level, b = save.best[bestKey(L)];
+        return `<button class="diff${d === last ? ' last' : ''}" data-act="diff:${i}:${d}">
+          <span class="diff-n">${d + 1}</span>
+          <span class="diff-body"><b>${esc(df.name)}</b>${df.description ? `<small>${esc(df.description)}</small>` : ''}
+            <em>${MODE[L.guidance] || L.guidance} &middot; ${L.health} hearts &middot; ${L.steps.length} components${L.timer ? ' &middot; ' + L.timer + 's timer' : ''}</em></span>
+          <span class="diff-stars">${[1, 2, 3].map(s => `<span class="${b && s <= b.stars ? 'on' : ''}">★</span>`).join('')}${b ? `<small>${b.xp} XP</small>` : ''}</span>
+        </button>`;
+      }).join('')}</div>`);
   }
   const shortNeed = (s) => s.length > 44 ? s.slice(0, 42) + '…' : s;
 
@@ -760,7 +789,7 @@
     h.innerHTML = Array.from({ length: st.max }, (_, i) => `<div class="heart${i < st.health ? '' : ' empty'}${i >= st.health && i < prev ? ' lost' : ''}">${ART.heart}</div>`).join('');
     h.dataset.hp = st.health;
     $('#xp-text').textContent = st.xp;
-    $('#level-chip').textContent = level().boss ? 'Boss level' : `Level ${level().id} · ${level().title}`;
+    $('#level-chip').textContent = `Level ${level().id} · ${level().title}${level().diffCount > 1 ? ' · ' + level().diffName : ''}`;
   }
 
   function renderEffects() {
@@ -843,7 +872,7 @@
     for (let i = 1; i < pts.length; i++) { const a = pts[i - 1], b = pts[i]; d += ` Q${(a[0] + b[0]) / 2 + (i % 2 ? 0 : 40)} ${(a[1] + b[1]) / 2 + (i % 2 ? 60 : -40)} ${b[0]} ${b[1]}`; }
     $('#map-path').innerHTML = `<path d="${d}" fill="none" stroke="#3d5450" stroke-width="10" stroke-linecap="round"/><path d="${d}" fill="none" stroke="#a8c690" stroke-width="2.5" stroke-dasharray="2 12" stroke-linecap="round" opacity=".7"/>`;
     $('#map-nodes').innerHTML = LEVELS.map((L, i) => {
-      const locked = i + 1 > save.unlocked, best = save.best[L.id], m = MONSTER_OPTIONS[monsterKey(L)];
+      const locked = i + 1 > save.unlocked, best = stageBest(L), m = MONSTER_OPTIONS[monsterKey(L)];
       const isCurrent = i + 1 === save.unlocked && !best;
       return `<div class="map-node${locked ? ' locked' : ''}${isCurrent ? ' current' : ''}${L.boss ? ' boss' : ''}" data-i="${i}" style="left:${pts[i][0]}px;top:${pts[i][1]}px">
         <div class="mn-art">${monsterArt(monsterKey(L))}</div>
@@ -851,12 +880,13 @@
         <div class="mn-num">${L.boss ? 'Boss' : 'Level ' + L.id} &middot; ${esc(m.name)}</div>
         <div class="mn-title">${esc(L.title)}</div>
         <div class="mn-obj">${esc(L.objective)}</div>
+        ${L.difficulties.length > 1 ? `<div class="mn-diff">${L.difficulties.map(df => `<i class="${save.best[bestKey(df.level)] ? 'done' : ''}" title="${esc(df.name)}"></i>`).join('')}<span>${L.difficulties.filter(df => save.best[bestKey(df.level)]).length}/${L.difficulties.length}</span></div>` : ''}
         <div class="mn-stars">${[1, 2, 3].map(s => `<span class="${best && s <= best.stars ? 'on' : ''}">★</span>`).join('')}${best ? ` <small class="muted" style="letter-spacing:0;font-size:11px">${best.xp} XP</small>` : ''}</div>
       </div>`;
     }).join('');
     $$('.map-node').forEach(n => n.onclick = () => {
       const i = +n.dataset.i; if (i + 1 > save.unlocked) { toast('Defeat the previous monster first', 'bad'); return; }
-      startLevel(i);
+      if (LEVELS[i].difficulties.length > 1) difficultyPicker(i); else startLevel(i, 0);
     });
   }
 

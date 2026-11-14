@@ -5,6 +5,7 @@
  *              need?, hint?, correct?, wrong?: { compId | "*": text }, distractors?, draft? }
  *   wires[]: { from: "node.Out", to: "node.In", check?: { side?: "in"|"out", prompt?, hint?, correct?, wrong?, draft? } }
  *   order?:  explicit build order of open node ids (default: topological order of the graph)
+ *   difficulties?: [{ id, name, description?, file?, ...rule overrides }] — see levels/README.md
  */
 var LEVELS = [];
 var MONSTER_OVERRIDE = null;
@@ -86,9 +87,29 @@ const LevelLoader = (() => {
     const pick = (location.search.match(/[?&]monster=(\w+)/) || [])[1];
     MONSTER_OVERRIDE = MONSTER_OPTIONS[pick] ? pick : null;
     const out = [];
+    const get = async (url) => { const r = await fetch(url, { cache: 'no-cache' }); if (!r.ok) throw new Error(`${url}: ${r.status} ${r.statusText}`); return r.json(); };
     for (const dir of idx.levels) {
-      const raw = await (await fetch(`levels/${dir}/level.json`, { cache: 'no-cache' })).json();
-      out.push(normalize(raw, dir));
+      const raw = await get(`levels/${dir}/level.json`);
+      // Difficulties: each may load its own definition file and override game rules.
+      // Without a list the level plays as one "Standard" difficulty using level.json's own graph.
+      const list = raw.difficulties && raw.difficulties.length ? raw.difficulties : [{ id: 'standard', name: 'Standard' }];
+      const base = Object.assign({}, raw); delete base.difficulties;
+      const diffs = [];
+      for (let i = 0; i < list.length; i++) {
+        const entry = list[i];
+        const def = entry.file ? await get(`levels/${dir}/${entry.file}`) : {};
+        const knobs = Object.assign({}, entry); delete knobs.file; delete knobs.id; delete knobs.name; delete knobs.description;
+        const merged = Object.assign({}, base, def, knobs);
+        // "open": which node ids the player must place in this difficulty (others start on the canvas)
+        if (Array.isArray(merged.open)) merged.nodes = merged.nodes.map(n => Object.assign({}, n, { open: merged.open.includes(n.id) }));
+        const lvl = normalize(merged, dir + (entry.file ? '/' + entry.file : ''));
+        lvl.dir = dir;
+        Object.assign(lvl, { diffId: String(entry.id != null ? entry.id : i + 1), diffName: entry.name || `Difficulty ${i + 1}`,
+          diffDesc: entry.description || '', diffIndex: i, diffCount: list.length });
+        diffs.push({ id: lvl.diffId, name: lvl.diffName, description: lvl.diffDesc, level: lvl });
+      }
+      // the stage behaves like its first difficulty for map/meta purposes
+      out.push(Object.assign({}, diffs[0].level, { difficulties: diffs }));
     }
     return out;
   }

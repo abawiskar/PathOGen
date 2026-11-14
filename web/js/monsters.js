@@ -8,7 +8,7 @@
  */
 const MONSTER_OPTIONS = {
   tower: {
-    name: 'The Twisted Tower', img: 'img/monster-tower.png', place: 'The Skyline',
+    name: 'The Twisted Tower', img: 'img/monster-tower.png' /* Images/Monster/Twisted Tower Monster_v3.png */, place: 'The Skyline',
     trait: 'A tower that twisted itself out of shape. It wants your definition to collapse the same way.',
   },
   spaghetti: {
