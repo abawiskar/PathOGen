@@ -1,54 +1,76 @@
 # PathOGen (Godot)
 
-The Godot 4 version of PathOGen. The web version is built separately; both use the same game data from the team spreadsheet.
+**Build the Script. Survive the Monster. Master Grasshopper.**
 
-Open this `godot` folder in Godot 4.4 or newer. Press Play to see the debug screen, which lists everything that loaded and plays a quick test run of the first puzzle.
+The Godot 4 version of the PathOGen web game in `../web`. It plays the same eight levels with the same rules,
+the same Grasshopper solver and the same monsters, with painted art where the team has made it.
 
-## Game data
+Open this `godot` folder in **Godot 4.4 or newer** and press Play.
 
-All cards, puzzles, monsters and LifeSavers come from the **PathOGen: Puzzle Card Lists** sheet. Each tab is exported as a CSV into `data/`:
+## Where the game data comes from
 
-| Sheet tab | File |
+The web version is the source of truth. Godot reads the same files:
+
+| Web file | Godot copy | How it gets there |
+|---|---|---|
+| `web/levels/**/level.json`, `index.json` | `levels/` | `tools/sync_from_web.py` (copied as-is) |
+| `web/js/data.js` (components, icons, filler) | `data/components.json` | `tools/sync_from_web.py` |
+| `web/js/monsters.js` | `data/monsters.json` | `tools/sync_from_web.py` |
+
+**When you run from the editor inside the repo, levels load straight from `../web/levels`**, so level edits
+made for the web version show up without syncing. Run the sync script before exporting a build, or when
+`data.js` or `monsters.js` change:
+
+```
+python godot/tools/sync_from_web.py
+```
+
+Other web files are ported by hand, so check them when the web version changes:
+
+| Web file | Godot file |
 |---|---|
-| Puzzles | `data/puzzles.csv` |
-| Puzzle Cards | `data/puzzle_cards.csv` |
-| Cards | `data/cards.csv` |
-| Monsters | `data/monsters.csv` |
-| LifeSavers | `data/lifesavers.csv` |
+| `js/engine.js` (solver) | `scripts/core/gh_engine.gd` |
+| `js/loader.js` | `scripts/core/level_loader.gd` |
+| `js/preview.js` (geometry + viewport) | `scripts/core/geo.gd`, `scripts/ui/preview_view.gd` |
+| `js/game.js` (rules) | `scripts/core/battle.gd` |
+| `js/game.js` (screens) | `scripts/main.gd`, `scripts/ui/*` |
+| `js/art.js` | `art/*.svg` (exported once) |
 
-Columns are matched by **header name**, so columns can be reordered or added in the sheet. Renaming a header means updating the matching `from_row()` in `scripts/data/`.
+## Art
 
-To test new numbers without touching the repo, drop the CSVs in the user data folder (`%APPDATA%\Godot\app_userdata\PathOGen\data\` on Windows). Those files win over the ones in `res://data/`. Press **F5** on the debug screen to reload.
+- `art/hero.png` is the hero (red-scarf concept).
+- `art/monster_<key>.png` is painted monster art. Any monster without a PNG uses the web version's SVG
+  (`art/monster_<key>.svg`). Current PNGs: `rootbound`, `branchmaw`, `wyrm` (Spaghetti Wyrm) and
+  `hexwarden` (the twisted tower). To give a monster new art, drop in `monster_<key>.png` with a transparent background.
+- Monster keys are in `data/monsters.json`.
 
-Check the data from the command line:
+## Checks
 
 ```
 godot --headless -s res://tests/run_checks.gd
 ```
 
-It exits with code 1 if a puzzle lists an unknown card or monster, or two cards share a slot.
+Loads every level, plays a perfect run (every correct card must be in its hand, 3 stars) and a run full of
+mistakes. Exits with code 1 on failure.
+
+`tests/screenshots.gd` drives the real UI and saves screenshots (needs a display, not `--headless`).
+
+The solver was checked against the web version: for every level and every build step, the preview
+geometry (lines, points, labels, arrows) matches `js/engine.js` exactly.
 
 ## Layout
 
 ```
-data/              CSV exports from the sheet (imported as "keep", not translations)
-scenes/            debug_main.tscn for now
-scripts/autoload/  game_db.gd: the GameDB autoload that loads the CSVs
-scripts/data/      CardData, MonsterData, LifeSaverData, PuzzleData, PuzzleCardEntry, enums, CSV reader
-scripts/combat/    DamageCalc, PlayerState (hearts, energy, attack statuses), PuzzleSession (turns, draws, LifeSavers, stars)
-scripts/debug/     the debug screen and report
-tests/             headless data check
+art/        hero + monster art (PNG painted, SVG from the web version), lifesaver icons
+data/       components.json, monsters.json (generated)
+fonts/      Cinzel + Barlow (SIL Open Font License), the web version's fonts
+levels/     level.json copies (generated)
+scenes/     main.tscn
+scripts/core/  GHData, GHEngine, Geo, LevelLoader, Battle, SaveData: game logic, no UI
+scripts/ui/    UIKit, Chip, GraphView, PreviewView, CardView, ArtView, FxViews
+scripts/main.gd  title, map and battle screens, modals, toasts, keyboard
+tools/      sync_from_web.py
+tests/      run_checks.gd, screenshots.gd
 ```
 
-## Rules as currently coded (all still open for discussion)
-
-- **Damage** = the sum of card damage on the path to the output × the number of items in the output × the monster's type modifier (×2 if weak, ×0.5 if it resists).
-- **Lag:** if the output has more items than the puzzle's item cap, the definition deals no damage and the player loses a heart.
-- **Monster turns:** an "Attack" intent takes hearts. Any other intent uses the monster's signature attack (Blurred Vision, Icon Curse, Scramble, Locked Component, Time Pressure), which lasts 1 or 2 turns.
-- **Wrong moves** cost a heart unless Second Chance is armed.
-- **Stars:** 1 for winning, +1 for finishing within par, +1 for using no LifeSavers that cost stars.
-- **Deck:** puzzles draw one card per turn in the order the sheet lists them (no shuffle), so puzzles stay predictable.
-
-## Not built yet
-
-The canvas and node slots, the card hand UI, wiring and port checks, the Rhino-style viewport, and the UI side of the attacks and LifeSavers (blurring, hiding labels, timers, hints).
+Progress is saved to `user://pathogen_save.json`. Run with `-- --all` to unlock every level for testing.
