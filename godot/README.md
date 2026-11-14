@@ -53,6 +53,11 @@ Other web files are ported by hand, so check them when the web version changes:
 - A level can set `"goal": "<file>.png"` in its folder for the Goal picture; otherwise the game renders
   the finished definition.
 
+## Team
+
+Made at the AECTech Hackathon 2026 by Maya Mashiach, Riku Kanemitsu, Kazu Tajima, Garrett Herbst, Joel Hills, Abhishek Bawiskar, Danny Karas.
+The names are in `TEAM` in `scripts/main.gd` (the About Us page from the title screen, and the end-of-game screen).
+
 ## Difficulties
 
 A level can offer several difficulties (the web version's `difficulties` list in level.json: see
