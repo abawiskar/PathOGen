@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PathOGen</title>
+  <meta name="description" content="Build the Script. Survive the Monster. Master Grasshopper.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Cinzel:wght@500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="viewport">
+  <div id="stage">
+    <i class="orn tl"></i><i class="orn tr"></i><i class="orn bl"></i><i class="orn br"></i>
+
+    <!-- ───────── Title ───────── -->
+    <section id="screen-title" class="screen active">
+      <div class="title-wrap">
+        <div class="title-monster" id="title-monster"></div>
+        <h1 class="logo">Path<span>O</span>Gen</h1>
+        <p class="tagline">Build the Script. Survive the Monster. Master Grasshopper.</p>
+        <div class="title-btns">
+          <button class="btn big primary" id="btn-start">Begin the Hunt</button>
+          <button class="btn big" id="btn-title-help">How to Play</button>
+        </div>
+        <div class="title-hero" id="title-hero"></div>
+      </div>
+    </section>
+
+    <!-- ───────── Map ───────── -->
+    <section id="screen-map" class="screen">
+      <header class="map-head">
+        <div>
+          <h2 class="smallcaps">The Path</h2>
+          <div class="sub">Each encounter teaches a real Grasshopper skill</div>
+        </div>
+        <div class="map-stats">
+          <div class="stat"><span>Total XP</span><b id="map-xp">0</b></div>
+          <div class="stat"><span>Rank</span><b id="map-rank">Novice</b></div>
+          <button class="btn small" id="btn-map-help">Help</button>
+          <button class="btn small ghost" id="btn-reset">Reset</button>
+        </div>
+      </header>
+      <svg id="map-path" viewBox="0 0 1600 900" preserveAspectRatio="none"></svg>
+      <div id="map-nodes"></div>
+    </section>
+
+    <!-- ───────── Battle ───────── -->
+    <section id="screen-battle" class="screen">
+      <div class="panel" id="p-graph">
+        <header>
+          <h3 class="smallcaps">Build your definition</h3>
+          <div class="sub" id="graph-sub">Place components into the open nodes</div>
+        </header>
+        <svg id="graph" xmlns="http://www.w3.org/2000/svg"></svg>
+        <footer id="graph-foot"></footer>
+      </div>
+
+      <div class="panel" id="p-preview">
+        <canvas id="preview-canvas"></canvas>
+        <div class="view-select">
+          <button id="view-btn">Perspective <span>&#9662;</span></button>
+          <div class="view-menu" id="view-menu">
+            <button data-view="perspective">Perspective</button><button data-view="top">Top</button><button data-view="front">Front</button>
+          </div>
+        </div>
+        <div class="params" id="params"></div>
+        <div class="preview-foot" id="preview-foot">World XY &bull; preview geometry</div>
+        <div class="timer" id="timer"><div class="timer-bar"><i></i></div><b>20</b></div>
+      </div>
+
+      <div class="panel" id="p-health">
+        <header><h3 class="smallcaps">Your health</h3><b id="hp-text">4 / 4</b></header>
+        <div class="hearts" id="hearts"></div>
+        <div class="xp-row"><span id="level-chip">Level 1</span><span>XP <b id="xp-text">0</b></span></div>
+      </div>
+      <div id="effects"></div>
+
+      <div class="panel" id="p-monster">
+        <header>
+          <div>
+            <h3 class="smallcaps" id="mon-name">The Rootbound</h3>
+            <div class="sub" id="mon-sub">Tangled Grove &middot; Encounter 01</div>
+          </div>
+          <div class="intent" id="mon-intent"></div>
+        </header>
+        <div class="mon-hp"><span id="mon-hp-text">18 / 25</span><div class="bar"><i id="mon-hp-bar"></i></div></div>
+        <div class="mon-art" id="mon-art"></div>
+      </div>
+
+      <div id="featured"></div>
+      <div class="panel" id="feedback"></div>
+      <div id="lifesavers"></div>
+
+      <div id="hero"></div>
+      <div id="hand-label"><span class="smallcaps">Your hand</span><small id="hand-sub">Choose a component</small></div>
+      <div id="hand"></div>
+
+      <div id="side-btns">
+        <button class="btn big primary" id="btn-moves">Moves</button>
+        <button class="btn big warm" id="btn-help">Help</button>
+        <button class="btn small ghost" id="btn-map">&#8592; Map</button>
+      </div>
+      <div id="flash"></div>
+    </section>
+
+    <div id="toast"></div>
+    <div id="modal" class="hidden"><div class="modal-card" id="modal-card"></div></div>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/preview.js"></script>
+<script src="js/monsters.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/loader.js"></script>
+<script src="js/art.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>

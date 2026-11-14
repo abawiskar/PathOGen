@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PathOGen Text Review</title>
+  <style>
+    :root { --bg: #13201f; --panel: #1c2c2a; --line: #3d5450; --gold: #e8dcb0; --text: #dfe6dc; --muted: #8fa29b; --draft: #c9b26a; --ok: #8fb79a; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.5 'Segoe UI', system-ui, sans-serif; }
+    header { padding: 24px 32px 8px; }
+    h1 { font-family: Georgia, serif; color: var(--gold); margin: 0; font-size: 26px; }
+    .bar { display: flex; gap: 16px; align-items: center; color: var(--muted); margin-top: 8px; flex-wrap: wrap; }
+    label { cursor: pointer; }
+    main { padding: 8px 32px 48px; max-width: 1100px; }
+    h2 { font-family: Georgia, serif; color: var(--gold); border-bottom: 1px solid var(--line); padding-bottom: 4px; margin-top: 28px; font-size: 19px; }
+    h2 small { color: var(--muted); font: 12px monospace; margin-left: 8px; }
+    .entry { background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--ok); border-radius: 4px; padding: 10px 14px; margin: 10px 0; }
+    .entry.draft { border-left-color: var(--draft); }
+    .entry h3 { margin: 0 0 6px; font-size: 14px; color: var(--gold); }
+    .entry h3 code { color: var(--muted); font-weight: 400; }
+    .tag { font-size: 11px; padding: 1px 6px; border-radius: 3px; background: var(--draft); color: #1a1a14; margin-left: 6px; font-weight: 700; }
+    dl { display: grid; grid-template-columns: 110px 1fr; gap: 3px 12px; margin: 0; }
+    dt { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .08em; padding-top: 2px; }
+    dd { margin: 0; }
+    .wrong div { margin-bottom: 2px; } .wrong b { color: #f0a6a6; font-weight: 600; }
+    .err { color: #f0a6a6; }
+    code { font-family: Consolas, monospace; }
+  </style>
+</head>
+<body>
+<header>
+  <h1>PathOGen &mdash; text review</h1>
+  <div class="bar">
+    <span id="summary">Loading&hellip;</span>
+    <label><input type="checkbox" id="only-draft" checked> Show only entries marked <code>"draft": true</code></label>
+  </div>
+  <p class="bar">Edit the text in <code>web/levels/&lt;level&gt;/level.json</code>, then delete the <code>"draft": true</code> line once an entry has been reviewed.</p>
+</header>
+<main id="list"></main>
+<script src="js/data.js"></script>
+<script>
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+let data = [];
+function compName(id) { return COMPONENTS[id] ? COMPONENTS[id].name : id; }
+function wrongList(w) {
+  return Object.entries(w || {}).map(([k, v]) => `<div><b>${k === '*' ? 'any other' : esc(compName(k))}</b> — ${esc(v)}</div>`).join('') || '<i>none</i>';
+}
+function render() {
+  const only = document.getElementById('only-draft').checked;
+  let total = 0, drafts = 0, html = '';
+  data.forEach(({ dir, L, err }) => {
+    if (err) { html += `<h2>${esc(dir)}</h2><p class="err">${esc(err)}</p>`; return; }
+    let body = '';
+    L.nodes.filter(n => n.open).forEach(n => {
+      total++; if (n.draft) drafts++;
+      if (only && !n.draft) return;
+      body += `<div class="entry${n.draft ? ' draft' : ''}"><h3>Node <code>${esc(n.id)}</code> — ${esc(compName(n.comp))}${n.draft ? '<span class="tag">DRAFT</span>' : ''}</h3>
+        <dl><dt>Needs</dt><dd>${esc(n.need)}</dd><dt>Hint</dt><dd>${esc(n.hint)}</dd><dt>Correct</dt><dd>${esc(n.correct)}</dd>
+        <dt>Wrong</dt><dd class="wrong">${wrongList(n.wrong)}</dd></dl></div>`;
+    });
+    (L.wires || []).filter(w => w.check).forEach(w => {
+      const c = w.check; total++; if (c.draft) drafts++;
+      if (only && !c.draft) return;
+      body += `<div class="entry${c.draft ? ' draft' : ''}"><h3>Wire check <code>${esc(w.from)} → ${esc(w.to)}</code>${c.draft ? '<span class="tag">DRAFT</span>' : ''}</h3>
+        <dl><dt>Prompt</dt><dd>${esc(c.prompt)}</dd><dt>Hint</dt><dd>${esc(c.hint)}</dd><dt>Correct</dt><dd>${esc(c.correct)}</dd>
+        <dt>Wrong</dt><dd class="wrong">${wrongList(c.wrong)}</dd></dl></div>`;
+    });
+    html += `<h2>${esc(L.title)}<small>levels/${esc(dir)}/level.json</small></h2>${body || '<p style="color:var(--muted)">Nothing to review.</p>'}`;
+  });
+  document.getElementById('list').innerHTML = html;
+  document.getElementById('summary').textContent = `${drafts} of ${total} text entries still marked draft`;
+}
+(async () => {
+  try {
+    const idx = await (await fetch('levels/index.json', { cache: 'no-cache' })).json();
+    for (const dir of idx.levels) {
+      try { data.push({ dir, L: await (await fetch(`levels/${dir}/level.json`, { cache: 'no-cache' })).json() }); }
+      catch (e) { data.push({ dir, err: 'Could not read level.json: ' + e.message }); }
+    }
+  } catch (e) { document.getElementById('summary').textContent = 'Could not load levels/index.json — serve the web folder over http.'; return; }
+  render();
+})();
+document.getElementById('only-draft').onchange = render;
+</script>
+</body>
+</html>
