@@ -51,6 +51,8 @@ const ICONS = {
   graphMapper: '<rect x="3" y="3" width="18" height="18"/><path d="M3 21C9 21 9 3 21 3"/>',
   remap: '<path d="M5 4v16M19 4v16"/><path d="M5 7l14 3M5 17l14-3"/>',
   radians: '<path d="M4 20h16M4 20L16 6"/><path d="M11 20a7 7 0 0 0-2.2-5.2"/>',
+  capHoles: '<path d="M5 8v9c0 1.7 3.1 3 7 3s7-1.3 7-3V8"/><ellipse cx="12" cy="8" rx="7" ry="3" fill="currentColor" fill-opacity=".4"/>',
+  contour: '<path d="M7 4h10l2 16H5z"/><path d="M6.5 8h11M6 12h12M5.5 16h13"/>',
 };
 
 /* ins / outs: [letter, name, what it expects / carries] */
@@ -149,6 +151,10 @@ const COMPONENTS = {
     desc: 'Reshapes numbers through an editable graph curve.' },
   remap: { name: 'Remap Numbers', cat: 'Maths / Domain', tier: 2, ins: [['V', 'Value', 'numbers'], ['S', 'Source', 'source domain'], ['T', 'Target', 'target domain']], outs: [['R', 'Mapped', 'remapped numbers'], ['C', 'Clipped', 'clipped numbers']],
     desc: 'Rescales numbers from one range to another.' },
+  capHoles: { name: 'Cap Holes', cat: 'Surface / Util', tier: 1, ins: [['B', 'Brep', 'an open brep']], outs: [['B', 'Brep', 'a closed brep']],
+    desc: 'Closes the planar openings of a brep.' },
+  contour: { name: 'Contour', cat: 'Intersect / Mathematical', tier: 2, ins: [['S', 'Shape', 'a brep or mesh'], ['P', 'Point', 'a start point'], ['N', 'Direction', 'the contour normal'], ['D', 'Distance', 'spacing between contours']], outs: [['C', 'Contours', 'section curves']],
+    desc: 'Slices a shape into evenly spaced section curves.' },
   radians: { name: 'Radians', cat: 'Maths / Trig', tier: 1, ins: [['D', 'Degrees', 'an angle in degrees']], outs: [['R', 'Radians', 'the angle in radians']],
     desc: 'Converts degrees to radians.' },
 };

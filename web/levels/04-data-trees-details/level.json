@@ -1,0 +1,346 @@
+{
+  "id": 4,
+  "title": "Data Trees & Details",
+  "placeholder": true,
+  "objective": "Divide every floor, regroup the points into columns, and run twisting mullions up the tower.",
+  "learn": "Data trees: one branch per floor, Flip Matrix to regroup, per-branch operations for details.",
+  "monster": "branchmaw",
+  "health": 5,
+  "guidance": "independent",
+  "lifesavers": {
+    "hint": 2,
+    "potion": 1,
+    "fifty": 1,
+    "clear": 1,
+    "shield": 1,
+    "second": 1
+  },
+  "params": [
+    {
+      "key": "h",
+      "label": "Height",
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "value": 67
+    },
+    {
+      "key": "tw",
+      "label": "Twist (°)",
+      "min": 0,
+      "max": 90,
+      "step": 1,
+      "value": 59
+    },
+    {
+      "key": "fh",
+      "label": "Floor ht",
+      "min": 2,
+      "max": 10,
+      "step": 0.5,
+      "value": 4
+    },
+    {
+      "key": "n",
+      "label": "Mullions",
+      "min": 4,
+      "max": 40,
+      "step": 1,
+      "value": 20
+    }
+  ],
+  "nodes": [
+    {
+      "id": "pb",
+      "comp": "polygon",
+      "open": false,
+      "label": "Base",
+      "set": {
+        "R": 6,
+        "S": 5,
+        "Rf": 1.46
+      },
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": "pt",
+      "comp": "polygon",
+      "open": false,
+      "label": "Top copy",
+      "set": {
+        "R": 6,
+        "S": 5,
+        "Rf": 1.46
+      },
+      "x": 0,
+      "y": 120
+    },
+    {
+      "id": "sh",
+      "comp": "slider",
+      "open": false,
+      "label": "Height",
+      "param": "h",
+      "x": 0,
+      "y": 230
+    },
+    {
+      "id": "uz",
+      "comp": "unitZ",
+      "open": false,
+      "x": 150,
+      "y": 230
+    },
+    {
+      "id": "mv",
+      "comp": "move",
+      "open": false,
+      "x": 290,
+      "y": 150
+    },
+    {
+      "id": "stw",
+      "comp": "slider",
+      "open": false,
+      "label": "Twist °",
+      "param": "tw",
+      "x": 290,
+      "y": 250
+    },
+    {
+      "id": "rot",
+      "comp": "rotate",
+      "open": false,
+      "degrees": true,
+      "x": 430,
+      "y": 160
+    },
+    {
+      "id": "lft",
+      "comp": "loft",
+      "open": false,
+      "preview": false,
+      "x": 570,
+      "y": 70
+    },
+    {
+      "id": "cap",
+      "comp": "capHoles",
+      "open": false,
+      "label": "Tower mass",
+      "ghost": true,
+      "preview": true,
+      "x": 710,
+      "y": 0
+    },
+    {
+      "id": "sfh",
+      "comp": "slider",
+      "open": false,
+      "label": "Floor ht",
+      "param": "fh",
+      "x": 710,
+      "y": 95
+    },
+    {
+      "id": "con",
+      "comp": "contour",
+      "open": false,
+      "label": "Floors",
+      "preview": true,
+      "x": 860,
+      "y": 40
+    },
+    {
+      "id": "sn",
+      "comp": "slider",
+      "open": false,
+      "label": "Mullions",
+      "param": "n",
+      "x": 860,
+      "y": 140
+    },
+    {
+      "id": "div",
+      "comp": "divideCurve",
+      "open": true,
+      "x": 1010,
+      "y": 80,
+      "need": "a component that places the same number of points on every floor",
+      "hint": "Curve › Division. A fixed count of equal parts.",
+      "correct": "Divide Curve runs once per floor curve, so its output is a data tree: one branch per floor, each holding N points — {0;0}, {0;1}, {0;2} …",
+      "wrong": {
+        "divideLength": "Divide Length uses a fixed spacing, so floors of different size would get different counts — the mullions wouldn't line up.",
+        "contour": "Contour already made the floors.",
+        "shatter": "Shatter cuts curves into pieces but doesn't give you points.",
+        "*": "This slot needs a component that places the same number of points on every floor."
+      },
+      "distractors": [
+        "divideLength",
+        "contour",
+        "shatter",
+        "listItem"
+      ],
+      "draft": true
+    },
+    {
+      "id": "flip",
+      "comp": "flipMatrix",
+      "open": true,
+      "x": 1150,
+      "y": 80,
+      "need": "a component that regroups the points by position instead of by floor",
+      "hint": "Sets › Tree. Rows become columns.",
+      "correct": "Flip Matrix swaps rows and columns of the tree: instead of one branch per floor, you get one branch per point position — every point that sits above each other is now grouped together.",
+      "wrong": {
+        "flatten": "Flatten throws all points into one list — you lose the grouping you need for vertical lines.",
+        "graft": "Graft puts every single point on its own branch; you'd get points, not columns.",
+        "reverseList": "Reverse List just flips the order inside each floor.",
+        "*": "This slot needs a component that regroups the points by position instead of by floor."
+      },
+      "distractors": [
+        "flatten",
+        "graft",
+        "reverseList",
+        "shiftList"
+      ],
+      "draft": true
+    },
+    {
+      "id": "itp",
+      "comp": "interpolate",
+      "open": true,
+      "x": 1290,
+      "y": 80,
+      "need": "a component that draws a curve through each column of points",
+      "hint": "Curve › Spline. Runs once per branch.",
+      "correct": "Interpolate runs once per branch, so each column of points becomes one mullion curve climbing and twisting with the tower.",
+      "wrong": {
+        "line": "Line joins pairs of points — you'd get short segments, not continuous mullions.",
+        "polygon": "Polygon ignores the points entirely.",
+        "loft": "Loft makes surfaces, not mullion lines.",
+        "*": "This slot needs a component that draws a curve through each column of points."
+      },
+      "distractors": [
+        "line",
+        "polygon",
+        "loft",
+        "divideCurve"
+      ],
+      "draft": true
+    },
+    {
+      "id": "pipe",
+      "comp": "pipe",
+      "open": true,
+      "set": {
+        "R": 0.15
+      },
+      "x": 1430,
+      "y": 80,
+      "need": "a component that gives each mullion curve real thickness",
+      "hint": "Surface › Freeform. A radius around a rail curve.",
+      "correct": "Pipe wraps a round profile around each curve — the mullions become solid detail elements.",
+      "wrong": {
+        "extrude": "Extrude pushes a curve along a vector into a ribbon, not a round member.",
+        "offset": "Offset copies the curve; it stays thin.",
+        "boundary": "Boundary Surfaces fills closed flat outlines.",
+        "*": "This slot needs a component that gives each mullion curve real thickness."
+      },
+      "distractors": [
+        "extrude",
+        "offset",
+        "boundary",
+        "loft"
+      ],
+      "draft": true
+    }
+  ],
+  "wires": [
+    {
+      "from": "sh.N",
+      "to": "uz.F"
+    },
+    {
+      "from": "pt.P",
+      "to": "mv.G"
+    },
+    {
+      "from": "uz.V",
+      "to": "mv.T"
+    },
+    {
+      "from": "mv.G",
+      "to": "rot.G"
+    },
+    {
+      "from": "stw.N",
+      "to": "rot.A"
+    },
+    {
+      "from": "pb.P",
+      "to": "lft.C"
+    },
+    {
+      "from": "rot.G",
+      "to": "lft.C"
+    },
+    {
+      "from": "lft.L",
+      "to": "cap.B"
+    },
+    {
+      "from": "cap.B",
+      "to": "con.S"
+    },
+    {
+      "from": "sfh.N",
+      "to": "con.D"
+    },
+    {
+      "from": "con.C",
+      "to": "div.C"
+    },
+    {
+      "from": "sn.N",
+      "to": "div.N",
+      "check": {
+        "side": "in",
+        "prompt": "The Mullions slider should drive which input of Divide Curve?",
+        "hint": "C = curve, N = count, K = split at kinks.",
+        "correct": "N is the number of segments per floor — the number of mullions around the tower.",
+        "wrong": {
+          "C": "C is the curve; the floors are already connected.",
+          "K": "K is a True/False kink switch.",
+          "*": "That input isn't the count."
+        },
+        "draft": true
+      }
+    },
+    {
+      "from": "div.P",
+      "to": "flip.D",
+      "check": {
+        "side": "out",
+        "prompt": "Which OUTPUT of Divide Curve should feed Flip Matrix?",
+        "hint": "The mullions pass through locations on each floor.",
+        "correct": "P carries the division points — the locations the mullions pass through.",
+        "wrong": {
+          "T": "T carries tangent vectors — directions, not locations.",
+          "t": "t carries curve parameters — numbers, not points.",
+          "*": "That output isn't the points."
+        },
+        "draft": true
+      }
+    },
+    {
+      "from": "flip.D",
+      "to": "itp.V"
+    },
+    {
+      "from": "itp.C",
+      "to": "pipe.C"
+    }
+  ]
+}

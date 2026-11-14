@@ -32,6 +32,6 @@ Then open http://localhost:5173. Add `?all` to the URL to unlock every level (fo
 | `js/game.js` | Game engine: turns, attacks, lifesavers, scoring, save data, rendering |
 
 Levels are loaded with `fetch()`, so the game must be served over http (not opened as a file).
-The 8 current levels are placeholders written before the real scripts; their text is all marked draft.
+Levels 1–2 are transcribed from `GH definitions/Twisty_Simple.gh`. Levels 3–4 are placeholders (`"placeholder": true`) until their scripts arrive. All card text is marked draft.
 
 Progress (XP, stars, unlocked levels) is stored in the browser's localStorage.

@@ -50,6 +50,25 @@ const Engine = (() => {
     const k = V.unit(axis), r = V.sub(p, o), c = Math.cos(a), s = Math.sin(a);
     return V.add(o, V.add(V.add(V.mul(r, c), V.mul(V.cross(k, r), s)), V.mul(k, V.dot(k, r) * (1 - c))));
   }
+  /* point on a loft: u runs along the sections (by vertex index), w across them */
+  function loftPoint(l, u, w) {
+    const S = l.sections, m = S[0].pts.length, closed = S[0].closed;
+    const along = (pts) => { const x = u * (closed ? m : m - 1), i = Math.floor(x) % m, j = closed ? (i + 1) % m : Math.min(i + 1, m - 1), f = x - Math.floor(x); return V.add(V.mul(pts[i], 1 - f), V.mul(pts[j], f)); };
+    const ring = S.map(c => along(c.pts));
+    const y = w * (ring.length - 1), a = Math.min(Math.floor(y), ring.length - 2), f = y - a;
+    return V.add(V.mul(ring[a], 1 - f), V.mul(ring[a + 1], f));
+  }
+  /* horizontal section of a loft at height z (rails treated as polylines between sections) */
+  function loftRing(l, z) {
+    const S = l.sections, m = S[0].pts.length;
+    return G.range(m).map(i => {
+      for (let j = 0; j < S.length - 1; j++) {
+        const a = S[j].pts[i], b = S[j + 1].pts[i];
+        if ((z - a[2]) * (z - b[2]) <= 0 && a[2] !== b[2]) { const f = (z - a[2]) / (b[2] - a[2]); return V.add(V.mul(a, 1 - f), V.mul(b, f)); }
+      }
+      return S[z < S[0].pts[i][2] ? 0 : S.length - 1].pts[i];
+    });
+  }
   const srfPoint = (s, u, w) => { const [a, b, c, d] = s.c; const p = V.add(V.mul(a, 1 - u), V.mul(b, u)), q = V.add(V.mul(d, 1 - u), V.mul(c, u)); return V.add(V.mul(p, 1 - w), V.mul(q, w)); };
   const L = (arr) => ({ list: arr });
 
@@ -69,7 +88,19 @@ const Engine = (() => {
     lineSDL: { def: [[0, 0, 0], vec([1, 0, 0]), 1], fn: ([s, d, l]) => { const p = toPoint(s); return [crv([p, V.add(p, V.mul(V.unit(toVec(d)), toNum(l)))])]; } },
     circle: { def: [null, 1], fn: ([p, r]) => { const pl = toPlane(p), R = toNum(r), pts = []; for (let i = 0; i < 64; i++) { const t = i / 64 * Math.PI * 2; pts.push(onPlane(pl, R * Math.cos(t), R * Math.sin(t))); } return [crv(pts, true)]; } },
     rectangle: { def: [null, 1, 1, 0], fn: ([p, x, y]) => { const pl = toPlane(p), X = toDomain(x), Y = toDomain(y); const pts = [[X[0], Y[0]], [X[1], Y[0]], [X[1], Y[1]], [X[0], Y[1]]].map(([u, w]) => onPlane(pl, u, w)); return [crv(pts, true), 2 * (Math.abs(X[1] - X[0]) + Math.abs(Y[1] - Y[0]))]; } },
-    polygon: { def: [null, 1, 6, 0], fn: ([p, r, s]) => { const pl = toPlane(p), R = toNum(r), n = Math.max(3, Math.round(toNum(s))), pts = []; for (let i = 0; i < n; i++) { const t = i / n * Math.PI * 2; pts.push(onPlane(pl, R * Math.cos(t), R * Math.sin(t))); } return [crv(pts, true), n * 2 * R * Math.sin(Math.PI / n)]; } },
+    polygon: { def: [null, 1, 6, 0], fn: ([p, r, s, rf]) => {
+      const pl = toPlane(p), R = toNum(r), n = Math.max(3, Math.round(toNum(s))), F = Math.max(0, toNum(rf));
+      const half = Math.PI / n, edge = 2 * R * Math.sin(half), inner = Math.PI - 2 * half;
+      const tdist = Math.min(F / Math.tan(inner / 2), edge / 2), fr = tdist * Math.tan(inner / 2), pts = [];
+      for (let i = 0; i < n; i++) {
+        const t = i / n * Math.PI * 2;
+        if (fr < 1e-6) { pts.push(onPlane(pl, R * Math.cos(t), R * Math.sin(t))); continue; }
+        // fillet arc: centre on the bisector, sweeping the corner's exterior angle
+        const cd = R - fr / Math.sin(inner / 2), cx = cd * Math.cos(t), cy = cd * Math.sin(t);
+        for (let k = 0; k <= 6; k++) { const a = t - half + (2 * half) * k / 6; pts.push(onPlane(pl, cx + fr * Math.cos(a), cy + fr * Math.sin(a))); }
+      }
+      return [crv(pts, true), polyLen([...pts, pts[0]])];
+    } },
     interpolate: { access: ['list'], def: [undefined, 3, false, 0], fn: ([v]) => { const pts = v.map(toPoint); if (pts.length < 2) return [null, null, null]; const c = crv(G.spline(pts, 10)); return [c, polyLen(c.pts), [0, 1]]; } },
     divideCurve: { def: [undefined, 10, false], fn: ([c, n]) => {
       if (!c || c.t !== 'crv') return [null, null, null];
@@ -86,7 +117,14 @@ const Engine = (() => {
     pipe: { def: [undefined, 1, null], fn: ([c]) => [c && c.t === 'crv' ? Object.assign({}, c, { w: 4 }) : null] },
     boundary: { fn: ([e]) => { if (!e || e.t !== 'crv' || !e.closed) return [null]; return [e.pts.length === 4 ? { t: 'srf', c: e.pts.slice() } : { t: 'srf', c: [e.pts[0], e.pts[1], e.pts[2], e.pts[3] || e.pts[2]], outline: e.pts }]; } },
     divDomain2: { def: [undefined, 10, 10], fn: ([, u, v]) => { const U = Math.max(1, Math.round(toNum(u))), W = Math.max(1, Math.round(toNum(v))), out = []; for (let j = 0; j < W; j++) for (let i = 0; i < U; i++) out.push({ t: 'dom2', u0: i / U, u1: (i + 1) / U, v0: j / W, v1: (j + 1) / W }); return [L(out)]; } },
-    isotrim: { fn: ([s, d]) => { if (!s || s.t !== 'srf' || !d || d.t !== 'dom2') return [null]; return [{ t: 'srf', c: [srfPoint(s, d.u0, d.v0), srfPoint(s, d.u1, d.v0), srfPoint(s, d.u1, d.v1), srfPoint(s, d.u0, d.v1)] }]; } },
+    isotrim: { fn: ([s, d]) => { if (!s || (s.t !== 'srf' && s.t !== 'loft') || !d || d.t !== 'dom2') return [null]; const f = s.t === 'loft' ? loftPoint : srfPoint; return [{ t: 'srf', c: [f(s, d.u0, d.v0), f(s, d.u1, d.v0), f(s, d.u1, d.v1), f(s, d.u0, d.v1)] }]; } },
+    capHoles: { fn: ([b]) => [b && b.t === 'loft' ? Object.assign({}, b, { capped: true }) : b] },
+    contour: { def: [undefined, [0, 0, 0], vec([0, 0, 1]), 1], fn: ([g, p, , d]) => {
+      if (!g || g.t !== 'loft') return [L([])];
+      const D = Math.max(0.05, toNum(d)), P = geoPoints(g), z0 = Math.min(...P.map(q => q[2])), z1 = Math.max(...P.map(q => q[2])), base = toPoint(p)[2], out = [];
+      for (let z = base + Math.ceil((z0 - base) / D - 1e-9) * D; z <= z1 + 1e-9 && out.length < 400; z += D) out.push(crv(loftRing(g, z), true));
+      return [L(out)];
+    } },
     area: { fn: ([g]) => {
       if (!g) return [null, null];
       const P = geoPoints(g); if (!P.length) return [null, null];
@@ -102,7 +140,7 @@ const Engine = (() => {
     sortList: { access: ['list', 'list'], fn: ([k, a]) => { const idx = k.map((_, i) => i).sort((x, y) => toNum(k[x]) - toNum(k[y])); return [L(idx.map(i => k[i])), L(idx.map(i => a[i]))]; } },
     shiftList: { access: ['list'], def: [undefined, 1, true], fn: ([l, s]) => { const n = l.length, k = Math.round(toNum(s)); return [L(l.map((_, i) => l[(((i + k) % n) + n) % n]))]; } },
     move: { def: [undefined, vec([0, 0, 10])], fn: ([g, t]) => { const d = toVec(t); return [mapGeo(g, p => V.add(p, d)), null]; } },
-    rotate: { def: [undefined, Math.PI / 2, null], fn: ([g, a, p]) => { const pl = toPlane(p), ang = toNum(a); return [mapGeo(g, q => rotAxis(q, pl.o, pl.z, ang)), null]; } },
+    rotate: { def: [undefined, Math.PI / 2, null], fn: ([g, a, p], n) => { const pl = toPlane(p), ang = toNum(a) * (n.degrees ? Math.PI / 180 : 1); return [mapGeo(g, q => rotAxis(q, pl.o, pl.z, ang)), null]; } },
     scale: { def: [undefined, [0, 0, 0], 0.5], fn: ([g, c, f]) => { const o = toPoint(c), k = toNum(f); return [mapGeo(g, q => V.add(o, V.mul(V.sub(q, o), k))), null]; } },
     mirror: { def: [undefined, 'YZ'], fn: ([g, p]) => { const pl = toPlane(p); return [mapGeo(g, q => V.sub(q, V.mul(pl.z, 2 * V.dot(V.sub(q, pl.o), pl.z)))), null]; } },
     sine: { fn: ([x]) => [Math.sin(toNum(x))] },
@@ -231,7 +269,12 @@ const Engine = (() => {
             }
             break;
           }
-          case 'loft': s.lines.push(...G.loft(it.sections.map(c => c.pts), it.sections[0].closed, k)); break;
+          case 'loft': {
+            const ls = G.loft(it.sections.map(c => c.pts), it.sections[0].closed, k);
+            if (it.sections.length === 2) for (let r = 1; r < 8; r++) { const f = r / 8; ls.push({ pts: it.sections[0].pts.map((p, i) => V.add(V.mul(p, 1 - f), V.mul(it.sections[1].pts[i], f))), closed: it.sections[0].closed, k, w: 0.8 }); }
+            if (node.ghost) ls.forEach(l => { l.color = 'rgba(120,60,70,.22)'; l.k = null; l.w = 0.8; });
+            s.lines.push(...ls); break;
+          }
           case 'dom2': doms++; break;
         }
       })));
