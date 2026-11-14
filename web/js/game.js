@@ -158,6 +158,7 @@
   }
 
   function startLevel(idx, d) {
+    window.PathOGenSound?.stop();
     const stage = LEVELS[idx];
     if (d == null) d = Math.min(save.diff[stage.id] != null ? save.diff[stage.id] : 0, stage.difficulties.length - 1);
     save.diff[stage.id] = d; writeSave();
@@ -213,8 +214,11 @@
   const wrongCards = () => st.hand.filter(id => !isCorrect(cur(), id));
 
   /* ───────── Core actions ───────── */
+  const sfx = (name, delay = 0) => window.PathOGenSound?.play(name, delay);
+
   function select(id) {
     if (!st || st.over) return;
+    sfx('card_select');
     st.selected = st.selected === id ? null : id;
     renderHand(); renderFeatured(); renderGraph();
   }
@@ -227,6 +231,8 @@
   }
 
   function onCorrect(d, id) {
+    sfx(d.kind === 'comp' ? 'component_place' : 'wire_connect');
+    if (st.di + 1 < st.decisions.length) sfx('correct', d.kind === 'comp' ? 90 : 180);
     clearTimer();
     st.done.add(d.key);
     const clean = st.decMistakes === 0, gain = (d.kind === 'comp' ? 100 : 60) + (clean ? 40 : 0);
@@ -293,7 +299,7 @@
     const intent = st.intent;
     let dmg = 1;
     anim($('#mon-art'), 'attack', 550);
-    setTimeout(() => { anim($('#flash'), 'red', 500); heroReact('damage'); anim($('#p-health'), 'shake', 400); }, 220);
+    setTimeout(() => { sfx('player_damage'); anim($('#flash'), 'red', 500); heroReact('damage'); anim($('#p-health'), 'shake', 400); }, 420);
     switch (intent) {
       case 'damage': dmg = 2; break;
       case 'blur': st.effects.blur = 2; break;
@@ -323,6 +329,7 @@
     st.mistakes++; st.streak = 0;
     if (st.shield) { st.shield = false; toast('Out of time — your shield absorbs the hit.', 'good'); }
     else {
+      sfx('player_damage', 280);
       st.health = Math.max(0, st.health - 1);
       anim($('#mon-art'), 'attack', 550); anim($('#flash'), 'red', 500); heroReact('damage');
       toast('Too slow! The monster strikes.', 'bad'); floatText($('#p-health'), '-1', 'bad', 200, 70);
@@ -408,6 +415,7 @@
 
   /* ───────── Victory / defeat ───────── */
   function victory() {
+    sfx('victory', 180);
     st.over = true; st.won = true; clearTimer();
     $('#mon-art').classList.add('dead');
     const L = level();
@@ -920,8 +928,9 @@
 
   /* ───────── Map ───────── */
   const MAP_POS = [[250, 270], [560, 235], [870, 270], [1180, 235], [1390, 430], [1110, 580], [790, 610], [480, 720]];
-  function openTitle() { if (st) clearTimer(); hideTip(); show('screen-title'); }
+  function openTitle() { window.PathOGenSound?.stop(); if (st) clearTimer(); hideTip(); show('screen-title'); }
   function openMap() {
+    window.PathOGenSound?.stop();
     clearTimer();
     show('screen-map');
     const xp = totalXP();
