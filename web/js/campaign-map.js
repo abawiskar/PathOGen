@@ -57,6 +57,12 @@
       if (completed) node.classList.add('completed');
       node.prepend(marker);
       const art = node.querySelector('.mn-art');
+      // keep the stage's monster as a preview beside the marker before .mn-art becomes the hero's spot
+      if (art && art.innerHTML.trim()) {
+        const monster = document.createElement('span'); monster.className = 'campaign-monster';
+        monster.innerHTML = art.innerHTML; monster.title = node.querySelector('.mn-num')?.textContent || '';
+        node.append(monster);
+      }
       if (art) art.innerHTML = '<img class="campaign-hero" src="img/hero-main.png" alt="Hero">';
       node.onclick = () => select(node);
       node.onkeydown = event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); select(node); } };
