@@ -1,0 +1,268 @@
+{
+  "id": 7,
+  "title": "Data Trees",
+  "objective": "Turn two lists into a grid of points, curve every row, and loft a wave surface.",
+  "learn": "Branches and data matching: Graft splits lists apart, Flatten brings them back together.",
+  "monster": "branchmaw",
+  "health": 5,
+  "guidance": "independent",
+  "lifesavers": {
+    "hint": 2,
+    "potion": 1,
+    "fifty": 1,
+    "clear": 1,
+    "shield": 1,
+    "second": 1
+  },
+  "params": [
+    {
+      "key": "nx",
+      "label": "X count",
+      "min": 3,
+      "max": 12,
+      "step": 1,
+      "value": 7
+    },
+    {
+      "key": "ny",
+      "label": "Y count",
+      "min": 4,
+      "max": 14,
+      "step": 1,
+      "value": 10
+    },
+    {
+      "key": "amp",
+      "label": "Wave",
+      "min": 0,
+      "max": 3,
+      "step": 0.1,
+      "value": 1.2
+    }
+  ],
+  "order": [
+    "cp",
+    "gr",
+    "itp",
+    "fl",
+    "lft"
+  ],
+  "nodes": [
+    {
+      "id": "sa",
+      "comp": "series",
+      "open": false,
+      "label": "Series X",
+      "x": 0,
+      "y": 0,
+      "set": {
+        "S": 0,
+        "N": 2,
+        "C": "$nx"
+      }
+    },
+    {
+      "id": "sb",
+      "comp": "series",
+      "open": false,
+      "label": "Series Y",
+      "x": 0,
+      "y": 120,
+      "set": {
+        "S": 0,
+        "N": 1.5,
+        "C": "$ny"
+      }
+    },
+    {
+      "id": "gr",
+      "comp": "graft",
+      "open": true,
+      "x": 140,
+      "y": 0,
+      "passthrough": true,
+      "need": "a component that puts every X value on its own branch",
+      "hint": "Sets › Tree. One item per branch: {0}, {1}, {2} …",
+      "correct": "Graft puts each X value on its own branch. Construct Point now pairs every branch with the WHOLE Y list — a full grid, one row of points per branch.",
+      "wrong": {
+        "flatten": "Flatten removes branches — the opposite of what we need. Our list is already flat.",
+        "flipMatrix": "Flip Matrix swaps rows and columns of an existing tree; our data is still a flat list.",
+        "reverseList": "Reverse List only changes the order.",
+        "shiftList": "Shift List offsets items but keeps one flat list.",
+        "*": "This slot needs a component that puts every X value on its own branch."
+      },
+      "distractors": [
+        "flatten",
+        "flipMatrix",
+        "reverseList",
+        "shiftList"
+      ],
+      "draft": true
+    },
+    {
+      "id": "sin",
+      "comp": "sine",
+      "open": false,
+      "label": "Sine × Wave",
+      "x": 140,
+      "y": 150
+    },
+    {
+      "id": "cp",
+      "comp": "constructPoint",
+      "open": true,
+      "x": 280,
+      "y": 70,
+      "need": "a component that combines X, Y and Z values into points",
+      "hint": "Vector › Point.",
+      "correct": "Construct Point pairs X, Y and Z item by item. Two flat lists of different lengths use “longest list” matching — so you get ONE diagonal row, not a grid. Next, fix that with a tree.",
+      "wrong": {
+        "pointParam": "A Point parameter only stores points.",
+        "vector2pt": "Vector 2Pt makes vectors from existing points.",
+        "unitZ": "Unit Z makes vectors, not points.",
+        "xyPlane": "XY Plane makes a plane from an origin point.",
+        "*": "This slot needs a component that combines X, Y and Z values into points."
+      },
+      "distractors": [
+        "pointParam",
+        "vector2pt",
+        "unitZ",
+        "xyPlane"
+      ],
+      "draft": true
+    },
+    {
+      "id": "itp",
+      "comp": "interpolate",
+      "open": true,
+      "x": 420,
+      "y": 70,
+      "need": "a component that draws a smooth curve through each row of points",
+      "hint": "Curve › Spline. Smooth, passing through the points.",
+      "correct": "Interpolate runs once per branch: each branch of points becomes its own smooth curve.",
+      "wrong": {
+        "line": "Line would join points in pairs, giving straight segments.",
+        "polygon": "Polygon draws a regular shape from a radius, ignoring the points.",
+        "divideCurve": "Divide Curve needs a curve — we’re trying to make one.",
+        "loft": "Loft needs curves first.",
+        "*": "This slot needs a component that draws a smooth curve through each row of points."
+      },
+      "distractors": [
+        "line",
+        "polygon",
+        "divideCurve",
+        "loft"
+      ],
+      "draft": true
+    },
+    {
+      "id": "fl",
+      "comp": "flatten",
+      "open": true,
+      "x": 560,
+      "y": 70,
+      "need": "a component that gathers the branch curves into one list",
+      "hint": "Sets › Tree. Loft wants all its curves in a single list.",
+      "correct": "Each curve sits on its own branch, and Loft works per branch — it would try to loft each curve alone. Flatten collects every curve into one list so Loft can skin through all of them.",
+      "wrong": {
+        "graft": "Graft adds even more branches — each curve is already alone.",
+        "reverseList": "Reverse List flips order within each branch; the curves stay separated.",
+        "shiftList": "Shift List works within each branch; the curves stay separated.",
+        "sortList": "Sort List reorders but keeps the branches.",
+        "*": "This slot needs a component that gathers the branch curves into one list."
+      },
+      "distractors": [
+        "graft",
+        "reverseList",
+        "shiftList",
+        "sortList"
+      ],
+      "draft": true
+    },
+    {
+      "id": "lft",
+      "comp": "loft",
+      "open": true,
+      "x": 690,
+      "y": 70,
+      "need": "a component that skins a surface through the curves",
+      "hint": "Surface › Freeform.",
+      "correct": "Loft skins a surface through the curves in order. Graft → operate per branch → Flatten is a pattern you’ll use constantly.",
+      "wrong": {
+        "boundary": "Boundary Surfaces needs closed planar outlines — these curves are open and wavy.",
+        "extrude": "Extrude pushes each curve into a ribbon — not one continuous surface.",
+        "pipe": "Pipe makes a tube around each curve.",
+        "interpolate": "Interpolate is already making the curves.",
+        "*": "This slot needs a component that skins a surface through the curves."
+      },
+      "distractors": [
+        "boundary",
+        "extrude",
+        "pipe",
+        "interpolate"
+      ],
+      "draft": true
+    },
+    {
+      "id": "amp",
+      "comp": "multiplication",
+      "open": false,
+      "label": "× Wave",
+      "set": {
+        "B": "$amp"
+      },
+      "x": 210,
+      "y": 215
+    }
+  ],
+  "wires": [
+    {
+      "from": "sa.S",
+      "to": "gr.T"
+    },
+    {
+      "from": "gr.T",
+      "to": "cp.X"
+    },
+    {
+      "from": "sb.S",
+      "to": "cp.Y"
+    },
+    {
+      "from": "sb.S",
+      "to": "sin.x"
+    },
+    {
+      "from": "cp.Pt",
+      "to": "itp.V",
+      "check": {
+        "side": "in",
+        "prompt": "Which input of Interpolate receives the points?",
+        "hint": "Points that a curve passes through are called its vertices.",
+        "correct": "V is Vertices — the points the curve must pass through.",
+        "wrong": {
+          "D": "D is the curve degree (a whole number, usually 3).",
+          "P": "P is Periodic — a True/False for closed curves.",
+          "K": "K is the knot style — an integer setting."
+        },
+        "draft": true
+      }
+    },
+    {
+      "from": "itp.C",
+      "to": "fl.T"
+    },
+    {
+      "from": "fl.T",
+      "to": "lft.C"
+    },
+    {
+      "from": "sin.y",
+      "to": "amp.A"
+    },
+    {
+      "from": "amp.R",
+      "to": "cp.Z"
+    }
+  ]
+}

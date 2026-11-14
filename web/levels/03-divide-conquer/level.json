@@ -1,0 +1,179 @@
+{
+  "id": 3,
+  "title": "Divide & Conquer",
+  "objective": "Divide a curve into equal segments and mark every division with a circle.",
+  "learn": "Curve operations, and how one component can output several kinds of data.",
+  "monster": "blightmoth",
+  "health": 4,
+  "guidance": "standard",
+  "lifesavers": {
+    "hint": 2,
+    "potion": 1,
+    "fifty": 1,
+    "clear": 2,
+    "shield": 1,
+    "second": 1
+  },
+  "params": [
+    {
+      "key": "n",
+      "label": "Count",
+      "min": 2,
+      "max": 24,
+      "step": 1,
+      "value": 8
+    },
+    {
+      "key": "r",
+      "label": "Radius",
+      "min": 0.2,
+      "max": 1.5,
+      "step": 0.1,
+      "value": 0.5
+    }
+  ],
+  "nodes": [
+    {
+      "id": "crv",
+      "comp": "curveParam",
+      "open": false,
+      "label": "Curve",
+      "x": 0,
+      "y": 0,
+      "preview": true,
+      "baked": {
+        "curve": [
+          [
+            -9,
+            -1,
+            0
+          ],
+          [
+            -5,
+            4,
+            1.5
+          ],
+          [
+            0,
+            -2,
+            2.5
+          ],
+          [
+            4,
+            3,
+            1
+          ],
+          [
+            9,
+            0,
+            0
+          ]
+        ],
+        "smooth": true
+      }
+    },
+    {
+      "id": "sn",
+      "comp": "slider",
+      "open": false,
+      "label": "Count",
+      "param": "n",
+      "x": 0,
+      "y": 62
+    },
+    {
+      "id": "div",
+      "comp": "divideCurve",
+      "open": true,
+      "x": 180,
+      "y": 25,
+      "preview": true,
+      "need": "a component that splits a curve into a set number of equal parts",
+      "hint": "Curve › Division. You want a fixed NUMBER of equal parts.",
+      "correct": "Divide Curve splits a curve into N segments of equal length and returns three things: division Points, Tangents and parameters (t). Until Count is connected, N defaults to 10.",
+      "wrong": {
+        "divideLength": "Divide Length splits by a fixed distance, so the number of parts changes with the curve length. We want a set count.",
+        "shatter": "Shatter cuts a curve at parameters you already have — we need to compute those first.",
+        "offset": "Offset Curve makes a parallel copy; it doesn’t divide anything.",
+        "*": "This slot needs a component that splits a curve into a set number of equal parts."
+      },
+      "distractors": [
+        "divideLength",
+        "shatter",
+        "offset"
+      ],
+      "draft": true
+    },
+    {
+      "id": "sr",
+      "comp": "slider",
+      "open": false,
+      "label": "Radius",
+      "param": "r",
+      "x": 180,
+      "y": 110
+    },
+    {
+      "id": "cir",
+      "comp": "circle",
+      "open": true,
+      "x": 360,
+      "y": 40,
+      "need": "a component that draws a circle at each point",
+      "hint": "Curve › Primitive. Round, with a plane and a radius.",
+      "correct": "A point can act as a plane origin, so Circle runs once per division point: one list in, many circles out.",
+      "wrong": {
+        "rectangle": "Rectangle would place boxes — the challenge asks for circles marking each division.",
+        "pointParam": "A Point parameter would just store the points again; nothing new is drawn.",
+        "pipe": "Pipe needs a curve to follow; it wouldn’t mark individual points.",
+        "*": "This slot needs a component that draws a circle at each point."
+      },
+      "distractors": [
+        "rectangle",
+        "pointParam",
+        "pipe"
+      ],
+      "draft": true
+    }
+  ],
+  "wires": [
+    {
+      "from": "crv.C",
+      "to": "div.C"
+    },
+    {
+      "from": "sn.N",
+      "to": "div.N",
+      "check": {
+        "side": "in",
+        "prompt": "The Count slider should drive which input of Divide Curve?",
+        "hint": "C = curve, N = number of segments, K = split at kinks.",
+        "correct": "N is the number of segments. Drag Count and the points re-space themselves along the curve.",
+        "wrong": {
+          "C": "C expects the curve itself — it is already connected.",
+          "K": "K is a True/False switch for splitting at kinks, not a count."
+        },
+        "draft": true
+      }
+    },
+    {
+      "from": "div.P",
+      "to": "cir.P",
+      "check": {
+        "side": "out",
+        "prompt": "Which OUTPUT of Divide Curve should feed Circle’s P input?",
+        "hint": "Circle needs locations. Which output holds positions in space?",
+        "correct": "P outputs the division points. Each one becomes the centre of a circle.",
+        "wrong": {
+          "T": "T outputs tangent vectors — directions, not locations.",
+          "t": "t outputs curve parameters — numbers along the curve, not points in space."
+        },
+        "draft": true
+      }
+    },
+    {
+      "from": "sr.N",
+      "to": "cir.R"
+    }
+  ]
+}

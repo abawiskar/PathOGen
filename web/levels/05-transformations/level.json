@@ -1,0 +1,234 @@
+{
+  "id": 5,
+  "title": "Transformations",
+  "objective": "Stack copies of a rectangle into a twisting tower.",
+  "learn": "Move and Rotate — and how a list of values transforms one object into many.",
+  "monster": "wraith",
+  "health": 4,
+  "guidance": "standard",
+  "lifesavers": {
+    "hint": 2,
+    "potion": 1,
+    "fifty": 1,
+    "clear": 1,
+    "shield": 1,
+    "second": 1
+  },
+  "params": [
+    {
+      "key": "n",
+      "label": "Count",
+      "min": 3,
+      "max": 30,
+      "step": 1,
+      "value": 14
+    },
+    {
+      "key": "h",
+      "label": "Spacing",
+      "min": 0.3,
+      "max": 2,
+      "step": 0.1,
+      "value": 0.8
+    },
+    {
+      "key": "t",
+      "label": "Twist",
+      "min": 0,
+      "max": 0.4,
+      "step": 0.01,
+      "value": 0.1
+    }
+  ],
+  "nodes": [
+    {
+      "id": "sh",
+      "comp": "slider",
+      "open": false,
+      "label": "Spacing",
+      "param": "h",
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": "sn",
+      "comp": "slider",
+      "open": false,
+      "label": "Count",
+      "param": "n",
+      "x": 0,
+      "y": 46
+    },
+    {
+      "id": "ser",
+      "comp": "series",
+      "open": true,
+      "x": 160,
+      "y": 18,
+      "need": "a list of heights, one per copy",
+      "hint": "Sets › Sequence. Start 0, step = Spacing, count = Count.",
+      "correct": "Series gives one value per floor: 0, 0.8, 1.6 … Those values will become both heights and twist angles.",
+      "wrong": {
+        "range": "Range divides a domain — you’d have to work out the total height first. Series lets you set the spacing directly.",
+        "slider": "One slider = one number. We need one value per copy.",
+        "listItem": "List Item picks from a list that doesn’t exist yet.",
+        "*": "This slot needs a list of heights, one per copy."
+      },
+      "distractors": [
+        "range",
+        "slider",
+        "listItem"
+      ],
+      "draft": true
+    },
+    {
+      "id": "st",
+      "comp": "slider",
+      "open": false,
+      "label": "Twist",
+      "param": "t",
+      "x": 160,
+      "y": 110
+    },
+    {
+      "id": "rect",
+      "comp": "rectangle",
+      "open": false,
+      "label": "Rectangle",
+      "x": 300,
+      "y": 205,
+      "set": {
+        "X": [
+          -3,
+          3
+        ],
+        "Y": [
+          -2,
+          2
+        ]
+      }
+    },
+    {
+      "id": "uz",
+      "comp": "unitZ",
+      "open": true,
+      "x": 300,
+      "y": 0,
+      "need": "vectors pointing up, one per height value",
+      "hint": "Vector › Vector. Its factor F sets the length.",
+      "correct": "Unit Z with a list of factors produces a list of upward vectors of increasing length — one motion per copy.",
+      "wrong": {
+        "unitX": "Unit X would push copies sideways, not up.",
+        "vector2pt": "Vector 2Pt needs two points; we just have numbers.",
+        "constructPoint": "Construct Point makes positions. Move needs motion vectors.",
+        "*": "This slot needs vectors pointing up, one per height value."
+      },
+      "distractors": [
+        "unitX",
+        "vector2pt",
+        "constructPoint"
+      ],
+      "draft": true
+    },
+    {
+      "id": "mul",
+      "comp": "multiplication",
+      "open": false,
+      "x": 300,
+      "y": 95,
+      "preview": false
+    },
+    {
+      "id": "mv",
+      "comp": "move",
+      "open": true,
+      "x": 440,
+      "y": 150,
+      "need": "a transform that shifts geometry along a vector",
+      "hint": "Transform › Euclidean. G for geometry, T for motion.",
+      "correct": "Move copies the geometry along each vector. One rectangle × a list of vectors = a stack of rectangles.",
+      "wrong": {
+        "mirror": "Mirror reflects across a plane — it can’t stack copies upward.",
+        "scale": "Scale resizes; the rectangles would stay on the ground.",
+        "extrude": "Extrude would make one solid wall, not separate floors.",
+        "*": "This slot needs a transform that shifts geometry along a vector."
+      },
+      "distractors": [
+        "mirror",
+        "scale",
+        "extrude"
+      ],
+      "draft": true
+    },
+    {
+      "id": "rot",
+      "comp": "rotate",
+      "open": true,
+      "x": 580,
+      "y": 110,
+      "need": "a transform that turns each copy by an angle",
+      "hint": "Transform › Euclidean. Angle is in radians.",
+      "correct": "Rotate turns each rectangle by its own angle (height × Twist). Higher floors turn more — a twisting tower from one rectangle.",
+      "wrong": {
+        "scale": "Scale changes size, not orientation.",
+        "mirror": "Mirror flips geometry; it can’t twist gradually.",
+        "flipMatrix": "Flip Matrix restructures data trees — it doesn’t touch geometry.",
+        "*": "This slot needs a transform that turns each copy by an angle."
+      },
+      "distractors": [
+        "scale",
+        "mirror",
+        "flipMatrix"
+      ],
+      "draft": true
+    }
+  ],
+  "wires": [
+    {
+      "from": "sh.N",
+      "to": "ser.N"
+    },
+    {
+      "from": "sn.N",
+      "to": "ser.C"
+    },
+    {
+      "from": "ser.S",
+      "to": "uz.F"
+    },
+    {
+      "from": "ser.S",
+      "to": "mul.A"
+    },
+    {
+      "from": "st.N",
+      "to": "mul.B"
+    },
+    {
+      "from": "rect.R",
+      "to": "mv.G"
+    },
+    {
+      "from": "uz.V",
+      "to": "mv.T",
+      "check": {
+        "side": "in",
+        "prompt": "Which input of Move takes the Unit Z vectors?",
+        "hint": "G = geometry, T = translation.",
+        "correct": "T is the translation (motion) vector. With a list of vectors, Move makes one copy per vector.",
+        "wrong": {
+          "G": "G is the geometry to move — the rectangle is already plugged in there."
+        },
+        "draft": true
+      }
+    },
+    {
+      "from": "mv.G",
+      "to": "rot.G"
+    },
+    {
+      "from": "mul.R",
+      "to": "rot.A"
+    }
+  ]
+}

@@ -1,0 +1,331 @@
+{
+  "id": 8,
+  "title": "Script Master",
+  "objective": "Build a complete parametric tower: scale, twist and stack a polygon, then loft it.",
+  "learn": "Everything: lists, data matching, transforms and surfaces in one workflow.",
+  "monster": "wyrm",
+  "health": 5,
+  "guidance": "independent",
+  "boss": true,
+  "lifesavers": {
+    "hint": 1,
+    "potion": 1,
+    "fifty": 1,
+    "clear": 1,
+    "shield": 1,
+    "second": 1
+  },
+  "params": [
+    {
+      "key": "sides",
+      "label": "Sides",
+      "min": 3,
+      "max": 8,
+      "step": 1,
+      "value": 6
+    },
+    {
+      "key": "n",
+      "label": "Floors",
+      "min": 4,
+      "max": 30,
+      "step": 1,
+      "value": 16
+    },
+    {
+      "key": "h",
+      "label": "Floor height",
+      "min": 0.2,
+      "max": 1.2,
+      "step": 0.05,
+      "value": 0.6
+    },
+    {
+      "key": "t",
+      "label": "Twist",
+      "min": 0,
+      "max": 0.4,
+      "step": 0.01,
+      "value": 0.12
+    },
+    {
+      "key": "pinch",
+      "label": "Pinch",
+      "min": 0,
+      "max": 0.8,
+      "step": 0.05,
+      "value": 0.5
+    }
+  ],
+  "nodes": [
+    {
+      "id": "pol",
+      "comp": "polygon",
+      "open": true,
+      "x": 0,
+      "y": 0,
+      "set": {
+        "R": 4,
+        "S": "$sides"
+      },
+      "need": "a regular many-sided floor plate",
+      "hint": "Curve › Primitive. Radius plus a number of sides.",
+      "correct": "Polygon draws a regular floor plate with S sides around the origin — the seed of the tower.",
+      "wrong": {
+        "circle": "A circle has no corners to twist — the Sides slider needs a polygon.",
+        "rectangle": "Rectangle is always four-sided; the brief wants adjustable sides.",
+        "*": "This slot needs a regular many-sided floor plate."
+      },
+      "distractors": [
+        "circle",
+        "rectangle",
+        "interpolate",
+        "xyPlane",
+        "divideCurve"
+      ],
+      "draft": true
+    },
+    {
+      "id": "ser",
+      "comp": "series",
+      "open": true,
+      "x": 0,
+      "y": 140,
+      "set": {
+        "S": 0,
+        "N": "$h",
+        "C": "$n"
+      },
+      "need": "one value per floor",
+      "hint": "Sets › Sequence.",
+      "correct": "Series gives one value per floor. The same list will drive scale, twist and height — one source of truth.",
+      "wrong": {
+        "range": "Range divides a domain; Series sets floor height directly as the step.",
+        "slider": "One slider is one value; we need one per floor.",
+        "*": "This slot needs one value per floor."
+      },
+      "distractors": [
+        "range",
+        "slider",
+        "listItem",
+        "sortList",
+        "shiftList"
+      ],
+      "draft": true
+    },
+    {
+      "id": "gm",
+      "comp": "graphMapper",
+      "open": true,
+      "x": 130,
+      "y": 60,
+      "graph": {
+        "type": "pinch",
+        "param": "pinch"
+      },
+      "need": "a way to reshape the values into a pinched profile",
+      "hint": "Params › Input. Draw the curve you want the numbers to follow.",
+      "correct": "Graph Mapper reads each value off an editable curve — here a dip in the middle, so middle floors get smaller factors: the waist of the tower.",
+      "wrong": {
+        "remap": "Remap rescales linearly — it can’t create a dip in the middle.",
+        "sine": "Sine would oscillate with height, not form one smooth waist.",
+        "multiplication": "Multiplication scales all values evenly.",
+        "*": "This slot needs a way to reshape the values into a pinched profile."
+      },
+      "distractors": [
+        "remap",
+        "sine",
+        "multiplication",
+        "sortList",
+        "range"
+      ],
+      "draft": true
+    },
+    {
+      "id": "mul",
+      "comp": "multiplication",
+      "open": false,
+      "label": "× Twist",
+      "x": 130,
+      "y": 140,
+      "set": {
+        "B": "$t"
+      },
+      "preview": false
+    },
+    {
+      "id": "uz",
+      "comp": "unitZ",
+      "open": true,
+      "x": 130,
+      "y": 225,
+      "need": "upward vectors, one per floor",
+      "hint": "Vector › Vector.",
+      "correct": "Unit Z turns each floor value into an upward vector — the lift for each plate.",
+      "wrong": {
+        "*": "This slot needs upward vectors, one per floor."
+      },
+      "distractors": [
+        "unitX",
+        "vector2pt",
+        "amplitude",
+        "constructPoint",
+        "xyPlane"
+      ],
+      "draft": true
+    },
+    {
+      "id": "scl",
+      "comp": "scale",
+      "open": true,
+      "x": 265,
+      "y": 20,
+      "need": "a transform that resizes the floor plate by each factor",
+      "hint": "Transform › Affine.",
+      "correct": "Scale with one polygon and a LIST of factors produces a list of polygons — data matching does the copying. Centre C defaults to the origin, which is exactly where the polygon sits.",
+      "wrong": {
+        "offset": "Offset changes size by a distance, not a proportion; corners would drift.",
+        "area": "Area measures; it doesn’t transform.",
+        "*": "This slot needs a transform that resizes the floor plate by each factor."
+      },
+      "distractors": [
+        "move",
+        "rotate",
+        "mirror",
+        "offset",
+        "area"
+      ],
+      "draft": true
+    },
+    {
+      "id": "rot",
+      "comp": "rotate",
+      "open": true,
+      "x": 395,
+      "y": 70,
+      "need": "a transform that twists each plate by its angle",
+      "hint": "Transform › Euclidean. Angle in radians.",
+      "correct": "Rotate turns each plate by its own angle (value × Twist). Rotating before moving keeps every plate spinning around the tower’s axis.",
+      "wrong": {
+        "move": "Move comes later — rotate first, while plates are still centred on the origin.",
+        "*": "This slot needs a transform that twists each plate by its angle."
+      },
+      "distractors": [
+        "scale",
+        "mirror",
+        "move",
+        "flipMatrix",
+        "graft"
+      ],
+      "draft": true
+    },
+    {
+      "id": "mv",
+      "comp": "move",
+      "open": true,
+      "x": 525,
+      "y": 130,
+      "need": "a transform that lifts each plate into place",
+      "hint": "Transform › Euclidean.",
+      "correct": "Move lifts plate i by vector i. Scaled, twisted and stacked — the tower is ready to skin.",
+      "wrong": {
+        "extrude": "Extrude would turn each plate into a prism, all starting from the ground.",
+        "*": "This slot needs a transform that lifts each plate into place."
+      },
+      "distractors": [
+        "rotate",
+        "scale",
+        "mirror",
+        "extrude",
+        "pipe"
+      ],
+      "draft": true
+    },
+    {
+      "id": "lft",
+      "comp": "loft",
+      "open": true,
+      "x": 650,
+      "y": 130,
+      "need": "a component that skins one surface through all the floor plates",
+      "hint": "Surface › Freeform.",
+      "correct": "Loft skins one continuous surface through every plate. Change any slider and the whole tower updates — you’ve built a parametric system.",
+      "wrong": {
+        "boundary": "Boundary Surfaces would cap each floor separately.",
+        "pipe": "Pipe would make tubes along each outline.",
+        "*": "This slot needs a component that skins one surface through all the floor plates."
+      },
+      "distractors": [
+        "boundary",
+        "extrude",
+        "pipe",
+        "interpolate",
+        "flatten"
+      ],
+      "draft": true
+    }
+  ],
+  "wires": [
+    {
+      "from": "pol.P",
+      "to": "scl.G"
+    },
+    {
+      "from": "ser.S",
+      "to": "gm.x"
+    },
+    {
+      "from": "gm.y",
+      "to": "scl.F",
+      "check": {
+        "side": "in",
+        "prompt": "Which input of Scale receives the Graph Mapper values?",
+        "hint": "G = geometry, C = centre, F = factor.",
+        "correct": "F is the scale factor. A list of factors = a list of scaled floor plates.",
+        "wrong": {
+          "G": "G is the geometry — the polygon is already there.",
+          "C": "C is the centre point. Leaving it empty scales about the origin, which is what we want."
+        },
+        "draft": true
+      }
+    },
+    {
+      "from": "ser.S",
+      "to": "mul.A"
+    },
+    {
+      "from": "scl.G",
+      "to": "rot.G"
+    },
+    {
+      "from": "mul.R",
+      "to": "rot.A"
+    },
+    {
+      "from": "ser.S",
+      "to": "uz.F"
+    },
+    {
+      "from": "rot.G",
+      "to": "mv.G"
+    },
+    {
+      "from": "uz.V",
+      "to": "mv.T",
+      "check": {
+        "side": "in",
+        "prompt": "Which input of Move takes the Unit Z vectors?",
+        "hint": "G = geometry, T = translation.",
+        "correct": "T is the motion vector — one per plate.",
+        "wrong": {
+          "G": "G already receives the rotated plates."
+        },
+        "draft": true
+      }
+    },
+    {
+      "from": "mv.G",
+      "to": "lft.C"
+    }
+  ]
+}

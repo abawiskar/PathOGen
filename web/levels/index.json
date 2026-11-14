@@ -1,0 +1,12 @@
+{
+  "levels": [
+    "01-first-connections",
+    "02-building-geometry",
+    "03-divide-conquer",
+    "04-data-flow",
+    "05-transformations",
+    "06-parametric-systems",
+    "07-data-trees",
+    "08-script-master"
+  ]
+}

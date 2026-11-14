@@ -1,0 +1,266 @@
+{
+  "id": 6,
+  "title": "Parametric Systems",
+  "objective": "Panelise a facade and cut an adjustable opening into every panel.",
+  "learn": "Chaining several operations into one adjustable system.",
+  "monster": "hexwarden",
+  "health": 5,
+  "guidance": "independent",
+  "lifesavers": {
+    "hint": 2,
+    "potion": 1,
+    "fifty": 1,
+    "clear": 1,
+    "shield": 1,
+    "second": 1
+  },
+  "params": [
+    {
+      "key": "u",
+      "label": "Columns",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "value": 6
+    },
+    {
+      "key": "v",
+      "label": "Rows",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "value": 4
+    },
+    {
+      "key": "f",
+      "label": "Opening",
+      "min": 0.1,
+      "max": 0.9,
+      "step": 0.05,
+      "value": 0.55
+    }
+  ],
+  "nodes": [
+    {
+      "id": "rect",
+      "comp": "rectangle",
+      "open": false,
+      "label": "Facade outline",
+      "x": 0,
+      "y": 40,
+      "preview": true,
+      "set": {
+        "P": "XZ",
+        "X": [
+          -6,
+          6
+        ],
+        "Y": [
+          0,
+          8
+        ]
+      }
+    },
+    {
+      "id": "bnd",
+      "comp": "boundary",
+      "open": true,
+      "x": 140,
+      "y": 40,
+      "need": "a component that fills the closed outline with a flat surface",
+      "hint": "Surface › Freeform. The outline is closed and planar.",
+      "correct": "Boundary Surfaces fills closed planar curves with a trimmed flat surface — our facade becomes something we can subdivide.",
+      "wrong": {
+        "loft": "Loft needs two or more section curves to skin between.",
+        "extrude": "Extrude would push the outline into a box, not fill it.",
+        "pipe": "Pipe makes a tube around the outline.",
+        "offset": "Offset makes a parallel copy of the outline — still just a curve.",
+        "*": "This slot needs a component that fills the closed outline with a flat surface."
+      },
+      "distractors": [
+        "loft",
+        "extrude",
+        "pipe",
+        "offset"
+      ],
+      "draft": true
+    },
+    {
+      "id": "su",
+      "comp": "slider",
+      "open": false,
+      "label": "Columns",
+      "param": "u",
+      "x": 140,
+      "y": -62
+    },
+    {
+      "id": "sv",
+      "comp": "slider",
+      "open": false,
+      "label": "Rows",
+      "param": "v",
+      "x": 140,
+      "y": -18
+    },
+    {
+      "id": "dd",
+      "comp": "divDomain2",
+      "open": true,
+      "x": 290,
+      "y": -30,
+      "need": "a way to split the surface’s UV space into a grid of cells",
+      "hint": "Maths › Domain. Surfaces live in a 2D (U×V) domain.",
+      "correct": "Divide Domain² splits the surface’s 2D domain into U columns × V rows of sub-domains. It doesn’t make geometry yet — it’s a cutting plan.",
+      "wrong": {
+        "range": "Range divides a 1D domain into numbers. A surface needs a 2D grid.",
+        "series": "Series makes a list of numbers, not UV cells.",
+        "divideCurve": "Divide Curve works on curves, not surfaces.",
+        "graft": "Graft restructures data; it can’t subdivide anything.",
+        "*": "This slot needs a way to split the surface’s UV space into a grid of cells."
+      },
+      "distractors": [
+        "range",
+        "series",
+        "divideCurve",
+        "graft"
+      ],
+      "draft": true
+    },
+    {
+      "id": "iso",
+      "comp": "isotrim",
+      "open": true,
+      "x": 420,
+      "y": 40,
+      "preview": true,
+      "need": "a component that cuts the surface into pieces using the UV grid",
+      "hint": "Surface › Util. It extracts sub-surfaces.",
+      "correct": "Isotrim (SubSrf) cuts one sub-surface per UV cell — your facade panels.",
+      "wrong": {
+        "shatter": "Shatter cuts curves, not surfaces.",
+        "listItem": "List Item would pick one cell description, not cut the surface.",
+        "flatten": "Flatten changes data structure only.",
+        "boundary": "Boundary Surfaces is already in place upstream.",
+        "*": "This slot needs a component that cuts the surface into pieces using the UV grid."
+      },
+      "distractors": [
+        "shatter",
+        "listItem",
+        "flatten",
+        "boundary"
+      ],
+      "draft": true
+    },
+    {
+      "id": "area",
+      "comp": "area",
+      "open": true,
+      "x": 550,
+      "y": 100,
+      "preview": true,
+      "need": "a component that finds the centre of each panel",
+      "hint": "Surface › Analysis. It returns area and centroid.",
+      "correct": "Area returns each panel’s area and, more usefully here, its Centroid — the point we’ll scale around.",
+      "wrong": {
+        "constructPoint": "Construct Point needs coordinates we don’t have. Area computes centres for us.",
+        "divideCurve": "Divide Curve works on curves.",
+        "listItem": "List Item picks items; it doesn’t measure anything.",
+        "pointParam": "A Point parameter just stores points.",
+        "*": "This slot needs a component that finds the centre of each panel."
+      },
+      "distractors": [
+        "constructPoint",
+        "divideCurve",
+        "listItem",
+        "pointParam"
+      ],
+      "draft": true
+    },
+    {
+      "id": "sf",
+      "comp": "slider",
+      "open": false,
+      "label": "Opening",
+      "param": "f",
+      "x": 550,
+      "y": 168
+    },
+    {
+      "id": "scl",
+      "comp": "scale",
+      "open": true,
+      "x": 690,
+      "y": 60,
+      "need": "a transform that shrinks each panel around its centre",
+      "hint": "Transform › Affine. Geometry, Centre, Factor.",
+      "correct": "Scale shrinks each panel around its own centroid by the Opening factor. One slider now controls every opening on the facade.",
+      "wrong": {
+        "move": "Move shifts panels; it can’t make openings.",
+        "rotate": "Rotate would spin panels out of the facade plane.",
+        "offset": "Offset works on curves and can fail on corners; Scale is cleaner here.",
+        "mirror": "Mirror flips panels; nothing gets smaller.",
+        "*": "This slot needs a transform that shrinks each panel around its centre."
+      },
+      "distractors": [
+        "move",
+        "rotate",
+        "offset",
+        "mirror"
+      ],
+      "draft": true
+    }
+  ],
+  "wires": [
+    {
+      "from": "rect.R",
+      "to": "bnd.E"
+    },
+    {
+      "from": "bnd.S",
+      "to": "dd.I"
+    },
+    {
+      "from": "su.N",
+      "to": "dd.U"
+    },
+    {
+      "from": "sv.N",
+      "to": "dd.V"
+    },
+    {
+      "from": "bnd.S",
+      "to": "iso.S"
+    },
+    {
+      "from": "dd.S",
+      "to": "iso.D",
+      "check": {
+        "side": "in",
+        "prompt": "Which input of Isotrim receives the Divide Domain² grid?",
+        "hint": "S = the surface to cut, D = the domains to cut by.",
+        "correct": "D takes the sub-domains. One surface × many domains = many panels.",
+        "wrong": {
+          "S": "S is the base surface — Boundary Surfaces is already plugged in."
+        },
+        "draft": true
+      }
+    },
+    {
+      "from": "iso.S",
+      "to": "area.G"
+    },
+    {
+      "from": "iso.S",
+      "to": "scl.G"
+    },
+    {
+      "from": "area.C",
+      "to": "scl.C"
+    },
+    {
+      "from": "sf.N",
+      "to": "scl.F"
+    }
+  ]
+}

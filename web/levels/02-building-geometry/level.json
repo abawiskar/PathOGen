@@ -1,0 +1,172 @@
+{
+  "id": 2,
+  "title": "Building Geometry",
+  "objective": "Place a point, then raise a vertical line from it.",
+  "learn": "Points, vectors and lines — the atoms of every Grasshopper model.",
+  "monster": "mossback",
+  "health": 4,
+  "guidance": "guided",
+  "lifesavers": {
+    "hint": 2,
+    "potion": 1,
+    "fifty": 1,
+    "clear": 1,
+    "shield": 1,
+    "second": 1
+  },
+  "params": [
+    {
+      "key": "x",
+      "label": "X",
+      "min": -6,
+      "max": 6,
+      "step": 0.5,
+      "value": 2
+    },
+    {
+      "key": "y",
+      "label": "Y",
+      "min": -6,
+      "max": 6,
+      "step": 0.5,
+      "value": 1
+    },
+    {
+      "key": "len",
+      "label": "Length",
+      "min": 1,
+      "max": 10,
+      "step": 0.5,
+      "value": 6
+    }
+  ],
+  "nodes": [
+    {
+      "id": "sx",
+      "comp": "slider",
+      "open": false,
+      "label": "X",
+      "param": "x",
+      "x": 0,
+      "y": 0
+    },
+    {
+      "id": "sy",
+      "comp": "slider",
+      "open": false,
+      "label": "Y",
+      "param": "y",
+      "x": 0,
+      "y": 46
+    },
+    {
+      "id": "cp",
+      "comp": "constructPoint",
+      "open": true,
+      "x": 175,
+      "y": 18,
+      "preview": true,
+      "need": "a component that turns X and Y numbers into a point",
+      "hint": "Vector › Point. It has X, Y and Z inputs.",
+      "correct": "Construct Point combines X, Y and Z coordinates into a point. Z is unconnected, so it defaults to 0 and the point sits on the ground plane.",
+      "wrong": {
+        "pointParam": "A Point parameter stores points picked in Rhino — it doesn’t build one from numbers.",
+        "vector2pt": "Vector 2Pt needs two existing points to make a direction. We don’t have any points yet.",
+        "unitX": "Unit X makes a direction along X, not a location.",
+        "*": "This slot needs a component that turns X and Y numbers into a point."
+      },
+      "distractors": [
+        "pointParam",
+        "vector2pt",
+        "unitX"
+      ],
+      "draft": true
+    },
+    {
+      "id": "uz",
+      "comp": "unitZ",
+      "open": true,
+      "x": 175,
+      "y": 110,
+      "need": "a direction pointing straight up",
+      "hint": "Vector › Vector. “Up” in Rhino is the Z axis.",
+      "correct": "Unit Z outputs a vector of length 1 pointing up the world Z axis (times its factor F). Vectors are directions — they have no fixed position, so the preview draws them from the origin.",
+      "wrong": {
+        "unitX": "Unit X points sideways along the X axis — our line should rise vertically.",
+        "constructPoint": "Construct Point makes a location, not a direction.",
+        "amplitude": "Amplitude resizes an existing vector, but there is no vector to resize yet.",
+        "*": "This slot needs a direction pointing straight up."
+      },
+      "distractors": [
+        "unitX",
+        "constructPoint",
+        "amplitude"
+      ],
+      "draft": true
+    },
+    {
+      "id": "sl",
+      "comp": "slider",
+      "open": false,
+      "label": "Length",
+      "param": "len",
+      "x": 175,
+      "y": 175
+    },
+    {
+      "id": "ln",
+      "comp": "lineSDL",
+      "open": true,
+      "x": 360,
+      "y": 90,
+      "need": "a line built from a start point, a direction and a length",
+      "hint": "Curve › Primitive. Look for S, D and L inputs.",
+      "correct": "Line SDL draws a line from a Start point, in a Direction, for a Length. Ideal when you know where and which way, but not the end point.",
+      "wrong": {
+        "line": "Line needs two points (A and B). We have one point and a direction, so Line SDL fits better.",
+        "pipe": "Pipe wraps a tube around an existing curve — there is no curve yet.",
+        "circle": "Circle draws a round curve, not a straight one.",
+        "*": "This slot needs a line built from a start point, a direction and a length."
+      },
+      "distractors": [
+        "line",
+        "pipe",
+        "circle"
+      ],
+      "draft": true
+    }
+  ],
+  "wires": [
+    {
+      "from": "sx.N",
+      "to": "cp.X"
+    },
+    {
+      "from": "sy.N",
+      "to": "cp.Y"
+    },
+    {
+      "from": "cp.Pt",
+      "to": "ln.S"
+    },
+    {
+      "from": "uz.V",
+      "to": "ln.D",
+      "check": {
+        "side": "in",
+        "prompt": "Which input of Line SDL receives the Unit Z vector?",
+        "hint": "S = start, D = direction, L = length. What does a vector describe?",
+        "correct": "D is the direction. Without it Line SDL falls back to the X axis — watch the line swing upright now that it’s connected.",
+        "wrong": {
+          "S": "S expects the start point. A vector has a direction but no location.",
+          "L": "L expects a number for the length — the Length slider is already wired there."
+        },
+        "draft": true
+      }
+    },
+    {
+      "from": "sl.N",
+      "to": "ln.L"
+    }
+  ]
+}
