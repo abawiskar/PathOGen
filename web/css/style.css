@@ -69,14 +69,16 @@ button { font-family: inherit; cursor: pointer; }
 .btn[disabled] { opacity: .4; pointer-events: none; }
 
 /* ───────── Title ───────── */
-#screen-title .title-wrap { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding-top: 48px; isolation: isolate; }
+/* Only the Start screen uses the illustrated plate; text and controls stay live. */
+#screen-title { background: url('../img/start-confrontation.webp') center / cover no-repeat; }
+#screen-title::after { content: ''; position: absolute; inset: 14px; border: 1px solid var(--line-soft); pointer-events: none; }
+#screen-title .title-wrap { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding-top: 330px; isolation: isolate; }
 .logo { font-family: var(--serif); font-size: 128px; margin: 0; color: var(--gold); letter-spacing: .04em; text-shadow: 0 6px 0 #0b1312, 0 0 40px rgba(168,198,144,.25); z-index: 2; }
 .logo span { color: var(--sage); }
 .tagline { font-family: var(--serif); font-size: 22px; color: var(--gold-dim); letter-spacing: .06em; margin: 6px 0 40px; z-index: 2; }
-#screen-title .title-btns { position: absolute; bottom: 62px; display: flex; gap: 18px; z-index: 2; }
-/* A smaller hero faces the looming boss on one shared ground line. */
-#screen-title .title-monster { position: absolute; right: 190px; bottom: 172px; width: 650px; opacity: .9; animation: bob 3.4s ease-in-out infinite; pointer-events: none; z-index: 1; }
-#screen-title .title-hero { position: absolute; left: 250px; bottom: 172px; width: 330px; pointer-events: none; z-index: 1; }
+#screen-title .title-btns { display: flex; gap: 18px; z-index: 2; }
+/* The plate already contains both characters. Keep their existing DOM hooks. */
+#screen-title .title-monster, #screen-title .title-hero { display: none; }
 
 /* ───────── Map ───────── */
 .map-head { position: absolute; left: 60px; right: 60px; top: 46px; display: flex; justify-content: space-between; align-items: flex-end; z-index: 2; }
