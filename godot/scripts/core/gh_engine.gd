@@ -223,7 +223,12 @@ static func solvers() -> Dictionary:
 static func _build_solvers() -> void:
 	var S := {}
 	S.slider = {"fn": func(_a, n, ctx): return [ctx.params.get(n.param, 5.0) if n.get("param") != null else n.get("value", 5.0)]}
-	S.panel = {"def": [null], "fn": func(_a, n, _c): return [L(n.get("values", []).duplicate())]}
+	# a wired panel passes its input through (as in Grasshopper); unwired it outputs its typed values
+	S.panel = {"access": ["list"], "def": [null], "fn": func(a, n, _c):
+		var v = a[0]
+		if v is Array and v.any(func(x): return x != null):
+			return [L(v)]
+		return [L(n.get("values", []).duplicate())]}
 	S.toggle = {"fn": func(_a, n, _c): return [n.get("value", true)]}
 	S.pointParam = {"fn": func(_a, _n, _c): return [null]}
 	S.curveParam = {"fn": func(_a, _n, _c): return [null]}
@@ -483,6 +488,25 @@ static func _build_solvers() -> void:
 		var lo: float = nums.min()
 		var hi: float = nums.max()
 		var g: Dictionary = n.get("graph", {"type": "linear"})
+		# Grasshopper's Bezier graph (from a .ghx), read over the graph's 0-1 domain
+		if g.get("type") == "bezier" and g.get("cp", []).size() == 4:
+			var cp: Array = g.cp
+			var bz := func(t: float, i: int) -> float:
+				var u := 1.0 - t
+				return u * u * u * float(cp[0][i]) + 3 * u * u * t * float(cp[1][i]) + 3 * u * t * t * float(cp[2][i]) + t * t * t * float(cp[3][i])
+			var ys := []
+			for x in nums:
+				var xc := clampf(x, 0.0, 1.0)
+				var lo2 := 0.0
+				var hi2 := 1.0
+				for _k in 40:
+					var m := (lo2 + hi2) / 2.0
+					if bz.call(m, 0) < xc:
+						lo2 = m
+					else:
+						hi2 = m
+				ys.append(bz.call((lo2 + hi2) / 2.0, 1))
+			return [L(ys)]
 		var k: float = to_num(ctx.params.get(g.param, 0.5)) if g.get("param") != null else to_num(g.get("k", 0.5))
 		var out := []
 		for x in nums:
@@ -524,7 +548,7 @@ static func _build_solvers() -> void:
 # ───── components used by the .ghx levels (Godot only, tools/ghx_to_level.py) ─────
 static func _build_godot_solvers(S: Dictionary) -> void:
 	# floating parameters pass their input through (unwired, they hold nothing)
-	for id in ["pointParam", "curveParam", "dataParam"]:
+	for id in ["pointParam", "curveParam", "dataParam", "numberParam"]:
 		S[id] = {"fn": func(a, _n, _c): return [a[0]]}
 	S.unitY = {"def": [1.0], "fn": func(a, _n, _c): return [vec(Vector3(0, to_num(a[0]), 0))]}
 	S.division = {"def": [1.0, 1.0], "fn": func(a, _n, _c):
@@ -587,7 +611,8 @@ static func _build_godot_solvers(S: Dictionary) -> void:
 			return [null]
 		return [L(_join(cs))]}
 	S.merge = {"tree": func(t, _n, _c):
-		return [merge_trees(t.filter(func(x): return x != null and has_data(x)))]}
+		var m = merge_trees(t.filter(func(x): return x != null and has_data(x)))
+		return [m if m != null else []]}
 	S.trimWithRegion = {"access": ["item", "list"], "def": [U, U, null], "fn": func(a, _n, _c):
 		var c = a[0]
 		var regions: Array = a[1].filter(func(r): return is_geo(r, "crv") and r.closed)

@@ -206,7 +206,9 @@ static func png_texture(path: String) -> Texture2D:
 	if not FileAccess.file_exists(path):
 		return null
 	var img := Image.new()
-	if img.load_png_from_buffer(FileAccess.get_file_as_bytes(path)) != OK:
+	var bytes := FileAccess.get_file_as_bytes(path)
+	var err := img.load_webp_from_buffer(bytes) if path.ends_with(".webp") else (img.load_jpg_from_buffer(bytes) if path.ends_with(".jpg") else img.load_png_from_buffer(bytes))
+	if err != OK:
 		return null
 	img.generate_mipmaps()
 	var t := ImageTexture.create_from_image(img)
@@ -235,6 +237,13 @@ static func comp_icon(id: String, px: int, color := "#2f6d52") -> Texture2D:
 	var key := "icon:%s:%d:%s" % [id, px, color]
 	if _tex.has(key):
 		return _tex[key]
+	# the real Grasshopper icon when there is one (24 px artwork), else the web version's line icon
+	var gh: String = GHData.gh_icons.get(id, "")
+	if gh != "":
+		var t0 := svg_texture("res://img/gh-icons/" + gh, px / 24.0)
+		if t0:
+			_tex[key] = t0
+			return t0
 	var inner: String = GHData.icons.get(id, GHData.icons.get(GHData.icon_alias.get(id, ""), ""))
 	var svg := '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="%s" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">%s</svg>' % [color, inner.replace("currentColor", color)]
 	var img := Image.new()
