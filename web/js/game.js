@@ -735,10 +735,11 @@
   function definitionModal() {
     const L = level();
     const pic = L.definition_image ? `<img class="def-img" src="levels/${L.dir}/${L.definition_image}" alt="Completed definition">` : definitionSVG(L);
+    const fullCanvas = L.definition_image ? `<a class="def-full" href="levels/${L.dir}/${esc(L.definition_image)}" target="_blank" rel="noopener">Open full canvas ↗</a>` : '';
     modal(`<button class="x-close">&times;</button><div class="sub">Level ${L.id}${L.diffCount > 1 ? ' &middot; ' + esc(L.diffName) : ''} &middot; Completed definition</div>
       <h2>${esc(L.title)}</h2>
       <div class="def-layout">
-        <div class="def-canvas">${pic}<div class="def-cap">The finished definition. Nodes outlined in gold are the ones you place.</div></div>
+        <div class="def-canvas">${pic}<div class="def-cap def-cap-row"><span>The finished definition. Nodes outlined in gold are the ones you place.</span>${fullCanvas}</div></div>
         <div class="def-side"><div class="def-cap top">Output</div><img class="def-out" src="${goalImage(L)}" alt="Finished result"><p class="muted">What the definition produces with the default slider values.</p></div>
       </div>
       <div class="actions"><button class="btn primary" data-act="close">Back to building</button></div>`, null, true);
