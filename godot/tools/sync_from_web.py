@@ -8,7 +8,8 @@ Run from anywhere after pulling web changes:
 What it does:
   web/levels/**            -> godot/levels/**            (copied as-is)
   web/js/data.js           -> godot/data/components.json  (COMPONENTS, ICONS, FILLER)
-  web/js/monsters.js       -> godot/data/monsters.json    (MONSTERS)
+  web/js/monsters.js       -> godot/data/monsters.json    (MONSTER_OPTIONS, MONSTER_PHASES)
+  web/img/*.png            -> godot/img/                  (monster art, hero sprite frames)
 
 The JS files are plain object literals, so they are converted with a small
 tokenizer (no Node.js needed). If the web team changes those files into
@@ -140,7 +141,8 @@ def main():
     comps = read_const(data_js, "COMPONENTS")
     icons = read_const(data_js, "ICONS")
     filler = read_const(data_js, "FILLER")
-    monsters = read_const(monsters_js, "MONSTERS")
+    monsters = {"options": read_const(monsters_js, "MONSTER_OPTIONS"),
+                "phases": read_const(monsters_js, "MONSTER_PHASES")}
 
     for cid, c in comps.items():
         for key in ("name", "cat", "ins", "outs", "desc"):
@@ -154,13 +156,30 @@ def main():
         encoding="utf-8")
     (out_dir / "monsters.json").write_text(json.dumps(monsters, indent=1, ensure_ascii=False), encoding="utf-8")
 
+    # web images: copied as-is, marked "keep" so Godot ships the PNG files unchanged
+    img_src, img_dst = WEB / "img", GODOT / "img"
+    n_img = 0
+    if img_src.is_dir():
+        if img_dst.exists():
+            shutil.rmtree(img_dst)
+        img_dst.mkdir()
+        for f in sorted(img_src.iterdir()):
+            if f.is_file():
+                shutil.copy2(f, img_dst / f.name)
+                (img_dst / (f.name + ".import")).write_text('[remap]\n\nimporter="keep"\n', encoding="utf-8")
+                n_img += 1
+
     src, dst = WEB / "levels", GODOT / "levels"
     if dst.exists():
         shutil.rmtree(dst)
     shutil.copytree(src, dst)
     n_levels = len(json.loads((dst / "index.json").read_text(encoding="utf-8"))["levels"])
 
-    print(f"components: {len(comps)}  icons: {len(icons)}  monsters: {len(monsters)}  levels: {n_levels}")
+    for d in dst.iterdir():   # level folders may hold a goal image: keep it as a raw file too
+        for f in d.glob("*.png") if d.is_dir() else []:
+            (d / (f.name + ".import")).write_text('[remap]\n\nimporter="keep"\n', encoding="utf-8")
+    print(f"components: {len(comps)}  icons: {len(icons)}  monsters: {len(monsters['options'])}  "
+          f"phases: {len(monsters['phases'])}  images: {n_img}  levels: {n_levels}")
     print(f"written to {out_dir} and {dst}")
 
 

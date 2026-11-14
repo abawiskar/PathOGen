@@ -7,7 +7,10 @@ extends RefCounted
 static var components: Dictionary = {}   # id -> { name, cat, tier, ins:[[L,name,desc]], outs, desc, id }
 static var icons: Dictionary = {}        # id -> svg inner markup (24x24, stroke=currentColor)
 static var filler: Array = []
-static var monsters: Dictionary = {}     # key -> { name, place, art, intents:{k:w}, trait, frenzy? }
+static var monsters: Dictionary = {}     # key -> { name, place, img? or art, trait, placeholder? }
+static var phases: Array = []            # attack set by level position: { line, intents:{k:w}, frenzy? }
+## Preview one monster on every level: run with `-- --monster=<key>` (web: ?monster=<key>).
+static var monster_override := ""
 static var _loaded := false
 
 
@@ -23,13 +26,34 @@ static func ensure_loaded() -> void:
 			components[id]["id"] = id
 	var m = _read_json("res://data/monsters.json")
 	if m is Dictionary:
-		monsters = m
+		monsters = m.get("options", {})
+		phases = m.get("phases", [])
+	for a in OS.get_cmdline_user_args():
+		if a.begins_with("--monster=") and monsters.has(a.substr(10)):
+			monster_override = a.substr(10)
 	_loaded = true
 
 
 static func comp(id: String) -> Dictionary:
 	ensure_loaded()
 	return components.get(id, {})
+
+
+static func monster_key(level: Dictionary) -> String:
+	ensure_loaded()
+	return monster_override if monster_override != "" else str(level.get("monster", "placeholder"))
+
+
+## The level's monster with the attack phase for its position on the path
+## (the last phase repeats when there are more levels than phases).
+static func monster_for(level: Dictionary, level_index: int) -> Dictionary:
+	ensure_loaded()
+	var m: Dictionary = monsters.get(monster_key(level), {}).duplicate(true)
+	if not phases.is_empty():
+		m.merge(phases[mini(level_index, phases.size() - 1)], true)
+	if not m.has("intents"):
+		m.intents = {"hit": 1}
+	return m
 
 
 ## First part of a category, e.g. "Curve / Primitive" -> "Curve".

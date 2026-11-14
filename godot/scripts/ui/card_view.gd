@@ -10,6 +10,8 @@ var featured := false
 var is_selected := false
 var hovered := false
 
+const CURSE := Color("8f2f3a")
+
 
 func setup(id: String, b: Battle, is_featured := false) -> CardView:
 	card_id = id
@@ -56,7 +58,8 @@ func _draw() -> void:
 		g.shadow_color = Color(0.66, 0.78, 0.56, 0.55)
 		g.shadow_size = 18
 		draw_style_box(g, r.grow(3))
-	var body := UIKit.box(UIKit.PARCH, Color("8a8064"), 6, 2, 10)
+	var cursed: bool = battle.effects.icon > 0
+	var body := UIKit.box(UIKit.PARCH, CURSE if cursed else Color("8a8064"), 6, 2, 10)
 	draw_style_box(body, r)
 	draw_rect(Rect2(2, 2, size.x - 4, size.y * 0.55), Color(1, 1, 1, 0.08))
 	draw_rect(Rect2(2, size.y - 11, size.x - 4, 9), UIKit.SAGE_DEEP)
@@ -134,3 +137,28 @@ func _draw() -> void:
 		var dy := ny + 8
 		var italic: bool = not port and battle.L.guidance == "independent"
 		draw_multiline_string(UIKit.sans, Vector2(14, dy + dfs), desc, HORIZONTAL_ALIGNMENT_CENTER, size.x - 28, dfs, 3, Color("555244") if not italic else Color("6d6a5a"))
+	if icon_curse:
+		_curse_note(int(battle.effects.icon))
+
+
+## "✦ Icon Curse / name hidden · N more" in a dashed red box, so the empty card explains itself.
+func _curse_note(n: int) -> void:
+	var r := Rect2(10, size.y - 22 - 40, size.x - 20, 40)
+	draw_rect(r, Color(CURSE, 0.08))
+	var pts := PackedVector2Array([r.position, Vector2(r.end.x, r.position.y), r.end, Vector2(r.position.x, r.end.y), r.position])
+	for i in range(1, pts.size()):
+		var a := pts[i - 1]
+		var b := pts[i]
+		var L := a.distance_to(b)
+		var t := 0.0
+		while t < L:
+			draw_line(a.lerp(b, t / L), a.lerp(b, minf(t + 4.0, L) / L), CURSE, 1.5)
+			t += 7.0
+	var title := "Icon Curse"
+	var fs := 14
+	var tw := UIKit.serif.get_string_size(title, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
+	var sw := UIKit.sans_bold.get_string_size("✦ ", HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
+	var x := (size.x - tw - sw) / 2.0
+	draw_string(UIKit.sans_bold, Vector2(x, r.position.y + 18), "✦ ", HORIZONTAL_ALIGNMENT_LEFT, -1, fs, CURSE)
+	draw_string(UIKit.serif, Vector2(x + sw, r.position.y + 18), title, HORIZONTAL_ALIGNMENT_LEFT, -1, fs, CURSE)
+	_text_c("NAME HIDDEN · %d MORE" % n, r.position.y + 33, 10, Color(CURSE, 0.85), UIKit.sans_bold)

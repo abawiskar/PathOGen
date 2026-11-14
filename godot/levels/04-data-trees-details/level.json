@@ -4,7 +4,7 @@
   "placeholder": true,
   "objective": "Divide every floor, regroup the points into columns, and run twisting mullions up the tower.",
   "learn": "Data trees: one branch per floor, Flip Matrix to regroup, per-branch operations for details.",
-  "monster": "branchmaw",
+  "monster": "tree",
   "health": 5,
   "guidance": "independent",
   "lifesavers": {

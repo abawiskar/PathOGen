@@ -174,10 +174,10 @@ static func normalize(raw: Dictionary, dir: String) -> Dictionary:
 		if steps.is_empty():
 			continue
 		steps[maxi(0, maxi(pos.call(w.from[0]), pos.call(w.to[0])))].quizzes.append(quiz)
-	var monster: String = raw.get("monster", "rootbound")
+	var monster: String = raw.get("monster", "placeholder")
 	if not GHData.monsters.has(monster):
-		push_warning('%s: unknown monster "%s", using rootbound' % [where, monster])
-		monster = "rootbound"
+		push_warning('%s: unknown monster "%s"' % [where, monster])
+		monster = "placeholder"
 	var level := {"params": [], "lifesavers": {}, "health": 4, "guidance": "standard"}
 	level.merge(raw, true)
 	level.dir = dir

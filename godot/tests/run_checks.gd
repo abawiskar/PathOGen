@@ -38,6 +38,10 @@ func _init() -> void:
 			check(b.hand.has(id), "%s: correct card %s not in hand %s" % [L.dir, id, b.hand])
 			b.place(id)
 		check(b.won, "%s: perfect run did not win" % L.dir)
+		var mon := b.monster()
+		check(mon.has("line") and mon.has("intents") and mon.has("name"), "%s: monster should merge option + phase" % L.dir)
+		var ph: Dictionary = GHData.phases[mini(i, GHData.phases.size() - 1)]
+		check(mon.intents == ph.intents, "%s: monster intents should come from phase %d" % [L.dir, i])
 		check(b.score.get("stars", 0) == 3, "%s: perfect run should give 3 stars" % L.dir)
 		check(b.hp == 0, "%s: monster HP should reach 0, is %d" % [L.dir, b.hp])
 		# full graph solves to some preview geometry
