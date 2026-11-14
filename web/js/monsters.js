@@ -19,7 +19,11 @@ const MONSTER_OPTIONS = {
     name: 'The Branch Tree', img: 'img/monster-tree.png', place: 'The Data Grove',
     trait: 'It grows a new branch for every item you forget to flatten.',
   },
-  /* stand-in until the fourth monster's artwork arrives */
+  voronoi: {
+    name: 'The Voronoi Golem', img: 'img/monster-voronoi.png' /* Images/Monster/voronoi_v1.png */, place: 'The Cell Quarry',
+    trait: 'A body of cells grown around stolen points. Feed it the wrong points and it only gets bigger.',
+  },
+  /* fallback for a level whose monster key is unknown */
   placeholder: {
     name: 'The Blightmoth', art: 'blightmoth', place: 'Dusk Hollow', placeholder: true,
     trait: 'Its dust blurs names and smears your preview.',

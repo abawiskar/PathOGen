@@ -4,7 +4,7 @@
   "placeholder": true,
   "objective": "Slice the twisted mass into floors and cut its facade into panels.",
   "learn": "Panelization: contouring a solid into floors and subdividing a surface by its UV domain.",
-  "monster": "placeholder",
+  "monster": "voronoi",
   "health": 4,
   "guidance": "standard",
   "lifesavers": {

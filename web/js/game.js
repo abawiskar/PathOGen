@@ -463,6 +463,8 @@
       case 'close': closeModal(); break;
       case 'fight': closeModal(); break;
       case 'map': clearTimer(); closeModal(); openMap(); break;
+      case 'menu': clearTimer(); closeModal(); openTitle(); break;
+      case 'exit': exitGame(); break;
       case 'retry': closeModal(); startLevel(st.idx, st.L.diffIndex); break;
       case 'harder': closeModal(); startLevel(st.idx, st.L.diffIndex + 1); break;
       case 'next': closeModal(); startLevel(st.idx + 1); break;
@@ -862,6 +864,7 @@
 
   /* ───────── Map ───────── */
   const MAP_POS = [[250, 270], [560, 235], [870, 270], [1180, 235], [1390, 430], [1110, 580], [790, 610], [480, 720]];
+  function openTitle() { if (st) clearTimer(); hideTip(); show('screen-title'); }
   function openMap() {
     clearTimer();
     show('screen-map');
@@ -904,11 +907,29 @@
       <p class="muted">Levels are loaded with fetch(), so the game must be served over http — e.g. <code>python -m http.server 5173 --directory web</code> — not opened as a file.</p>`);
   });
   $('#btn-title-help').onclick = helpModal;
+  /* Exit: browsers only let a page close a tab that a script opened, so try it and fall back to a farewell screen. */
+  $('#btn-exit').onclick = () => modal(`<h2>Leave PathOGen?</h2><p>Your progress is saved on this device, so you can pick up where you left off.</p>
+    <div class="actions"><button class="btn" data-act="close">Stay</button><button class="btn warm" data-act="exit">Exit</button></div>`);
+  function exitGame() {
+    closeModal();
+    try { window.close(); } catch (e) { /* not allowed */ }
+    setTimeout(() => {   // still here: the browser kept the tab open
+      modal(`<h2>Thanks for playing!</h2><p>Your browser keeps this tab open, so close it whenever you're ready — your progress is saved.</p>
+        <div class="actions"><button class="btn primary" data-act="close">Back to PathOGen</button></div>`);
+    }, 250);
+  }
   $('#btn-map-help').onclick = helpModal;
   $('#btn-help').onclick = helpModal;
   $('#btn-moves').onclick = movesModal;
   $('#goal').onclick = () => { if (st) goalModal(); };
-  $('#btn-map').onclick = () => { if (st && !st.over && st.di > 0) { modal(`<h2>Leave the battle?</h2><p>Your progress in this level will be lost.</p><div class="actions"><button class="btn" data-act="close">Stay</button><button class="btn warm" data-act="map">Leave</button></div>`); } else openMap(); };
+  /* leaving a battle in progress asks first (as in the Godot build); 'to' = map or main menu */
+  const leaveBattle = (to) => {
+    if (st && !st.over && st.di > 0) modal(`<h2>Leave the battle?</h2><p>Your progress in this level will be lost.</p><div class="actions"><button class="btn" data-act="close">Stay</button><button class="btn warm" data-act="${to}">Leave</button></div>`);
+    else to === 'menu' ? openTitle() : openMap();
+  };
+  $('#btn-map').onclick = () => leaveBattle('map');
+  $('#btn-menu').onclick = () => leaveBattle('menu');
+  $('#btn-map-menu').onclick = () => openTitle();
   $('#btn-reset').onclick = () => modal(`<h2>Reset progress?</h2><p>This clears all XP, stars and unlocked levels on this device.</p><div class="actions"><button class="btn" data-act="close">Cancel</button><button class="btn warm" data-act="reset">Reset</button></div>`);
   let gDrag = null;
   $('#graph').addEventListener('pointerdown', e => {

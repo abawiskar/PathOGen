@@ -25,7 +25,7 @@ Then open <http://localhost:5173>.
 | URL option | Effect |
 | --- | --- |
 | `?all` | Unlocks every level (for testing) |
-| `?monster=tower` (or `spaghetti`, `tree`, `placeholder`) | Shows one monster on every level |
+| `?monster=tower` (or `spaghetti`, `tree`, `voronoi`) | Shows one monster on every level |
 
 Other pages: `web/review.html` lists every hint and explanation still marked as draft, for the team to review.
 
@@ -46,6 +46,8 @@ Other pages: `web/review.html` lists every hint and explanation still marked as 
 | **Your hand** (bottom) | The component cards (or port cards during a wire check) to choose from. |
 | **Hero** (bottom left) | The guide character; reacts to success, damage and defeat. |
 | **Moves / Help** (bottom right) | Moves opens a log of every decision with its explanation; Help explains the rules. |
+| **Title screen** | Begin the Hunt, How to Play, and Exit (asks first; closes the tab where the browser allows it, otherwise shows a goodbye message). |
+| **Main Menu / ← Map** (bottom right) | Leave the battle for the title screen or the map; asks first if the level is in progress. The map also has a Main Menu button. |
 
 ---
 
@@ -122,7 +124,7 @@ Every 3 correct picks in a row can award a bonus lifesaver (up to 2 per level).
 | --- | --- | --- | --- | --- |
 | 1 | **Build the Base Shape** | The Spaghetti Boss | Construct Point → Polygon (5 sides, filleted corners), driven by sliders | Twisty_Simple.gh |
 | 2 | **Build the Mass** | The Twisted Tower | Unit Z → Move → Rotate (degrees) → Loft → Cap Holes: a twisted tower mass | Twisty_Simple.gh |
-| 3 | **Panels & Floors** | *Placeholder* (Blightmoth) | Contour (floors), Divide Domain² + Isotrim (facade panels) | Placeholder |
+| 3 | **Panels & Floors** | The Voronoi Golem | Contour (floors), Divide Domain² + Isotrim (facade panels) | Placeholder |
 | 4 | **Data Trees & Details** | The Branch Tree | Divide Curve per floor → Flip Matrix → Interpolate → Pipe: twisting mullions | Placeholder |
 
 ### Difficulties
@@ -164,7 +166,7 @@ cards and pre-place less — moving players from **recognition → understanding
 | The Spaghetti Boss | `Images/Monster/Spaghetti Boss_v1.png` | `web/img/monster-spaghetti.png` |
 | The Twisted Tower | `Images/Monster/Twisted Tower Monster_v3.png` (dark background removed) | `web/img/monster-tower.png` |
 | The Branch Tree | `Images/Monster/Tree Branch Monster_v1.png` | `web/img/monster-tree.png` |
-| Level 3 monster | *Awaiting artwork* — built-in SVG placeholder | — |
+| The Voronoi Golem | `Images/Monster/voronoi_v1.png` (same version as the Godot build) | `web/img/monster-voronoi.png` |
 
 Monster names and backstory lines are placeholders and can be edited in `web/js/monsters.js`.
 
@@ -205,7 +207,6 @@ Monster names and backstory lines are placeholders and can be edited in `web/js/
 
 - **Level 1 difficulties:** replace the five placeholders with definitions from their `.ghx` files.
 - **Levels 3–4:** replace placeholder definitions with the real scripts; decide how many difficulties each has.
-- **Level 3 monster:** add the fourth monster's artwork.
 - **Hero wire-attack animation:** needs evenly spaced frames on the sheet.
 - **Text review:** all hints and explanations are drafts written by Claude.
 - **Monster names and lines:** placeholders.
