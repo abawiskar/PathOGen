@@ -1,4 +1,4 @@
-/* Original PathOGen music. Independent of the sound-effect playback pools. */
+/* Original PathOGen music. The Music toggle also gates sound effects. */
 (() => {
   'use strict';
   const base = new URL('../audio/bgm/', document.currentScript.src);
@@ -75,9 +75,10 @@
   function unlock() { unlocked = true; sync(); resume(); }
   function setEnabled(value) {
     enabled = Boolean(value); save(); updateControl();
+    window.PathOGenSound?.setEnabled(enabled);
     if (!enabled) pauseAll(); else resume();
   }
-  button.addEventListener('click', () => { unlock(); setEnabled(!enabled); });
+  button.addEventListener('click', () => { setEnabled(!enabled); unlock(); });
   slider.addEventListener('input', () => { unlock(); setVolume(Number(slider.value) / 100); });
   function setVolume(value) {
     if (!Number.isFinite(value)) return;
@@ -95,5 +96,6 @@
     sync, setEnabled, setVolume,
     get state() { const a = tracks.get(current); return { track: current, enabled, volume, unlocked, paused: a ? a.paused : true, loop: a ? a.loop : false }; }
   };
+  window.PathOGenSound?.setEnabled(enabled);
   updateControl(); sync();
 })();
