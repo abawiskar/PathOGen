@@ -69,6 +69,10 @@ func _run() -> void:
 	bb.changed.emit()
 	await create_timer(1.0).timeout
 	await shot("08_boss_icon_curse")
+	main.goal_modal()
+	await create_timer(0.3).timeout
+	await shot("08b_goal")
+	main.close_modal()
 	main.help_modal()
 	await create_timer(0.3).timeout
 	await shot("09_help")

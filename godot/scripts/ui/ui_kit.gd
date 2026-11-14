@@ -214,15 +214,20 @@ static func png_texture(path: String) -> Texture2D:
 	return t
 
 
-## Painted PNG art when the team has made it (art/monster_<key>.png), else the web SVG.
-static func monster_texture(art: String) -> Texture2D:
-	var png := png_texture("res://art/monster_%s.png" % art)
-	return png if png else svg_texture("res://art/monster_%s.svg" % art, 2.0)
+## A monster option's picture: its painted image (img/monster-*.png) when it has one,
+## else the web's drawn SVG (art/monster_<art>.svg), as monsterArt() in game.js.
+static func monster_texture(key: String) -> Texture2D:
+	var m: Dictionary = GHData.monsters.get(key, {})
+	if m.has("img"):
+		var png := png_texture("res://" + str(m.img))
+		if png:
+			return png
+	return svg_texture("res://art/monster_%s.svg" % str(m.get("art", "blightmoth")), 2.0)
 
 
-static func hero_texture() -> Texture2D:
-	var png := png_texture("res://art/hero.png")
-	return png if png else svg_texture("res://art/hero.svg", 2.0)
+## Hero sprite: "main" is the standing pose, "<kind>-<n>" a reaction frame.
+static func hero_texture(frame := "main") -> Texture2D:
+	return png_texture("res://img/hero-%s.png" % frame)
 
 
 ## Component icon (24x24 line glyph from data.js) rasterised at px pixels.

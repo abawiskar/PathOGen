@@ -2,6 +2,7 @@
 ## The rules live in Battle (scripts/core/battle.gd); this file only draws and routes input.
 extends Control
 
+const MAP_POS_4 := [Vector2(270, 330), Vector2(630, 560), Vector2(990, 330), Vector2(1340, 560)]
 const MAP_POS := [Vector2(250, 270), Vector2(560, 235), Vector2(870, 270), Vector2(1180, 235), Vector2(1390, 430), Vector2(1110, 580), Vector2(790, 610), Vector2(480, 720)]
 
 var levels: Array = []
@@ -47,7 +48,12 @@ var fb_title: Label
 var fb_body: RichTextLabel
 var fb_meta: RichTextLabel
 var ls_buttons := {}
-var hero: ArtView
+var hero: HeroView
+var title_monster: ArtView
+var goal_box: PanelContainer
+var curse_banner: PanelContainer
+var curse_text: RichTextLabel
+var _goal_scenes := {}
 var hand_box: Control
 var hand_sub: Label
 var flash: FxViews.Flash
@@ -74,6 +80,8 @@ func _ready() -> void:
 	load_errors = r.errors
 	if unlock_all:
 		SaveData.unlocked = levels.size()
+	if not levels.is_empty():
+		title_monster.set_texture(UIKit.monster_texture(GHData.monster_key(levels[-1])))
 	show_screen("title")
 	if not load_errors.is_empty():
 		modal(func(b):
@@ -138,17 +146,17 @@ func _build_background() -> void:
 
 # ═════════════════════ title ═════════════════════
 func _build_title(s: Control) -> void:
-	var mon := ArtView.new()
-	mon.position = Vector2(1180, 110)
-	mon.size = Vector2(360, 340)
-	mon.bob_period = 3.4
-	mon.set_texture(UIKit.monster_texture("rootbound"))
-	s.add_child(mon)
-	var hr := ArtView.new()
-	hr.position = Vector2(80, 520)
-	hr.size = Vector2(330, 340)
-	hr.bob = false
-	hr.set_texture(UIKit.hero_texture())
+	# the last level's monster (set once levels load), and the hero
+	title_monster = ArtView.new()
+	title_monster.position = Vector2(1150, 90)
+	title_monster.size = Vector2(400, 300)
+	title_monster.bob_period = 3.4
+	title_monster.modulate.a = 0.9
+	s.add_child(title_monster)
+	var hr := HeroView.new()
+	hr.fit_width = true
+	hr.position = Vector2(70, 568)
+	hr.size = Vector2(290, 300)
 	s.add_child(hr)
 	var logo := RichTextLabel.new()
 	logo.bbcode_enabled = true
@@ -231,13 +239,14 @@ func open_map() -> void:
 	for c in _map_nodes.get_children():
 		c.queue_free()
 	var pts: Array = []
+	var pos: Array = MAP_POS_4 if levels.size() <= 4 else MAP_POS
 	for i in levels.size():
-		pts.append(MAP_POS[i] if i < MAP_POS.size() else Vector2(200 + (i % 5) * 300, 300 + (i / 5) * 220))
+		pts.append(pos[i] if i < pos.size() else Vector2(200 + (i % 5) * 300, 300 + (i / 5) * 220))
 	_map_path.points = pts
 	_map_path.queue_redraw()
 	for i in levels.size():
 		var L: Dictionary = levels[i]
-		var m: Dictionary = GHData.monsters.get(L.monster, {})
+		var m: Dictionary = GHData.monsters.get(GHData.monster_key(L), {})
 		var locked := i + 1 > SaveData.unlocked
 		var best := SaveData.best_for(int(L.id))
 		var current := i + 1 == SaveData.unlocked and best.is_empty()
@@ -257,7 +266,7 @@ func open_map() -> void:
 		art.bob = false
 		art.position = Vector2(4, 13)
 		art.size = Vector2(84, 84)
-		art.set_texture(UIKit.monster_texture(m.get("art", "rootbound")))
+		art.set_texture(UIKit.monster_texture(GHData.monster_key(L)))
 		card.add_child(art)
 		UIKit.sub(card, ("Boss" if L.get("boss", false) else "Level %d" % int(L.id)) + " · " + str(m.get("name", "")), Vector2(92, 10), 150, 9)
 		var t := UIKit.label(card, L.title, 13, UIKit.GOLD, UIKit.serif, Vector2(92, 25), 152)
@@ -339,8 +348,13 @@ func _build_battle(s: Control) -> void:
 	view_btn.add_theme_font_size_override("font_size", 13)
 	view_btn.item_selected.connect(func(i): preview.set_view(["perspective", "top", "front"][i]))
 	pp.add_child(view_btn)
+	# preview side: sliders, then the goal thumbnail
+	var side_col := VBoxContainer.new()
+	side_col.position = Vector2(326, 8)
+	side_col.custom_minimum_size = Vector2(196, 0)
+	side_col.add_theme_constant_override("separation", 6)
+	pp.add_child(side_col)
 	var params_panel := PanelContainer.new()
-	params_panel.position = Vector2(326, 8)
 	params_panel.custom_minimum_size = Vector2(196, 0)
 	var psb := UIKit.box(Color(0.94, 0.953, 0.957, 0.82), Color(0.31, 0.37, 0.39, 0.35), 4, 1)
 	psb.content_margin_left = 9
@@ -348,7 +362,25 @@ func _build_battle(s: Control) -> void:
 	psb.content_margin_top = 6
 	psb.content_margin_bottom = 6
 	params_panel.add_theme_stylebox_override("panel", psb)
-	pp.add_child(params_panel)
+	side_col.add_child(params_panel)
+	goal_box = PanelContainer.new()
+	goal_box.tooltip_text = "The finished result you are building towards"
+	goal_box.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	var gsb := UIKit.box(Color(0.94, 0.953, 0.957, 0.86), Color(0.31, 0.37, 0.39, 0.35), 4, 1)
+	gsb.content_margin_left = 6
+	gsb.content_margin_right = 6
+	gsb.content_margin_top = 5
+	gsb.content_margin_bottom = 6
+	var gsb_hi := gsb.duplicate() as StyleBoxFlat
+	gsb_hi.border_color = Color("2f6d52")
+	gsb_hi.set_border_width_all(2)
+	goal_box.add_theme_stylebox_override("panel", gsb)
+	goal_box.mouse_entered.connect(func(): goal_box.add_theme_stylebox_override("panel", gsb_hi))
+	goal_box.mouse_exited.connect(func(): goal_box.add_theme_stylebox_override("panel", gsb))
+	goal_box.gui_input.connect(func(e):
+		if e is InputEventMouseButton and e.pressed and e.button_index == MOUSE_BUTTON_LEFT and battle:
+			goal_modal())
+	side_col.add_child(goal_box)
 	params_box = VBoxContainer.new()
 	params_box.add_theme_constant_override("separation", 0)
 	params_panel.add_child(params_box)
@@ -491,11 +523,9 @@ func _build_battle(s: Control) -> void:
 		ls_buttons[k] = {"button": b, "badge": badge, "icon": icon}
 
 	# hero, hand, side buttons
-	hero = ArtView.new()
-	hero.bob = false
-	hero.position = Vector2(30, 646)
-	hero.size = Vector2(290, 250)
-	hero.set_texture(UIKit.hero_texture())
+	hero = HeroView.new()
+	hero.position = Vector2(26, 640)
+	hero.size = Vector2(320, 260)
 	s.add_child(hero)
 	UIKit.label(s, "Your hand", 19, UIKit.GOLD, UIKit.serif, Vector2(376, 638))
 	hand_sub = UIKit.sub(s, "", Vector2(510, 646), 400, 10)
@@ -504,6 +534,30 @@ func _build_battle(s: Control) -> void:
 	hand_box.size = Vector2(940, 240)
 	hand_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	s.add_child(hand_box)
+	curse_banner = PanelContainer.new()
+	curse_banner.position = Vector2(562, 600)
+	curse_banner.custom_minimum_size = Vector2(536, 0)
+	curse_banner.size = Vector2(536, 0)
+	var csb := UIKit.box(Color(0.157, 0.063, 0.078, 0.92), Color("c4555e"), 4, 1, 6)
+	csb.content_margin_left = 14
+	csb.content_margin_right = 14
+	csb.content_margin_top = 7
+	csb.content_margin_bottom = 7
+	curse_banner.add_theme_stylebox_override("panel", csb)
+	curse_banner.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	curse_banner.z_index = 5
+	curse_banner.visible = false
+	s.add_child(curse_banner)
+	curse_text = RichTextLabel.new()
+	curse_text.bbcode_enabled = true
+	curse_text.fit_content = true
+	curse_text.scroll_active = false
+	curse_text.custom_minimum_size = Vector2(508, 0)
+	curse_text.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	curse_text.add_theme_font_size_override("normal_font_size", 13)
+	curse_text.add_theme_font_size_override("bold_font_size", 13)
+	curse_text.add_theme_color_override("default_color", Color("f6d4d4"))
+	curse_banner.add_child(curse_text)
 	var side := VBoxContainer.new()
 	side.position = Vector2(1300, 736)
 	side.size = Vector2(235, 140)
@@ -588,7 +642,8 @@ func start_level(i: int) -> void:
 	preview.set_view("perspective")
 	view_btn.select(0)
 	preview.zoom = 1.0
-	mon_art.set_texture(UIKit.monster_texture(battle.monster().get("art", "rootbound")))
+	mon_art.set_texture(UIKit.monster_texture(GHData.monster_key(battle.L)))
+	hero.react("idle")
 	_render_params()
 	render_all()
 	update_preview()
@@ -622,7 +677,7 @@ func _on_fx(kind: String, data: Dictionary) -> void:
 		"anim":
 			match data.target:
 				"monster": mon_art.play(data.name)
-				"hero": hero.play(data.name)
+				"hero": hero.react(data.name)
 				"flash": flash.play()
 				"intent":
 					var tw := create_tween()
@@ -667,10 +722,30 @@ func render_all() -> void:
 	_render_monster()
 	_render_lifesavers()
 	_render_timer()
+	var n_curse := int(battle.effects.icon)
+	curse_banner.visible = n_curse > 0 and not battle.over
+	if n_curse > 0:
+		curse_text.text = "[center][color=#ffd98a][b]Icon Curse![/b][/color] %s has stolen the card names. They return after [color=#ffd98a][b]%d[/b][/color] correct placement%s, or use [color=#ffd98a][b]Clear Vision[/b][/color].[/center]" % [battle.monster().get("name", ""), n_curse, "s" if n_curse > 1 else ""]
+		curse_banner.size = Vector2(536, 0)
 	hand_sub.text = ("Definition complete" if battle.won else "") if d == null else ("Wire check: choose a port" if d.kind == "quiz" else "Choose a component").to_upper()
 
 
 func _render_params() -> void:
+	for c in goal_box.get_children():
+		c.queue_free()
+	var gcol := VBoxContainer.new()
+	gcol.add_theme_constant_override("separation", 3)
+	gcol.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	goal_box.add_child(gcol)
+	var ghead := HBoxContainer.new()
+	ghead.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	gcol.add_child(ghead)
+	var gl := UIKit.label(ghead, "GOAL", 9, Color("4a5a5e"), UIKit.sans_bold)
+	gl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var gr := UIKit.label(ghead, "click to enlarge", 9, Color(0.29, 0.353, 0.369, 0.7), UIKit.sans_bold)
+	gr.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	gl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	gcol.add_child(goal_view(battle.L, 184.0))
 	for c in params_box.get_children():
 		c.queue_free()
 	UIKit.label(params_box, "SLIDERS", 9, Color("4a5a5e"), UIKit.sans_bold)
@@ -886,7 +961,7 @@ func _render_monster() -> void:
 	var m := battle.monster()
 	mon_name.text = m.get("name", "")
 	mon_name.add_theme_font_size_override("font_size", 20 if str(mon_name.text).length() > 15 else 25)
-	mon_sub.text = ("%s · %s" % [m.get("place", ""), "Boss" if battle.L.get("boss", false) else "Encounter " + UIKit.pad2(battle.L.id)]).to_upper()
+	mon_sub.text = ("%s · Level %d of %d" % [m.get("place", ""), battle.idx + 1, levels.size()]).to_upper()
 	mon_intent.text = "DEFEATED" if battle.won else ("⚔ INTENT: " + Battle.INTENT_TXT.get(battle.intent, battle.intent)).to_upper()
 	mon_intent_box.reset_size()
 	mon_intent_box.position.x = 422 - mon_intent_box.size.x
@@ -901,7 +976,7 @@ func _render_lifesavers() -> void:
 		b.disabled = not can
 		b.modulate = Color(1, 1, 1, 1) if can else Color(0.7, 0.7, 0.7, 0.5)
 		e.badge.text = str(int(battle.ls.get(k, 0)))
-		var ready: bool = k == "second" and can
+		var ready: bool = (k == "second" or k == "clear") and can
 		var active: bool = k == "shield" and battle.shield
 		var sb := UIKit.box(Color("263d3a"), UIKit.STAR if ready else (Color("8fd0e6") if active else Color("6f8a83")), 6, 2 if (ready or active) else 1)
 		if ready:
@@ -1050,6 +1125,60 @@ func _m_actions(b: Control, acts: Array) -> void:
 		row.add_child(btn)
 
 
+# ═════════════════════ goal ═════════════════════
+## The complete definition as a scene: everything placed, every wire live, no labels
+## (goalImage() in game.js). Cached per level.
+func _goal_scene(L: Dictionary) -> Dictionary:
+	if _goal_scenes.has(L.dir):
+		return _goal_scenes[L.dir]
+	var params := {}
+	for p in L.get("params", []):
+		params[p.key] = p.value
+	var ctx := {"params": params, "placed": func(_n): return true, "wire_active": func(_w): return true}
+	var sc := GHEngine.scene(L, GHEngine.evaluate(L, ctx), ctx)
+	sc.labels = []
+	for l in sc.lines:
+		l.k = ""
+	_goal_scenes[L.dir] = sc
+	return sc
+
+
+## The level's finished result at width w (4:3): the level's own "goal" image, else a still render.
+func goal_view(L: Dictionary, w: float) -> Control:
+	var sz := Vector2(w, roundf(w * 0.75))
+	if str(L.get("goal", "")) != "":
+		var tex := UIKit.png_texture(LevelLoader.source_dir.path_join(L.dir).path_join(L.goal))
+		if tex:
+			var tr := TextureRect.new()
+			tr.texture = tex
+			tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			tr.custom_minimum_size = Vector2(w, w * tex.get_size().y / tex.get_size().x)
+			tr.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			return tr
+	var holder := Control.new()
+	holder.custom_minimum_size = sz
+	holder.clip_contents = true
+	holder.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var pv := PreviewView.new()
+	pv.snapshot(_goal_scene(L))
+	pv.size = Vector2(480, 360)
+	pv.scale = Vector2.ONE * (w / 480.0)
+	holder.add_child(pv)
+	return holder
+
+
+func goal_modal() -> void:
+	var L := battle.L
+	modal(func(b):
+		_m_sub(b, "Level %d · Goal" % int(L.id))
+		_m_h2(b, L.title)
+		_m_p(b, str(L.objective))
+		b.add_child(goal_view(L, 652.0))
+		_m_p(b, "[color=#8fa29b]This is what the finished definition produces with the default slider values. Build it piece by piece to get here.[/color]", 14)
+		_m_actions(b, [["Back to building", "primary", close_modal]]))
+
+
 func briefing() -> void:
 	var L := battle.L
 	var m := battle.monster()
@@ -1062,16 +1191,17 @@ func briefing() -> void:
 		row.add_theme_constant_override("separation", 22)
 		b.add_child(row)
 		var art := ArtView.new()
-		art.custom_minimum_size = Vector2(200, 200)
-		art.set_texture(UIKit.monster_texture(m.get("art", "rootbound")))
+		art.custom_minimum_size = Vector2(200, 190)
+		art.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+		art.set_texture(UIKit.monster_texture(GHData.monster_key(L)))
 		row.add_child(art)
 		var col := VBoxContainer.new()
 		col.add_theme_constant_override("separation", 6)
 		row.add_child(col)
-		_m_sub(col, ("Boss level" if L.get("boss", false) else "Level %d" % int(L.id)) + " · " + str(m.get("place", "")))
+		_m_sub(col, "Level %d of %d · %s" % [int(L.id), levels.size(), m.get("place", "")])
 		_m_h2(col, L.title)
-		_m_p(col, "[b]%s[/b] blocks the path. %s" % [m.get("name", ""), m.get("trait", "")], 15, 430)
-		var kv := [["Challenge", L.objective], ["You'll learn", L.get("learn", "")], ["Mode", mode],
+		_m_p(col, "[b]%s[/b] blocks the path. %s %s" % [m.get("name", ""), m.get("trait", ""), m.get("line", "")], 15, 430)
+		var kv := [["Challenge", L.objective], ["Goal", null], ["You'll learn", L.get("learn", "")], ["Mode", mode],
 			["Decisions", "%d (%d components%s)" % [battle.decisions.size(), L.steps.size(), (" + %d wire checks" % quizzes) if quizzes > 0 else ""]]]
 		for e in kv:
 			var r2 := HBoxContainer.new()
@@ -1079,7 +1209,10 @@ func briefing() -> void:
 			col.add_child(r2)
 			var k := UIKit.sub(r2, e[0], Vector2.ZERO, 0, 11)
 			k.custom_minimum_size.x = 110
-			_m_p(r2, str(e[1]), 14, 308)
+			if e[1] == null:
+				r2.add_child(goal_view(L, 300.0))
+			else:
+				_m_p(r2, str(e[1]), 14, 308)
 		_m_actions(b, [["Back", "ghost", func():
 			close_modal()
 			open_map()], ["Fight!", "primary", close_modal]]),
@@ -1096,7 +1229,7 @@ func victory_modal() -> void:
 	var m := battle.monster()
 	var sc := battle.score
 	modal(func(b):
-		_m_sub(b, str(m.get("place", "")) + " · " + ("Boss defeated" if L.get("boss", false) else "Encounter " + UIKit.pad2(L.id)))
+		_m_sub(b, "%s · Level %d of %d" % [m.get("place", ""), battle.idx + 1, levels.size()])
 		_m_h2(b, "%s is defeated!" % m.get("name", ""))
 		var stars := ""
 		for i in 3:
