@@ -126,6 +126,15 @@
   function heroReact(kind) {
     const el = $('#hero img'); if (!el) return;
     clearInterval(heroTimer); clearTimeout(heroTimer);
+    const h = hero(), box = $('#hero');
+    box.classList.remove('av-defeat');
+    if (!h.frames) {   // a team avatar is one picture: react with motion instead of sprite frames
+      el.src = h.img; el.className = 'hero-main avatar';
+      if (kind === 'success') anim(box, 'av-success', 700);
+      else if (kind === 'damage') anim(box, 'av-damage', 600);
+      else if (kind === 'defeat') box.classList.add('av-defeat');
+      return;
+    }
     if (!HERO_FRAMES[kind]) { el.src = 'img/hero-main.png'; el.className = 'hero-main'; return; }
     let i = 0; el.className = 'hero-frame'; el.src = `img/hero-${kind}-0.png`;
     heroTimer = setInterval(() => {
@@ -470,6 +479,7 @@
 
   function modalAction(a) {
     if (a.startsWith('diff:')) { const [, i, d] = a.split(':'); closeModal(); startLevel(+i, +d); return; }
+    if (a.startsWith('hero:')) { setHero(a.slice(5)); heroModal(); return; }
     switch (a) {
       case 'close': closeModal(); break;
       case 'fight': closeModal(); break;
@@ -513,14 +523,46 @@
 
   /* the team (alphabetical by last name, as in the Godot build's TEAM list); click a name on About Us for the details */
   const TEAM = [
-    { name: 'Abhishek Bawiskar', title: 'Senior Associate Application Developer', org: 'Thornton Tomasetti' },
-    { name: 'Garrett Herbst', title: 'Director of Emerging Technologies', org: 'Little' },
-    { name: 'Joel Hills', title: 'Senior Digital Design Technologist', org: 'Thornton Tomasetti' },
-    { name: 'Riku Kanemitsu', title: 'Graduate Student', org: 'Waseda University & ADL Intern' },
-    { name: 'Danny Karas', title: 'Associate Computational Designer', org: 'Thornton Tomasetti' },
-    { name: 'Maya Mashiach', title: 'Design Technology Specialist', org: 'LPA Design Studios' },
-    { name: 'Kazu Tajima', title: 'Graduate Student', org: 'Waseda University & ADL Intern' },
+    { name: 'Abhishek Bawiskar', title: 'Senior Associate Application Developer', org: 'Thornton Tomasetti', avatar: 'abhishek' },
+    { name: 'Garrett Herbst', title: 'Director of Emerging Technologies', org: 'Little', avatar: 'garrett' },
+    { name: 'Joel Hills', title: 'Senior Digital Design Technologist', org: 'Thornton Tomasetti', avatar: 'joel' },
+    { name: 'Riku Kanemitsu', title: 'Graduate Student', org: 'Waseda University & ADL Intern', avatar: 'riku' },
+    { name: 'Danny Karas', title: 'Associate Computational Designer', org: 'Thornton Tomasetti', avatar: 'danny' },
+    { name: 'Maya Mashiach', title: 'Design Technology Specialist', org: 'LPA Design Studios', avatar: 'maya' },
+    { name: 'Kazu Tajima', title: 'Graduate Student', org: 'Waseda University & ADL Intern', avatar: 'kazu' },
   ];
+  /* Guides (the hero in the bottom-left, on the map and the title screen). The Spaghetti Hero is the default;
+   * every team member can be picked too (art: Images/Avatar, web copies in img/avatars). Saved per device. */
+  const HEROES = [
+    { id: 'spaghetti', name: 'The Spaghetti Hero', sub: 'The original guide', img: 'img/hero-main.png', title: 'img/start-hero.webp', frames: true },
+    ...TEAM.map(t => ({ id: t.avatar, name: t.name, sub: t.title + ' · ' + t.org, img: `img/avatars/${t.avatar}.png` })),
+  ];
+  function hero() { return HEROES.find(h => h.id === save.hero) || HEROES[0]; }
+  function applyHero() {
+    const h = hero();
+    const box = $('#hero'); box.classList.remove('av-defeat');
+    box.innerHTML = `<img class="hero-main${h.frames ? '' : ' avatar'}" src="${h.img}" alt="${esc(h.name)}">`;
+    const t = $('#title-hero');
+    t.classList.toggle('avatar-mode', !h.frames);
+    t.innerHTML = `<img class="hero-title${h.frames ? '' : ' avatar'}" src="${h.title || h.img}" alt="">`;
+    const lab = $('#btn-hero'); if (lab) lab.innerHTML = `Guide: <b>${esc(h.name.replace(/^The /, ''))}</b> &middot; change`;
+    $$('#team .team-card').forEach(c => c.classList.toggle('is-guide', c.dataset.hero === h.id));
+  }
+  function setHero(id) {
+    if (!HEROES.some(h => h.id === id)) return;
+    save.hero = id; writeSave(); applyHero();
+    toast(`${hero().name} will guide you`, 'good');
+  }
+  function heroModal() {
+    const cur = hero().id;
+    modal(`<button class="x-close">&times;</button><div class="sub">Choose your guide</div>
+      <h2>Who will guide you?</h2>
+      <p class="muted">Your guide stands beside you in every battle, on the map and on the title screen. The Spaghetti Hero is the original; the rest of the crew are the people who made PathOGen.</p>
+      <div class="hero-grid">${HEROES.map(h => `<button class="hero-pick${h.id === cur ? ' on' : ''}" data-act="hero:${h.id}">
+        <span class="hp-art"><img src="${h.img}" alt=""></span><b>${esc(h.name)}</b><small>${esc(h.sub)}</small>
+        ${h.id === cur ? '<em>Your guide</em>' : ''}</button>`).join('')}</div>
+      <div class="actions"><button class="btn primary" data-act="close">Done</button></div>`, null, true);
+  }
   function credits() {
     modal(`<h2>Script Master</h2>
       <p>You cleared the path and built complete parametric definitions, all driven by a handful of sliders.</p>
@@ -983,8 +1025,7 @@
   }
 
   /* ───────── Wiring ───────── */
-  $('#title-hero').innerHTML = '<img class="hero-title" src="img/start-hero.webp" alt="">';
-  $('#hero').innerHTML = '<img class="hero-main" src="img/hero-main.png" alt="">';
+  applyHero();   // title-screen hero, battle hero (default: the Spaghetti Hero)
   $('#btn-start').onclick = () => { if (LEVELS.length) openMap(); else toast('Levels are still loading…'); };
   LevelLoader.loadAll().then(ls => {
     LEVELS = ls;
@@ -996,14 +1037,19 @@
       <p class="muted">Levels are loaded with fetch(), so the game must be served over http — e.g. <code>python -m http.server 5173 --directory web</code> — not opened as a file.</p>`);
   });
   $('#btn-title-help').onclick = helpModal;
-  $('#team').innerHTML = TEAM.map(t => `<button class="team-card" aria-expanded="false">
+  $('#team').innerHTML = TEAM.map(t => `<div class="team-card" role="button" tabindex="0" aria-expanded="false" data-hero="${t.avatar}">
+      <img class="tc-avatar" src="img/avatars/${t.avatar}.png" alt="">
       <span class="tc-name">${esc(t.name)}</span>
-      <span class="tc-more"><b>${esc(t.title)}</b>${esc(t.org)}</span>
-      <span class="tc-hint">Click for more</span></button>`).join('');
-  $$('#team .team-card').forEach(c => c.onclick = () => {
-    const open = !c.classList.contains('open');
-    c.classList.toggle('open', open); c.setAttribute('aria-expanded', open);
+      <span class="tc-more"><b>${esc(t.title)}</b>${esc(t.org)}
+        <button class="btn small tc-pick" data-pick="${t.avatar}">Choose as my guide</button></span>
+      <span class="tc-hint">Click for more</span></div>`).join('');
+  $$('#team .team-card').forEach(c => {
+    const toggle = () => { const open = !c.classList.contains('open'); c.classList.toggle('open', open); c.setAttribute('aria-expanded', open); };
+    c.onclick = (e) => { if (e.target.closest('.tc-pick')) { e.stopPropagation(); setHero(c.dataset.hero); return; } toggle(); };
+    c.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } };
   });
+  applyHero();   // marks the current guide's card
+  $('#btn-hero').onclick = heroModal;
   $('#btn-about').onclick = () => show('screen-about');
   $('#btn-free').onclick = freePlayModal;
   $('#btn-map-free').onclick = freePlayModal;
@@ -1064,5 +1110,5 @@
   });
 
   // debug hook for testing
-  window.PathOGen = { startLevel, get state() { return st; }, place, select, openMap };
+  window.PathOGen = { startLevel, get state() { return st; }, place, select, openMap, hero };
 })();

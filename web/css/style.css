@@ -504,3 +504,38 @@ button { font-family: inherit; cursor: pointer; }
 /* five title buttons: keep the row compact and above the hero */
 .title-btns { position: relative; z-index: 5; gap: 12px; }
 .title-btns .btn.big { font-size: 19px; padding: 11px 20px; }
+
+/* ───────── Guides (hero choice) ───────── */
+.hero-choose { position: relative; z-index: 5; margin-top: 14px; font-size: 12px; }
+.hero-choose b { color: var(--gold); font-weight: 800; }
+.hero-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 14px; }
+.hero-pick { position: relative; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 10px 10px 12px; text-align: center;
+  background: rgba(0,0,0,.2); border: 1px solid var(--line); border-radius: 8px; color: var(--text); cursor: pointer; transition: border-color .15s, transform .12s; }
+.hero-pick:hover { border-color: var(--sage); transform: translateY(-2px); }
+.hero-pick.on { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(232,220,176,.25); }
+.hero-pick .hp-art { width: 100%; height: 150px; display: grid; place-items: center; }
+.hero-pick .hp-art img { max-width: 100%; max-height: 150px; object-fit: contain; filter: drop-shadow(0 6px 8px rgba(0,0,0,.4)); }
+.hero-pick b { font-family: var(--serif); color: var(--gold); font-size: 16px; line-height: 1.15; }
+.hero-pick small { font-size: 11px; color: var(--muted); line-height: 1.3; }
+.hero-pick em { position: absolute; top: 8px; right: 8px; font-style: normal; font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; font-weight: 800;
+  background: var(--gold); color: var(--bg); padding: 3px 7px; border-radius: 10px; }
+/* battle: a team avatar is a single picture, so it reacts with motion */
+#hero img.hero-main.avatar { height: 230px; max-width: 300px; object-fit: contain; }
+#hero.av-success img { animation: av-jump .7s ease-out; }
+#hero.av-damage img { animation: av-hit .6s ease-out; }
+#hero.av-defeat img { transition: transform .6s, filter .6s; transform: translateX(-50%) translateY(26px) rotate(-10deg); filter: grayscale(.85) brightness(.7) drop-shadow(0 8px 10px rgba(0,0,0,.35)); animation: none; }
+@keyframes av-jump { 40% { transform: translateX(-50%) translateY(-22px) rotate(-3deg); } 70% { transform: translateX(-50%) translateY(-4px); } }
+@keyframes av-hit { 0%, 100% { transform: translateX(-50%); filter: drop-shadow(0 8px 10px rgba(0,0,0,.35)); } 20% { transform: translateX(-56%); filter: brightness(1.6) sepia(1) hue-rotate(-40deg) saturate(3); } 45% { transform: translateX(-44%); } 70% { transform: translateX(-52%); } }
+/* title screen: a team avatar replaces the composed Spaghetti Hero artwork */
+#screen-title .title-hero.avatar-mode::before { display: none; }
+#screen-title .title-hero.avatar-mode img { clip-path: none; width: 100%; height: 340px; object-fit: contain; object-position: bottom; animation: bob 3.2s ease-in-out infinite; filter: drop-shadow(0 10px 14px rgba(0,0,0,.5)); }
+/* About Us: avatars on the team cards */
+.team-card .tc-avatar { height: 96px; max-width: 120px; object-fit: contain; margin-bottom: 6px; filter: drop-shadow(0 6px 8px rgba(0,0,0,.4)); transition: transform .2s; }
+.team-card:hover .tc-avatar { transform: translateY(-3px) scale(1.04); }
+.team-card .tc-pick { display: block; margin: 9px auto 0; font-size: 10.5px; }
+.team-card.is-guide { border-color: var(--gold); }
+.team-card.is-guide .tc-name::after { content: ' \2605'; color: var(--gold); }
+.about .about-text { margin-top: 18px; }
+.about .about-head { margin: 22px 0 14px; }
+.about .about-fonts { margin-top: 22px; }
+.about .btn { margin-top: 18px; }
