@@ -1,0 +1,707 @@
+{
+ "source": "GameLevels/LevelD/D01.ghx",
+ "method": "D01",
+ "params": [
+  {
+   "key": "s1",
+   "label": "Sides",
+   "min": 3.0,
+   "max": 12.0,
+   "step": 1,
+   "value": 4.0
+  },
+  {
+   "key": "s2",
+   "label": "Mullion radius (ft)",
+   "min": 0.1,
+   "max": 1.0,
+   "step": 0.01,
+   "value": 0.25
+  },
+  {
+   "key": "s3",
+   "label": "Base fillet (ft)",
+   "min": 0.0,
+   "max": 15.0,
+   "step": 0.1,
+   "value": 6.0
+  },
+  {
+   "key": "s4",
+   "label": "Base radius (ft)",
+   "min": 30.0,
+   "max": 120.0,
+   "step": 0.1,
+   "value": 60.0
+  },
+  {
+   "key": "s5",
+   "label": "Top fillet (ft)",
+   "min": 0.0,
+   "max": 15.0,
+   "step": 0.1,
+   "value": 6.0
+  },
+  {
+   "key": "s6",
+   "label": "Top radius (ft)",
+   "min": 30.0,
+   "max": 120.0,
+   "step": 0.1,
+   "value": 45.0
+  },
+  {
+   "key": "s7",
+   "label": "Floors",
+   "min": 5.0,
+   "max": 80.0,
+   "step": 1,
+   "value": 30.0
+  },
+  {
+   "key": "s8",
+   "label": "Floor-to-floor (ft)",
+   "min": 10.0,
+   "max": 18.0,
+   "step": 0.1,
+   "value": 13.0
+  },
+  {
+   "key": "s9",
+   "label": "Total twist (deg)",
+   "min": -180.0,
+   "max": 180.0,
+   "step": 1,
+   "value": 90.0
+  },
+  {
+   "key": "s10",
+   "label": "Mullions",
+   "min": 8.0,
+   "max": 120.0,
+   "step": 1,
+   "value": 32.0
+  }
+ ],
+ "nodes": [
+  {
+   "id": "capHoles",
+   "comp": "capHoles",
+   "open": false,
+   "x": 2902,
+   "y": 35,
+   "ghost": true
+  },
+  {
+   "id": "constructP",
+   "comp": "constructPoint",
+   "open": false,
+   "x": 0,
+   "y": 22,
+   "set": {
+    "X": 0.0,
+    "Y": 0.0,
+    "Z": 0.0
+   }
+  },
+  {
+   "id": "data",
+   "comp": "dataParam",
+   "open": false,
+   "x": 1480,
+   "y": 0,
+   "label": "Height (ft)"
+  },
+  {
+   "id": "data10",
+   "comp": "dataParam",
+   "open": false,
+   "x": 3776,
+   "y": 52,
+   "label": "Top points"
+  },
+  {
+   "id": "data11",
+   "comp": "dataParam",
+   "open": false,
+   "x": 3778,
+   "y": 0,
+   "label": "Base points"
+  },
+  {
+   "id": "data12",
+   "comp": "dataParam",
+   "open": false,
+   "x": 4110,
+   "y": 0,
+   "label": "Mullion lines"
+  },
+  {
+   "id": "data2",
+   "comp": "dataParam",
+   "open": false,
+   "x": 1776,
+   "y": 52,
+   "label": "Up vector"
+  },
+  {
+   "id": "data3",
+   "comp": "dataParam",
+   "open": false,
+   "x": 1780,
+   "y": 0,
+   "label": "Top outline"
+  },
+  {
+   "id": "data4",
+   "comp": "dataParam",
+   "open": false,
+   "x": 2046,
+   "y": 0,
+   "label": "Lift top"
+  },
+  {
+   "id": "data5",
+   "comp": "dataParam",
+   "open": false,
+   "x": 2484,
+   "y": 52,
+   "label": "Twist top"
+  },
+  {
+   "id": "data6",
+   "comp": "dataParam",
+   "open": false,
+   "x": 2491,
+   "y": 0,
+   "label": "Base outline"
+  },
+  {
+   "id": "data7",
+   "comp": "dataParam",
+   "open": false,
+   "x": 2796,
+   "y": 0,
+   "label": "Skin"
+  },
+  {
+   "id": "data8",
+   "comp": "dataParam",
+   "open": false,
+   "x": 3065,
+   "y": 0,
+   "label": "Base outline"
+  },
+  {
+   "id": "data9",
+   "comp": "dataParam",
+   "open": false,
+   "x": 3438,
+   "y": 0,
+   "label": "Twist top"
+  },
+  {
+   "id": "divideCurv",
+   "comp": "divideCurve",
+   "open": true,
+   "x": 3286,
+   "y": 34,
+   "set": {
+    "K": false
+   },
+   "question": "D01_Q01",
+   "need": "evenly spaced points around the base outline",
+   "hint": "Curve › Division. Watch for: A closed curve gives exactly N points: the start and end are the same point.",
+   "correct": "Divide Curve places N evenly spaced points around the base outline: one per mullion.",
+   "distractors": [
+    "divideLength",
+    "divideDistance",
+    "divideByDeviation",
+    "evaluateLength",
+    "curveFrames",
+    "perpFrames",
+    "shatter",
+    "dashPattern",
+    "curveContour",
+    "horizontalFrames",
+    "evaluateCurve",
+    "curveMiddle"
+   ],
+   "draft": true,
+   "stage": "Points around the base: Evenly spaced points around the base outline. Divide Curve splits a curve into N equal segments and returns the points between them.",
+   "stage_draft": true
+  },
+  {
+   "id": "divideCurv2",
+   "comp": "divideCurve",
+   "open": true,
+   "x": 3548,
+   "y": 32,
+   "set": {
+    "K": false
+   },
+   "question": "D01_Q02",
+   "need": "the same number of points around the twisted top",
+   "hint": "Curve › Division. The same node as the step before. Watch for: Use the same slider for both, or the lines will skip.",
+   "correct": "Divide Curve with the same count gives matching points around the top.",
+   "distractors": [
+    "divideLength",
+    "divideDistance",
+    "divideByDeviation",
+    "evaluateLength",
+    "curveFrames",
+    "perpFrames",
+    "shatter",
+    "dashPattern",
+    "curveContour",
+    "horizontalFrames",
+    "evaluateCurve",
+    "curveMiddle"
+   ],
+   "draft": true,
+   "stage": "Points around the top: The same number of points around the twisted top. Same count as the base, so point i at the base pairs with point i at the top.",
+   "stage_draft": true
+  },
+  {
+   "id": "line",
+   "comp": "line",
+   "open": true,
+   "x": 3894,
+   "y": 38,
+   "question": "D01_Q03",
+   "need": "a line from each base point to its matching top point",
+   "hint": "Curve › Primitive. Two points in.",
+   "correct": "Line joins each base point to its partner at the top: the leaning mullion lines.",
+   "distractors": [
+    "lineSDL",
+    "line4Pt",
+    "line2Plane",
+    "fitLine",
+    "tangentLines",
+    "vector2pt",
+    "tangentLinesEx",
+    "tangentLinesIn",
+    "polyline",
+    "arcSED",
+    "linePt",
+    "lineLine"
+   ],
+   "draft": true,
+   "stage": "Connect base to top: A straight line from every base point to its matching top point. Line pairs its two lists item by item: base point 0 to top point 0, and so on. The twist makes the lines lean.",
+   "stage_draft": true
+  },
+  {
+   "id": "loft",
+   "comp": "loft",
+   "open": false,
+   "x": 2609,
+   "y": 12,
+   "set": {
+    "O": false
+   }
+  },
+  {
+   "id": "move",
+   "comp": "move",
+   "open": false,
+   "x": 1898,
+   "y": 21
+  },
+  {
+   "id": "multiplica",
+   "comp": "multiplication",
+   "open": false,
+   "x": 1326,
+   "y": 31
+  },
+  {
+   "id": "number",
+   "comp": "numberParam",
+   "open": false,
+   "x": 645,
+   "y": 52
+  },
+  {
+   "id": "number2",
+   "comp": "numberParam",
+   "open": false,
+   "x": 3435,
+   "y": 52
+  },
+  {
+   "id": "pipe",
+   "comp": "pipe",
+   "open": true,
+   "x": 4373,
+   "y": 25,
+   "set": {
+    "E": 0.0
+   },
+   "question": "D01_Q04",
+   "need": "a round tube around every line",
+   "hint": "Surface › Freeform. Watch for: The radius is in feet: 0.25 ft = 3 in.",
+   "correct": "Pipe wraps a round section around every line: solid mullions.",
+   "distractors": [
+    "sweep1",
+    "sweep2",
+    "extrude",
+    "loft",
+    "offset",
+    "filletCtR",
+    "rebuildCurve",
+    "revolution",
+    "railRevolution",
+    "patch",
+    "boundary",
+    "extrudePoint"
+   ],
+   "draft": true,
+   "stage": "Give mullions thickness: Round mullions around every line. Pipe sweeps a circle along a curve.",
+   "stage_draft": true
+  },
+  {
+   "id": "point",
+   "comp": "pointParam",
+   "open": false,
+   "x": 233,
+   "y": 0
+  },
+  {
+   "id": "point2",
+   "comp": "pointParam",
+   "open": false,
+   "x": 645,
+   "y": 0
+  },
+  {
+   "id": "point3",
+   "comp": "pointParam",
+   "open": false,
+   "x": 2046,
+   "y": 52
+  },
+  {
+   "id": "polygon",
+   "comp": "polygon",
+   "open": false,
+   "x": 496,
+   "y": 36
+  },
+  {
+   "id": "polygon2",
+   "comp": "polygon",
+   "open": false,
+   "x": 904,
+   "y": 34
+  },
+  {
+   "id": "rotate",
+   "comp": "rotate",
+   "open": false,
+   "x": 2324,
+   "y": 27,
+   "degrees": true
+  },
+  {
+   "id": "slider",
+   "comp": "slider",
+   "open": false,
+   "x": 288,
+   "y": 48,
+   "param": "s1",
+   "label": "Sides"
+  },
+  {
+   "id": "slider10",
+   "comp": "slider",
+   "open": false,
+   "x": 4182,
+   "y": 48,
+   "param": "s2",
+   "label": "Mullion radius (ft)"
+  },
+  {
+   "id": "slider2",
+   "comp": "slider",
+   "open": false,
+   "x": 306,
+   "y": 144,
+   "param": "s3",
+   "label": "Base fillet (ft)"
+  },
+  {
+   "id": "slider3",
+   "comp": "slider",
+   "open": false,
+   "x": 310,
+   "y": 96,
+   "param": "s4",
+   "label": "Base radius (ft)"
+  },
+  {
+   "id": "slider4",
+   "comp": "slider",
+   "open": false,
+   "x": 716,
+   "y": 144,
+   "param": "s5",
+   "label": "Top fillet (ft)"
+  },
+  {
+   "id": "slider5",
+   "comp": "slider",
+   "open": false,
+   "x": 720,
+   "y": 96,
+   "param": "s6",
+   "label": "Top radius (ft)"
+  },
+  {
+   "id": "slider6",
+   "comp": "slider",
+   "open": false,
+   "x": 1109,
+   "y": 0,
+   "param": "s7",
+   "label": "Floors"
+  },
+  {
+   "id": "slider7",
+   "comp": "slider",
+   "open": false,
+   "x": 1136,
+   "y": 48,
+   "param": "s8",
+   "label": "Floor-to-floor (ft)"
+  },
+  {
+   "id": "slider8",
+   "comp": "slider",
+   "open": false,
+   "x": 2126,
+   "y": 96,
+   "param": "s9",
+   "label": "Total twist (deg)"
+  },
+  {
+   "id": "slider9",
+   "comp": "slider",
+   "open": false,
+   "x": 3116,
+   "y": 48,
+   "param": "s10",
+   "label": "Mullions"
+  },
+  {
+   "id": "unitZ",
+   "comp": "unitZ",
+   "open": false,
+   "x": 1592,
+   "y": 28
+  }
+ ],
+ "wires": [
+  {
+   "from": "point.Pt",
+   "to": "polygon.P"
+  },
+  {
+   "from": "slider3.N",
+   "to": "polygon.R"
+  },
+  {
+   "from": "slider.N",
+   "to": "polygon.S"
+  },
+  {
+   "from": "slider2.N",
+   "to": "polygon.Rf"
+  },
+  {
+   "from": "point2.Pt",
+   "to": "polygon2.P"
+  },
+  {
+   "from": "slider5.N",
+   "to": "polygon2.R"
+  },
+  {
+   "from": "number.N",
+   "to": "polygon2.S"
+  },
+  {
+   "from": "slider4.N",
+   "to": "polygon2.Rf"
+  },
+  {
+   "from": "slider6.N",
+   "to": "multiplica.A"
+  },
+  {
+   "from": "slider7.N",
+   "to": "multiplica.B"
+  },
+  {
+   "from": "data.D",
+   "to": "unitZ.F"
+  },
+  {
+   "from": "data3.D",
+   "to": "move.G"
+  },
+  {
+   "from": "data2.D",
+   "to": "move.T"
+  },
+  {
+   "from": "data4.D",
+   "to": "rotate.G"
+  },
+  {
+   "from": "slider8.N",
+   "to": "rotate.A"
+  },
+  {
+   "from": "point3.Pt",
+   "to": "rotate.P"
+  },
+  {
+   "from": "data6.D",
+   "to": "loft.C"
+  },
+  {
+   "from": "data5.D",
+   "to": "loft.C"
+  },
+  {
+   "from": "data7.D",
+   "to": "capHoles.B"
+  },
+  {
+   "from": "data8.D",
+   "to": "divideCurv.C"
+  },
+  {
+   "from": "slider9.N",
+   "to": "divideCurv.N",
+   "check": {
+    "side": "in",
+    "prompt": "The Mullions slider goes into which input of Divide Curve?",
+    "hint": "C = curve, N = count, K = split at kinks.",
+    "correct": "N is the number of segments: one point per mullion.",
+    "wrong": {
+     "*": "That input isn't the count."
+    },
+    "draft": true
+   }
+  },
+  {
+   "from": "data9.D",
+   "to": "divideCurv2.C"
+  },
+  {
+   "from": "number2.N",
+   "to": "divideCurv2.N"
+  },
+  {
+   "from": "data11.D",
+   "to": "line.A"
+  },
+  {
+   "from": "data10.D",
+   "to": "line.B"
+  },
+  {
+   "from": "data12.D",
+   "to": "pipe.C"
+  },
+  {
+   "from": "slider10.N",
+   "to": "pipe.R",
+   "check": {
+    "side": "in",
+    "prompt": "The mullion radius goes into which input of Pipe?",
+    "hint": "C = curve, R = radius, E = end caps.",
+    "correct": "R is the pipe radius.",
+    "wrong": {
+     "*": "That input isn't the radius."
+    },
+    "draft": true
+   }
+  },
+  {
+   "from": "constructP.Pt",
+   "to": "point.Pt"
+  },
+  {
+   "from": "constructP.Pt",
+   "to": "point2.Pt"
+  },
+  {
+   "from": "slider.N",
+   "to": "number.N"
+  },
+  {
+   "from": "multiplica.R",
+   "to": "data.D"
+  },
+  {
+   "from": "polygon2.P",
+   "to": "data3.D"
+  },
+  {
+   "from": "unitZ.V",
+   "to": "data2.D"
+  },
+  {
+   "from": "move.G",
+   "to": "data4.D"
+  },
+  {
+   "from": "constructP.Pt",
+   "to": "point3.Pt"
+  },
+  {
+   "from": "polygon.P",
+   "to": "data6.D"
+  },
+  {
+   "from": "rotate.G",
+   "to": "data5.D"
+  },
+  {
+   "from": "loft.L",
+   "to": "data7.D"
+  },
+  {
+   "from": "polygon.P",
+   "to": "data8.D"
+  },
+  {
+   "from": "rotate.G",
+   "to": "data9.D"
+  },
+  {
+   "from": "slider9.N",
+   "to": "number2.N"
+  },
+  {
+   "from": "divideCurv.P",
+   "to": "data11.D"
+  },
+  {
+   "from": "divideCurv2.P",
+   "to": "data10.D"
+  },
+  {
+   "from": "line.L",
+   "to": "data12.D"
+  }
+ ],
+ "order": [
+  "divideCurv",
+  "divideCurv2",
+  "line",
+  "pipe"
+ ]
+}

@@ -261,7 +261,7 @@
     const dmg = d.kind === 'comp' ? 10 : 5; st.hp = Math.max(0, st.hp - dmg);
     st.streak++;
     st.lastPlaced = d.kind === 'comp' ? d.step.key : null;
-    floatText($('#mon-art'), `-${dmg}`, ''); floatText($('#p-health'), `+${gain} XP`, 'good', 360, 110);
+    floatText($('#mon-art'), `-${dmg}`, ''); floatText($('#p-health'), `+${gain} XP`, 'good', 150, -40);
     anim($('#mon-art'), 'hurt', 500); heroReact('success');
 
     if (d.kind === 'comp') {
@@ -336,7 +336,7 @@
     }
     st.health = Math.max(0, st.health - dmg);
     setTimeout(() => toast(`${monster().name}: ${ATTACK_NAME[intent]}!${dmg > 1 ? ' (-2)' : ''}`, 'bad'), 250);
-    floatText($('#p-health'), `-${dmg}`, 'bad', 200, 70);
+    floatText($('#p-health'), `-${dmg}`, 'bad', 40, -44);
     st.snap = snap;
     rollIntent();
     renderAll();
@@ -353,7 +353,7 @@
       sfx('player_damage', 280);
       st.health = Math.max(0, st.health - 1);
       anim($('#mon-art'), 'attack', 550); anim($('#flash'), 'red', 500); heroReact('damage');
-      toast('Too slow! The monster strikes.', 'bad'); floatText($('#p-health'), '-1', 'bad', 200, 70);
+      toast('Too slow! The monster strikes.', 'bad'); floatText($('#p-health'), '-1', 'bad', 40, -44);
     }
     st.journal.push({ cls: 'bad', title: '✗ Out of time', text: 'Hesitation cost a heart. Lifesavers like Hint and 50/50 can speed up a tough decision.' });
     renderAll();
@@ -410,7 +410,7 @@
         st.journal.push({ cls: 'aid', title: '★ Hint', text: txt });
         break;
       }
-      case 'potion': st.health = Math.min(st.max, st.health + 1); toast('+1 heart', 'good'); floatText($('#p-health'), '+1', 'good', 200, 70); break;
+      case 'potion': st.health = Math.min(st.max, st.health + 1); toast('+1 heart', 'good'); floatText($('#p-health'), '+1', 'good', 40, -44); break;
       case 'fifty': {
         const rm = shuffle(wrongCards()).slice(0, 2);
         st.hand = st.hand.filter(h => !rm.includes(h)); if (rm.includes(st.selected)) st.selected = null;
@@ -534,7 +534,7 @@
     () => { if (monster().frenzy && !st.over && !st.timer) startTimer(monster().frenzy); });
   }
 
-  /* the team (alphabetical by last name, as in the Godot build's TEAM list); click a name on About Us for the details */
+  /* the team (alphabetical by last name, as in the Godot build's TEAM list); shown with role and studio on About Us */
   const TEAM = [
     { name: 'Abhishek Bawiskar', title: 'Senior Associate Application Developer', org: 'Thornton Tomasetti', avatar: 'abhishek' },
     { name: 'Garrett Herbst', title: 'Director of Emerging Technologies', org: 'Little', avatar: 'garrett' },
@@ -794,10 +794,24 @@
     modal(`<button class="x-close">&times;</button><div class="sub">Level ${L.id}${L.diffCount > 1 ? ' &middot; ' + esc(L.diffName) : ''} &middot; Completed definition</div>
       <h2>${esc(L.title)}</h2>
       <div class="def-layout">
-        <div class="def-canvas">${pic}<div class="def-cap def-cap-row"><span>The finished definition. Nodes outlined in gold are the ones you place.</span>${fullCanvas}</div></div>
+          <div class="def-canvas"><div class="def-tools"><button class="btn small" id="def-zoom-out" aria-label="Zoom out">−</button><output id="def-zoom-label" aria-live="polite"></output><button class="btn small" id="def-zoom-in" aria-label="Zoom in">+</button><button class="btn small" id="def-fit">Fit all</button><span>Scroll to explore the definition</span></div><div class="def-viewport" tabindex="0" role="region" aria-label="Completed definition, scroll to explore">${pic}</div><div class="def-cap def-cap-row"><span>The finished definition. Nodes outlined in gold are the ones you place.</span>${fullCanvas}</div></div>
         <div class="def-side"><div class="def-cap top">Output</div><img class="def-out" src="${goalImage(L)}" alt="Finished result"><p class="muted">What the definition produces with the default slider values.</p></div>
       </div>
       <div class="actions"><button class="btn primary" data-act="close">Back to building</button></div>`, null, true);
+      const viewport = $('.def-viewport'), art = viewport.firstElementChild;
+      let zoom = 1;
+      const nativeWidth = () => art.tagName.toLowerCase() === 'svg' ? art.viewBox.baseVal.width : art.naturalWidth;
+      const resize = () => {
+        const width = nativeWidth();
+        if (!width) return;
+        art.style.width = `${width * zoom}px`;
+        $('#def-zoom-label').textContent = `${Math.round(zoom * 100)}%`;
+      };
+      $('#def-zoom-out').onclick = () => { zoom = Math.max(.1, zoom / 1.25); resize(); };
+      $('#def-zoom-in').onclick = () => { zoom = Math.min(4, zoom * 1.25); resize(); };
+      $('#def-fit').onclick = () => { if (nativeWidth()) { zoom = viewport.clientWidth / nativeWidth(); resize(); viewport.scrollTo(0, 0); } };
+      if (art.tagName.toLowerCase() === 'img') art.addEventListener('load', resize, { once: true });
+      resize();
   }
 
   function goalModal() {
@@ -928,13 +942,14 @@
 
   function renderHealth() {
     $('#hp-text').textContent = `${st.health} / ${st.max}`;
+    $('#p-health').classList.toggle('low', st.health <= 1);
     const h = $('#hearts');
     const prev = h.dataset.hp != null ? +h.dataset.hp : st.health;
     h.className = 'hearts' + (st.max > 4 ? ' five' : '') + (st.shield ? ' shielded' : '');
     h.innerHTML = Array.from({ length: st.max }, (_, i) => `<div class="heart${i < st.health ? '' : ' empty'}${i >= st.health && i < prev ? ' lost' : ''}">${ART.heart}</div>`).join('');
     h.dataset.hp = st.health;
     $('#xp-text').textContent = st.xp;
-    $('#level-chip').textContent = `Level ${level().id} · ${level().title}${level().diffCount > 1 ? ' · ' + level().diffName : ''}`;
+    $('#level-chip').textContent = $('#level-chip').title = `Level ${level().id} · ${level().title}${level().diffCount > 1 ? ' · ' + level().diffName : ''}`;
   }
 
   function renderEffects() {
@@ -979,14 +994,15 @@
 
   function renderParams() {
     const L = level();
-    $('#params').innerHTML = `<div class="ph">Sliders</div>` + L.params.map(p => `
-      <label class="param"><span>${esc(p.label)}</span><input type="range" min="${p.min}" max="${p.max}" step="${p.step}" value="${st.params[p.key]}" data-k="${p.key}"><b>${G.fmt(st.params[p.key])}</b></label>`).join('');
+    // the list scrolls inside the panel when a level has more sliders than fit
+    $('#params').innerHTML = `<header><h3 class="smallcaps">Sliders</h3><span class="sub">${L.params.length > 5 ? 'Scroll for more' : ''}</span></header><div class="param-list">` + (L.params.map(p => `
+      <label class="param"><span>${esc(p.label)}</span><input type="range" min="${p.min}" max="${p.max}" step="${p.step}" value="${st.params[p.key]}" data-k="${p.key}"><b>${G.fmt(st.params[p.key])}</b></label>`).join('') || '<p class="param-none">This level has no sliders.</p>') + '</div>';
     $$('#params input').forEach(inp => inp.addEventListener('input', () => {
       st.params[inp.dataset.k] = +inp.value; inp.nextElementSibling.textContent = G.fmt(+inp.value);
       updatePreview(); renderGraph();
     }));
     $('#preview-foot').textContent = `World XY • ${L.title} preview`;
-    $('#goal').innerHTML = `<div class="ph">Goal <span>click to enlarge</span></div><img src="${goalImage(L)}" alt="Finished result">`;
+    $('#goal').innerHTML = `<header><h3 class="smallcaps">Goal</h3><span class="sub">Click to enlarge</span></header><img src="${goalImage(L)}" alt="Finished result">`;
   }
 
   function updatePreview(freshKey) {
@@ -1049,17 +1065,12 @@
       <p class="muted">Levels are loaded with fetch(), so the game must be served over http — e.g. <code>python -m http.server 5173 --directory web</code> — not opened as a file.</p>`);
   });
   $('#btn-title-help').onclick = helpModal;
-  $('#team').innerHTML = TEAM.map(t => `<div class="team-card" role="button" tabindex="0" aria-expanded="false" data-hero="${t.avatar}">
+  $('#team').innerHTML = TEAM.map(t => `<div class="team-card" data-hero="${t.avatar}">
       <img class="tc-avatar" src="img/avatars/${t.avatar}.png" alt="">
       <span class="tc-name">${esc(t.name)}</span>
       <span class="tc-more"><b>${esc(t.title)}</b>${esc(t.org)}
-        <button class="btn small tc-pick" data-pick="${t.avatar}">Choose as my guide</button></span>
-      <span class="tc-hint">Click for more</span></div>`).join('');
-  $$('#team .team-card').forEach(c => {
-    const toggle = () => { const open = !c.classList.contains('open'); c.classList.toggle('open', open); c.setAttribute('aria-expanded', open); };
-    c.onclick = (e) => { if (e.target.closest('.tc-pick')) { e.stopPropagation(); setHero(c.dataset.hero); return; } toggle(); };
-    c.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } };
-  });
+        <button class="btn small tc-pick" data-pick="${t.avatar}">Choose as my guide</button></span></div>`).join('');
+  $$('#team .tc-pick').forEach(b => { b.onclick = () => setHero(b.dataset.pick); });
   applyHero();   // marks the current guide's card
   $('#btn-hero').onclick = heroModal;
   $('#btn-about').onclick = () => show('screen-about');

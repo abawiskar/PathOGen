@@ -1,0 +1,686 @@
+{
+ "source": "GameLevels/LevelB/B01.ghx",
+ "method": "B01",
+ "params": [
+  {
+   "key": "s1",
+   "label": "Sides",
+   "min": 3.0,
+   "max": 12.0,
+   "step": 1,
+   "value": 4.0
+  },
+  {
+   "key": "s2",
+   "label": "Base fillet (ft)",
+   "min": 0.0,
+   "max": 15.0,
+   "step": 0.1,
+   "value": 6.0
+  },
+  {
+   "key": "s3",
+   "label": "Base radius (ft)",
+   "min": 30.0,
+   "max": 120.0,
+   "step": 0.1,
+   "value": 60.0
+  },
+  {
+   "key": "s4",
+   "label": "Top fillet (ft)",
+   "min": 0.0,
+   "max": 15.0,
+   "step": 0.1,
+   "value": 6.0
+  },
+  {
+   "key": "s5",
+   "label": "Top radius (ft)",
+   "min": 30.0,
+   "max": 120.0,
+   "step": 0.1,
+   "value": 45.0
+  },
+  {
+   "key": "s6",
+   "label": "Floors",
+   "min": 5.0,
+   "max": 80.0,
+   "step": 1,
+   "value": 30.0
+  },
+  {
+   "key": "s7",
+   "label": "Floor-to-floor (ft)",
+   "min": 10.0,
+   "max": 18.0,
+   "step": 0.1,
+   "value": 13.0
+  },
+  {
+   "key": "s8",
+   "label": "Total twist (deg)",
+   "min": -180.0,
+   "max": 180.0,
+   "step": 1,
+   "value": 90.0
+  }
+ ],
+ "nodes": [
+  {
+   "id": "area",
+   "comp": "area",
+   "open": true,
+   "x": 3350,
+   "y": 46,
+   "question": "B01_Q07",
+   "need": "the surface area of the tower",
+   "hint": "Surface › Analysis. Area works on curves, surfaces and solids. Watch for: Set Total twist to 0: the area drops, because twisting stretches the skin.",
+   "correct": "Area measures the tower's envelope in square feet and finds its centroid. The Panel shows the number.",
+   "distractors": [
+    "volume",
+    "length",
+    "dimensions",
+    "boundingBox",
+    "curveMiddle",
+    "evaluateCurve",
+    "closed",
+    "curveClosestPoint",
+    "polygonCenter",
+    "segmentLengths",
+    "planar",
+    "boxProperties"
+   ],
+   "draft": true,
+   "stage": "Check your result: A number that proves the mass is right. Read outputs as data, not just as a picture. Area gives the surface area (sf) and the centroid.",
+   "wrong": {
+    "volume": "Volume would be a good check too, but this step reads the envelope area.",
+    "length": "Length measures curves, not surfaces.",
+    "*": "This step needs the surface area of the solid."
+   },
+   "stage_draft": true,
+   "preview": false
+  },
+  {
+   "id": "capHoles",
+   "comp": "capHoles",
+   "open": true,
+   "x": 2992,
+   "y": 35,
+   "question": "B01_Q06",
+   "need": "a closed solid: lids on the loft's open top and bottom",
+   "hint": "Surface › Util. The loft is a tube with two flat openings. Watch for: Only flat (planar) openings can be capped.",
+   "correct": "Cap Holes fills the planar openings at the top and bottom, turning the lofted tube into a closed solid.",
+   "distractors": [
+    "boundary",
+    "brepJoin",
+    "mergeFaces",
+    "flip",
+    "deconstructBrep",
+    "brepEdges",
+    "solidUnion",
+    "solidDifference",
+    "solidIntersection",
+    "offsetSurface",
+    "brepWireframe",
+    "untrim"
+   ],
+   "draft": true,
+   "stage": "Close the mass: A closed solid (Brep): the tower mass. Loft leaves the top and bottom open; Cap Holes adds flat lids to planar openings.",
+   "wrong": {
+    "boundary": "Boundary Surfaces would make loose discs, not one joined solid.",
+    "brepJoin": "Brep Join joins existing pieces: there are no lids yet to join.",
+    "*": "This step needs to close the loft's openings."
+   },
+   "stage_draft": true,
+   "preview": true
+  },
+  {
+   "id": "constructP",
+   "comp": "constructPoint",
+   "open": false,
+   "x": 0,
+   "y": 22,
+   "set": {
+    "X": 0.0,
+    "Y": 0.0,
+    "Z": 0.0
+   }
+  },
+  {
+   "id": "data",
+   "comp": "dataParam",
+   "open": false,
+   "x": 1480,
+   "y": 0,
+   "label": "Height (ft)"
+  },
+  {
+   "id": "data2",
+   "comp": "dataParam",
+   "open": false,
+   "x": 1782,
+   "y": 52,
+   "label": "Up vector"
+  },
+  {
+   "id": "data3",
+   "comp": "dataParam",
+   "open": false,
+   "x": 1786,
+   "y": 0,
+   "label": "Top outline"
+  },
+  {
+   "id": "data4",
+   "comp": "dataParam",
+   "open": false,
+   "x": 2117,
+   "y": 0,
+   "label": "Lift top"
+  },
+  {
+   "id": "data5",
+   "comp": "dataParam",
+   "open": false,
+   "x": 2556,
+   "y": 52,
+   "label": "Twist top"
+  },
+  {
+   "id": "data6",
+   "comp": "dataParam",
+   "open": false,
+   "x": 2562,
+   "y": 0,
+   "label": "Base outline"
+  },
+  {
+   "id": "data7",
+   "comp": "dataParam",
+   "open": false,
+   "x": 2885,
+   "y": 0,
+   "label": "Skin"
+  },
+  {
+   "id": "data8",
+   "comp": "dataParam",
+   "open": false,
+   "x": 3232,
+   "y": 0,
+   "label": "Tower mass"
+  },
+  {
+   "id": "loft",
+   "comp": "loft",
+   "open": true,
+   "x": 2680,
+   "y": 12,
+   "set": {
+    "O": false
+   },
+   "question": "B01_Q05",
+   "need": "a surface skinned from the base outline up to the twisted top",
+   "hint": "Surface › Freeform. It takes a list of section curves. Watch for: Curves out of order make the skin fold back on itself.",
+   "correct": "Loft skins a surface through the section curves in order. Both outlines go into the same C input, which merges them into one list.",
+   "distractors": [
+    "sweep1",
+    "sweep2",
+    "extrude",
+    "edgeSurface",
+    "networkSurface",
+    "boundary",
+    "surfaceFromPoints",
+    "pipe",
+    "revolution",
+    "railRevolution",
+    "patch",
+    "extrudeLinear"
+   ],
+   "draft": true,
+   "stage": "Skin between the profiles: One surface from the base outline to the twisted top. Loft builds a surface through section curves, in the order they arrive: base first, then top.",
+   "wrong": {
+    "extrude": "Extrude pushes one curve along a vector: it can't connect different profiles.",
+    "boundary": "Boundary Surfaces only fills flat outlines: you'd get separate floor discs.",
+    "sweep1": "Sweep1 needs a rail curve to follow. Here there are only section curves.",
+    "*": "This step needs a surface through section curves."
+   },
+   "stage_draft": true
+  },
+  {
+   "id": "move",
+   "comp": "move",
+   "open": true,
+   "x": 1904,
+   "y": 21,
+   "question": "B01_Q03",
+   "need": "a transform that lifts the top outline along the up vector",
+   "hint": "Transform › Euclidean. Geometry in, a Motion vector in.",
+   "correct": "Move translates geometry along a vector. The top outline is copied up to roof height and the original stays on the ground.",
+   "distractors": [
+    "moveToPlane",
+    "mirror",
+    "scale",
+    "rotate",
+    "moveAwayFrom",
+    "rotate3D",
+    "rotateAxis",
+    "scaleNU",
+    "shear",
+    "orient",
+    "orientDirection",
+    "linearArray"
+   ],
+   "draft": true,
+   "stage": "Copy the profile to the top: The top outline sitting at roof height. Transforms output a moved copy: the original stays where it was.",
+   "wrong": {
+    "rotate": "Rotate turns geometry in place: you'll need it next, but first the outline has to go up.",
+    "scale": "Scale resizes around a point: the outline would stay on the ground.",
+    "*": "This step needs a transform that shifts geometry along a vector."
+   },
+   "stage_draft": true
+  },
+  {
+   "id": "multiplica",
+   "comp": "multiplication",
+   "open": true,
+   "x": 1326,
+   "y": 31,
+   "question": "B01_Q01",
+   "need": "the total tower height: Floors × Floor-to-floor",
+   "hint": "Maths › Operators. Two numbers in, their product out. Watch for: Don't type the height in by hand: it has to update whenever a slider moves.",
+   "correct": "Multiplication turns two sliders into one derived value: 30 floors × 13 ft = 390 ft. Deriving values instead of typing them keeps the definition parametric.",
+   "distractors": [
+    "addition",
+    "subtraction",
+    "power",
+    "modulus",
+    "maximum",
+    "minimum",
+    "massAddition",
+    "average",
+    "absolute",
+    "squareRoot",
+    "logarithm",
+    "cosine"
+   ],
+   "draft": true,
+   "stage": "How tall is the tower?: One number: the total height in feet. Derive values from sliders: Floors × Floor-to-floor.",
+   "wrong": {
+    "addition": "Addition gives 30 + 13 = 43 ft, not the height of 30 stacked floors.",
+    "power": "Power raises A to the B-th power: far too tall.",
+    "*": "This step needs the product of two numbers."
+   },
+   "stage_draft": true
+  },
+  {
+   "id": "number",
+   "comp": "numberParam",
+   "open": false,
+   "x": 645,
+   "y": 52
+  },
+  {
+   "id": "panel",
+   "comp": "panel",
+   "open": false,
+   "x": 3518,
+   "y": 35
+  },
+  {
+   "id": "point",
+   "comp": "pointParam",
+   "open": false,
+   "x": 233,
+   "y": 0
+  },
+  {
+   "id": "point2",
+   "comp": "pointParam",
+   "open": false,
+   "x": 645,
+   "y": 0
+  },
+  {
+   "id": "point3",
+   "comp": "pointParam",
+   "open": false,
+   "x": 2117,
+   "y": 52
+  },
+  {
+   "id": "polygon",
+   "comp": "polygon",
+   "open": false,
+   "x": 496,
+   "y": 36
+  },
+  {
+   "id": "polygon2",
+   "comp": "polygon",
+   "open": false,
+   "x": 904,
+   "y": 34
+  },
+  {
+   "id": "rotate",
+   "comp": "rotate",
+   "open": true,
+   "x": 2394,
+   "y": 27,
+   "degrees": true,
+   "question": "B01_Q04",
+   "need": "a transform that turns the lifted outline by the twist angle",
+   "hint": "Transform › Euclidean. Geometry, Angle, and a Plane to turn around. Watch for: Angle is in radians unless the A input is set to Degrees (right-click A > Degrees).",
+   "correct": "Rotate turns the lifted outline around the tower's centre. Degrees is switched on, so the Total twist slider reads −180° to 180°.",
+   "distractors": [
+    "rotatePlane",
+    "mirror",
+    "scale",
+    "move",
+    "scaleNU",
+    "shear",
+    "shearAngle",
+    "orient",
+    "orientDirection",
+    "flipPlane",
+    "alignPlane",
+    "polarArray"
+   ],
+   "draft": true,
+   "stage": "Twist the top: The roof outline turned by the twist angle. A rotation needs a centre (the tower's centre point) and an angle.",
+   "wrong": {
+    "move": "Move shifts geometry. The outline has to turn, not shift.",
+    "mirror": "Mirror flips across a plane: a jump, not a gradual twist.",
+    "orient": "Orient maps geometry from one plane to another: much more set-up than a simple turn.",
+    "*": "This step needs a transform that turns geometry by an angle."
+   },
+   "stage_draft": true
+  },
+  {
+   "id": "slider",
+   "comp": "slider",
+   "open": false,
+   "x": 288,
+   "y": 48,
+   "param": "s1",
+   "label": "Sides"
+  },
+  {
+   "id": "slider2",
+   "comp": "slider",
+   "open": false,
+   "x": 306,
+   "y": 144,
+   "param": "s2",
+   "label": "Base fillet (ft)"
+  },
+  {
+   "id": "slider3",
+   "comp": "slider",
+   "open": false,
+   "x": 310,
+   "y": 96,
+   "param": "s3",
+   "label": "Base radius (ft)"
+  },
+  {
+   "id": "slider4",
+   "comp": "slider",
+   "open": false,
+   "x": 716,
+   "y": 144,
+   "param": "s4",
+   "label": "Top fillet (ft)"
+  },
+  {
+   "id": "slider5",
+   "comp": "slider",
+   "open": false,
+   "x": 720,
+   "y": 96,
+   "param": "s5",
+   "label": "Top radius (ft)"
+  },
+  {
+   "id": "slider6",
+   "comp": "slider",
+   "open": false,
+   "x": 1109,
+   "y": 0,
+   "param": "s6",
+   "label": "Floors"
+  },
+  {
+   "id": "slider7",
+   "comp": "slider",
+   "open": false,
+   "x": 1136,
+   "y": 48,
+   "param": "s7",
+   "label": "Floor-to-floor (ft)"
+  },
+  {
+   "id": "slider8",
+   "comp": "slider",
+   "open": false,
+   "x": 2198,
+   "y": 96,
+   "param": "s8",
+   "label": "Total twist (deg)"
+  },
+  {
+   "id": "unitZ",
+   "comp": "unitZ",
+   "open": true,
+   "x": 1592,
+   "y": 28,
+   "question": "B01_Q02",
+   "need": "a vector pointing straight up, as long as the tower is tall",
+   "hint": "Vector › Vector. Up is the Z axis; the Factor input sets the length. Watch for: Unit X and Unit Y point sideways.",
+   "correct": "Unit Z makes a vector up the Z axis. Feeding the height into its Factor makes it exactly as long as the tower is tall.",
+   "distractors": [
+    "unitX",
+    "unitY",
+    "vectorXYZ",
+    "amplitude",
+    "vector2pt",
+    "reverse",
+    "vectorLength",
+    "deconstructVector",
+    "crossProduct",
+    "dotProduct",
+    "angle",
+    "unitVector"
+   ],
+   "draft": true,
+   "stage": "Point it upward: A vector straight up, as long as the tower is tall. A vector is a direction × a length. Unit Z gives the direction; its Factor sets the length.",
+   "wrong": {
+    "unitX": "Unit X points sideways along X: the top would slide off to the side.",
+    "unitY": "Unit Y points sideways along Y: the top would slide off to the side.",
+    "vectorXYZ": "Vector XYZ could do it, but needs X, Y and Z: Unit Z only needs the length.",
+    "*": "This step needs a vector pointing straight up."
+   },
+   "stage_draft": true
+  }
+ ],
+ "wires": [
+  {
+   "from": "point.Pt",
+   "to": "polygon.P"
+  },
+  {
+   "from": "slider3.N",
+   "to": "polygon.R"
+  },
+  {
+   "from": "slider.N",
+   "to": "polygon.S"
+  },
+  {
+   "from": "slider2.N",
+   "to": "polygon.Rf"
+  },
+  {
+   "from": "point2.Pt",
+   "to": "polygon2.P"
+  },
+  {
+   "from": "slider5.N",
+   "to": "polygon2.R"
+  },
+  {
+   "from": "number.N",
+   "to": "polygon2.S"
+  },
+  {
+   "from": "slider4.N",
+   "to": "polygon2.Rf"
+  },
+  {
+   "from": "slider6.N",
+   "to": "multiplica.A"
+  },
+  {
+   "from": "slider7.N",
+   "to": "multiplica.B"
+  },
+  {
+   "from": "data.D",
+   "to": "unitZ.F"
+  },
+  {
+   "from": "data3.D",
+   "to": "move.G"
+  },
+  {
+   "from": "data2.D",
+   "to": "move.T",
+   "check": {
+    "side": "in",
+    "prompt": "Which input of Move takes the up vector?",
+    "hint": "G = geometry to move, T = the motion vector.",
+    "correct": "T is the motion. Until it was connected Move used its default (10 units up); now the top sits at roof height.",
+    "wrong": {
+     "G": "G is the geometry to move: the top outline is already plugged in there.",
+     "*": "That input isn't the motion vector."
+    },
+    "draft": true
+   }
+  },
+  {
+   "from": "data4.D",
+   "to": "rotate.G"
+  },
+  {
+   "from": "slider8.N",
+   "to": "rotate.A",
+   "check": {
+    "side": "in",
+    "prompt": "The twist angle goes into which input of Rotate?",
+    "hint": "G = geometry, A = angle, P = plane (the centre) to rotate around.",
+    "correct": "A is the angle, read in degrees because Degrees is switched on.",
+    "wrong": {
+     "G": "G is the geometry: the outline is already connected.",
+     "P": "P is the rotation plane: the centre point goes there.",
+     "*": "That input isn't the angle."
+    },
+    "draft": true
+   }
+  },
+  {
+   "from": "point3.Pt",
+   "to": "rotate.P",
+   "check": {
+    "side": "in",
+    "prompt": "The centre point goes into which input of Rotate?",
+    "hint": "A rotation needs a centre to turn around.",
+    "correct": "P is the plane to rotate around: a point there means 'turn around this point'.",
+    "wrong": {
+     "A": "A is the angle: that's the twist value.",
+     "*": "That input isn't the centre of rotation."
+    },
+    "draft": true
+   }
+  },
+  {
+   "from": "data6.D",
+   "to": "loft.C"
+  },
+  {
+   "from": "data5.D",
+   "to": "loft.C"
+  },
+  {
+   "from": "data7.D",
+   "to": "capHoles.B"
+  },
+  {
+   "from": "data8.D",
+   "to": "area.G"
+  },
+  {
+   "from": "area.A",
+   "to": "panel.in"
+  },
+  {
+   "from": "constructP.Pt",
+   "to": "point.Pt"
+  },
+  {
+   "from": "constructP.Pt",
+   "to": "point2.Pt"
+  },
+  {
+   "from": "slider.N",
+   "to": "number.N"
+  },
+  {
+   "from": "multiplica.R",
+   "to": "data.D"
+  },
+  {
+   "from": "polygon2.P",
+   "to": "data3.D"
+  },
+  {
+   "from": "unitZ.V",
+   "to": "data2.D"
+  },
+  {
+   "from": "move.G",
+   "to": "data4.D"
+  },
+  {
+   "from": "constructP.Pt",
+   "to": "point3.Pt"
+  },
+  {
+   "from": "polygon.P",
+   "to": "data6.D"
+  },
+  {
+   "from": "rotate.G",
+   "to": "data5.D"
+  },
+  {
+   "from": "loft.L",
+   "to": "data7.D"
+  },
+  {
+   "from": "capHoles.B",
+   "to": "data8.D"
+  }
+ ],
+ "order": [
+  "multiplica",
+  "unitZ",
+  "move",
+  "rotate",
+  "loft",
+  "capHoles",
+  "area"
+ ]
+}

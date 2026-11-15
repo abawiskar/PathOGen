@@ -1,0 +1,396 @@
+{
+ "source": "GameLevels/LevelA/A02.ghx",
+ "method": "A02",
+ "params": [
+  {
+   "key": "s1",
+   "label": "A",
+   "min": 0.0,
+   "max": 1000.0,
+   "step": 1,
+   "value": 360.0
+  },
+  {
+   "key": "s2",
+   "label": "B",
+   "min": 0.0,
+   "max": 10.0,
+   "step": 1,
+   "value": 5.0
+  },
+  {
+   "key": "s3",
+   "label": "Length",
+   "min": 0.0,
+   "max": 10.0,
+   "step": 1,
+   "value": 10.0
+  },
+  {
+   "key": "s4",
+   "label": "B",
+   "min": 0.0,
+   "max": 1.0,
+   "step": 1,
+   "value": 1.0
+  },
+  {
+   "key": "s5",
+   "label": "Radius",
+   "min": 0.0,
+   "max": 10.0,
+   "step": 1,
+   "value": 3.0
+  }
+ ],
+ "nodes": [
+  {
+   "id": "addition",
+   "comp": "addition",
+   "open": false,
+   "x": 350,
+   "y": 332
+  },
+  {
+   "id": "constructP",
+   "comp": "constructPoint",
+   "open": true,
+   "x": 0,
+   "y": 4,
+   "set": {
+    "X": 0.0,
+    "Y": 0.0,
+    "Z": 0.0
+   },
+   "question": "A02_Q01",
+   "need": "a component that turns X coordinate, Y coordinate and Z coordinate into Point",
+   "hint": "Look in Vector › Point.",
+   "correct": "Construct Point is the component this method uses here. Builds a point from X, Y and Z numbers.",
+   "distractors": [
+    "deconstruct",
+    "pointPolar",
+    "pointCylindrical",
+    "pointOriented",
+    "numbersToPoints",
+    "pointsToNumbers",
+    "coordinateMask",
+    "closestPoint",
+    "sortPoints",
+    "distance",
+    "vectorXYZ",
+    "plane3Pt"
+   ],
+   "draft": true,
+   "stage": "Start with the centre point of the floor plate.",
+   "stage_draft": true
+  },
+  {
+   "id": "curve",
+   "comp": "curveParam",
+   "open": false,
+   "x": 457,
+   "y": 173
+  },
+  {
+   "id": "curve2",
+   "comp": "curveParam",
+   "open": false,
+   "x": 695,
+   "y": 70
+  },
+  {
+   "id": "curve3",
+   "comp": "curveParam",
+   "open": false,
+   "x": 1038,
+   "y": 70
+  },
+  {
+   "id": "division",
+   "comp": "division",
+   "open": false,
+   "x": 350,
+   "y": 200
+  },
+  {
+   "id": "endPoints",
+   "comp": "endPoints",
+   "open": true,
+   "x": 789,
+   "y": 126,
+   "question": "A02_Q04",
+   "need": "a component that turns Curve into Start",
+   "hint": "Look in Curve › Analysis.",
+   "correct": "End Points is the component this method uses here. Extract the end points of a curve.",
+   "distractors": [
+    "curveMiddle",
+    "evaluateCurve",
+    "curveFrame",
+    "controlPoints",
+    "curveDomain",
+    "evaluateLength",
+    "deconstructArc",
+    "discontinuity",
+    "length",
+    "controlPolygon",
+    "segmentLengths",
+    "curveClosestPoint"
+   ],
+   "draft": true,
+   "stage": "Take the outer tip of every spoke. Joined in order, the tips become the corners of the outline.",
+   "stage_draft": true
+  },
+  {
+   "id": "fillet",
+   "comp": "fillet",
+   "open": true,
+   "x": 1218,
+   "y": 81,
+   "question": "A02_Q05",
+   "need": "a component that turns Curve and Radius into Curve",
+   "hint": "Look in Curve › Util.",
+   "correct": "Fillet is the component this method uses here. Fillet the sharp corners of a curve.",
+   "distractors": [
+    "filletEdge",
+    "smoothPolyline",
+    "offset",
+    "extendCurve",
+    "filletDistance",
+    "offsetCurveLoose",
+    "offsetPolyline",
+    "simplifyCurve",
+    "rebuildCurve",
+    "flipCurve",
+    "joinCurves",
+    "reduce"
+   ],
+   "draft": true,
+   "stage": "The corners are joined by a polyline. Round them off to finish the floor plate.",
+   "stage_draft": true
+  },
+  {
+   "id": "lineSDL",
+   "comp": "lineSDL",
+   "open": true,
+   "x": 358,
+   "y": 39,
+   "question": "A02_Q02",
+   "need": "a component that turns Start, Direction and Length into Line",
+   "hint": "Look in Curve › Primitive.",
+   "correct": "Line SDL is the component this method uses here. Draws a line from a start, direction and length.",
+   "distractors": [
+    "line4Pt",
+    "line2Plane",
+    "fitLine",
+    "tangentLines",
+    "line",
+    "vector2pt",
+    "tangentLinesEx",
+    "tangentLinesIn",
+    "polyline",
+    "arcSED",
+    "linePt",
+    "lineLine"
+   ],
+   "draft": true,
+   "stage": "Draw a spoke out from the centre: a start point, a direction (world Y) and a length.",
+   "stage_draft": true
+  },
+  {
+   "id": "point",
+   "comp": "pointParam",
+   "open": false,
+   "x": 157,
+   "y": 0
+  },
+  {
+   "id": "polyline",
+   "comp": "polyline",
+   "open": false,
+   "x": 900,
+   "y": 70,
+   "set": {
+    "C": false
+   }
+  },
+  {
+   "id": "rotate",
+   "comp": "rotate",
+   "open": true,
+   "x": 584,
+   "y": 222,
+   "degrees": true,
+   "question": "A02_Q03",
+   "need": "a component that turns Geometry, Angle and Plane into Geometry",
+   "hint": "Look in Transform › Euclidean.",
+   "correct": "Rotate is the component this method uses here. Turns geometry around a plane.",
+   "distractors": [
+    "rotatePlane",
+    "mirror",
+    "scale",
+    "move",
+    "scaleNU",
+    "shear",
+    "shearAngle",
+    "orient",
+    "orientDirection",
+    "flipPlane",
+    "alignPlane",
+    "polarArray"
+   ],
+   "draft": true,
+   "stage": "Copy the spoke around the centre. The Series gives one angle per side (360° ÷ 5).",
+   "stage_draft": true
+  },
+  {
+   "id": "series",
+   "comp": "series",
+   "open": false,
+   "x": 444,
+   "y": 266,
+   "set": {
+    "S": 0.0
+   }
+  },
+  {
+   "id": "slider",
+   "comp": "slider",
+   "open": false,
+   "x": 191,
+   "y": 190,
+   "param": "s1",
+   "label": "A"
+  },
+  {
+   "id": "slider2",
+   "comp": "slider",
+   "open": false,
+   "x": 198,
+   "y": 229,
+   "param": "s2",
+   "label": "B"
+  },
+  {
+   "id": "slider3",
+   "comp": "slider",
+   "open": false,
+   "x": 200,
+   "y": 95,
+   "param": "s3",
+   "label": "Length"
+  },
+  {
+   "id": "slider4",
+   "comp": "slider",
+   "open": false,
+   "x": 210,
+   "y": 267,
+   "param": "s4",
+   "label": "B"
+  },
+  {
+   "id": "slider5",
+   "comp": "slider",
+   "open": false,
+   "x": 1082,
+   "y": 113,
+   "param": "s5",
+   "label": "Radius"
+  },
+  {
+   "id": "unitY",
+   "comp": "unitY",
+   "open": false,
+   "x": 228,
+   "y": 52,
+   "set": {
+    "F": 1.0
+   }
+  }
+ ],
+ "wires": [
+  {
+   "from": "division.R",
+   "to": "series.N"
+  },
+  {
+   "from": "addition.R",
+   "to": "series.C"
+  },
+  {
+   "from": "point.Pt",
+   "to": "lineSDL.S"
+  },
+  {
+   "from": "unitY.V",
+   "to": "lineSDL.D"
+  },
+  {
+   "from": "slider3.N",
+   "to": "lineSDL.L"
+  },
+  {
+   "from": "curve.C",
+   "to": "rotate.G"
+  },
+  {
+   "from": "series.S",
+   "to": "rotate.A"
+  },
+  {
+   "from": "slider.N",
+   "to": "division.A"
+  },
+  {
+   "from": "slider2.N",
+   "to": "division.B"
+  },
+  {
+   "from": "slider2.N",
+   "to": "addition.A"
+  },
+  {
+   "from": "slider4.N",
+   "to": "addition.B"
+  },
+  {
+   "from": "curve2.C",
+   "to": "endPoints.C"
+  },
+  {
+   "from": "endPoints.E",
+   "to": "polyline.V"
+  },
+  {
+   "from": "curve3.C",
+   "to": "fillet.C"
+  },
+  {
+   "from": "slider5.N",
+   "to": "fillet.R"
+  },
+  {
+   "from": "constructP.Pt",
+   "to": "point.Pt"
+  },
+  {
+   "from": "lineSDL.L",
+   "to": "curve.C"
+  },
+  {
+   "from": "rotate.G",
+   "to": "curve2.C"
+  },
+  {
+   "from": "polyline.Pl",
+   "to": "curve3.C"
+  }
+ ],
+ "order": [
+  "constructP",
+  "lineSDL",
+  "rotate",
+  "endPoints",
+  "fillet"
+ ]
+}

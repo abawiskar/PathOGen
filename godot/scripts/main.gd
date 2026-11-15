@@ -1635,16 +1635,55 @@ func definition_modal() -> void:
 		var img_path := LevelLoader.source_dir.path_join(L.dir).path_join(img)
 		var tex: Texture2D = null
 		if img.ends_with(".svg"):
-			tex = UIKit.svg_texture(img_path, 0.5)
+			tex = UIKit.svg_texture(img_path, 1.0)
 		elif img != "":
 			tex = UIKit.png_texture(img_path)
 		if tex:
+			# web: zoom tools (−, %, +, Fit all) over a scrollable viewport, starting at 100%
+			var native := tex.get_size()
+			var tools := HBoxContainer.new()
+			tools.add_theme_constant_override("separation", 10)
+			cbox.add_child(tools)
+			var zout := UIKit.button("−", "", "small")
+			tools.add_child(zout)
+			var zlab := UIKit.label(tools, "100%", 14, UIKit.GOLD, UIKit.sans_bold)
+			zlab.custom_minimum_size.x = 52
+			zlab.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			zlab.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+			var zin := UIKit.button("+", "", "small")
+			tools.add_child(zin)
+			var zfit := UIKit.button("Fit all", "", "small")
+			tools.add_child(zfit)
+			var tip := UIKit.label(tools, "Scroll to explore the definition", 12, UIKit.MUTED, UIKit.sans)
+			tip.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			tip.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+			tip.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+			var vp := ScrollContainer.new()
+			vp.custom_minimum_size = Vector2(854, 460)
+			vp.add_theme_stylebox_override("panel", UIKit.box(Color(0, 0, 0, 0), UIKit.LINE_SOFT, 0, 1))
+			cbox.add_child(vp)
 			var tr := TextureRect.new()
 			tr.texture = tex
 			tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-			tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-			tr.custom_minimum_size = Vector2(854, 480)
-			cbox.add_child(tr)
+			tr.stretch_mode = TextureRect.STRETCH_SCALE
+			vp.add_child(tr)
+			var zoom := [1.0]
+			var apply_zoom := func():
+				tr.custom_minimum_size = native * zoom[0]
+				tr.size = tr.custom_minimum_size
+				zlab.text = "%d%%" % roundi(zoom[0] * 100.0)
+			zout.pressed.connect(func():
+				zoom[0] = maxf(0.1, zoom[0] / 1.25)
+				apply_zoom.call())
+			zin.pressed.connect(func():
+				zoom[0] = minf(4.0, zoom[0] * 1.25)
+				apply_zoom.call())
+			zfit.pressed.connect(func():
+				zoom[0] = (vp.size.x if vp.size.x > 0 else 854.0) / native.x
+				apply_zoom.call()
+				vp.scroll_horizontal = 0
+				vp.scroll_vertical = 0)
+			apply_zoom.call()
 		else:
 			var done_b := Battle.new(L, battle.idx, levels.size())
 			for st in L.steps:
@@ -1982,8 +2021,8 @@ func _build_about(s: Control) -> void:
 	back.pressed.connect(main_menu)
 	s.add_child(back)
 	back.reset_size()
-	back.position = Vector2((1600 - back.size.x) / 2.0, 700)
-	_about_bottom.append(back)
+	# web: the Main Menu button sits pinned at the top left of the About page
+	back.position = Vector2(40, 32)
 	_layout_team()
 	apply_hero()
 
@@ -1995,27 +2034,23 @@ var _hero_btn: Button
 var _about_bottom: Array = []
 
 
-## Lay the team cards out in rows of 4 and 3; an opened card makes its row taller, pushing the rest down.
+## Lay the team cards out in rows of 4 and 3. Cards keep a fixed height (web: 244px), so opening one never shifts the others.
 func _layout_team() -> void:
 	var w := 300.0
+	var h := 244.0
 	var gap := 24.0
 	var y := 300.0
 	var rows := [_team_cards.slice(0, 4), _team_cards.slice(4)]
 	for r in rows:
 		var n_r: int = r.size()
 		var x0: float = (1600.0 - (n_r * w + (n_r - 1) * gap)) / 2.0
-		var rh := 160.0
-		for e in r:
-			if e.open:
-				rh = 218.0
 		for i in r.size():
 			var e: Dictionary = r[i]
 			e.card.position = Vector2(x0 + i * (w + gap), y)
-			e.card.size = Vector2(w, 218.0 if e.open else 160.0)
-		y += rh + gap
-	if _about_bottom.size() == 2:
-		_about_bottom[0].position.y = y + 14
-		_about_bottom[1].position.y = y + 50
+			e.card.size = Vector2(w, h)
+		y += h + gap
+	if _about_bottom.size() >= 1:
+		_about_bottom[0].position.y = y + 10
 
 
 func help_modal() -> void:

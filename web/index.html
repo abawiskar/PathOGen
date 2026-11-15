@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=Cinzel:wght@500;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=about3">
   <link rel='stylesheet' href='css/campaign-map.css?v=hero3'>
 </head>
 <body>
@@ -44,8 +44,8 @@
         <h2 class="about-head">The team</h2>
         <div class="team" id="team"></div>
         <div class="about-fonts">Fonts: Cinzel and Barlow (SIL Open Font License) &nbsp;·&nbsp; Grasshopper component icons by David Rutten / Robert McNeel &amp; Associates</div>
-        <button class="btn big primary" id="btn-about-back">&#8592; Main Menu</button>
       </div>
+      <button class="btn big primary" id="btn-about-back">&#8592; Main Menu</button>
     </section>
 
     <section id="screen-map" class="screen">
@@ -87,17 +87,15 @@
             <button data-view="perspective">Perspective</button><button data-view="top">Top</button><button data-view="front">Front</button>
           </div>
         </div>
-        <div class="preview-side">
-          <div class="params" id="params"></div>
-          <div class="goal" id="goal" title="The finished result you are building towards"></div>
-        </div>
         <div class="preview-foot" id="preview-foot">World XY &bull; preview geometry</div>
         <div class="timer" id="timer"><div class="timer-bar"><i></i></div><b>20</b></div>
       </div>
 
+      <div class="panel" id="goal" title="The finished result you are building towards"></div>
+      <div class="panel" id="params"></div>
+
       <div class="panel" id="p-health">
-        <header><h3 class="smallcaps">Your health</h3><b id="hp-text">4 / 4</b></header>
-        <div class="hearts" id="hearts"></div>
+        <div class="hp-row"><span class="hp-label">HP</span><div class="hearts" id="hearts"></div><b id="hp-text">4 / 4</b></div>
         <div class="xp-row"><span id="level-chip">Level 1</span><span>XP <b id="xp-text">0</b></span></div>
       </div>
       <div id="effects"></div>
@@ -145,7 +143,7 @@
 <script src="js/engine.js"></script>
 <script src="js/loader.js"></script>
 <script src="js/art.js"></script>
-<script src="js/game.js?v=guide2"></script>
+<script src="js/game.js?v=about3"></script>
   <script src='js/campaign-map.js?v=hero3'></script>
 <script>
   // testing only: ?inspect adds the level inspector bar (js/inspect.js)

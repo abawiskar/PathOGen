@@ -1,0 +1,1113 @@
+{
+ "source": "GameLevels/LevelD/D03.ghx",
+ "method": "D03",
+ "params": [
+  {
+   "key": "s1",
+   "label": "Floors",
+   "min": 5.0,
+   "max": 80.0,
+   "step": 1,
+   "value": 30.0
+  },
+  {
+   "key": "s2",
+   "label": "Panels / mullions around",
+   "min": 8.0,
+   "max": 120.0,
+   "step": 1,
+   "value": 32.0
+  },
+  {
+   "key": "s3",
+   "label": "Mullion radius (ft)",
+   "min": 0.1,
+   "max": 1.0,
+   "step": 0.01,
+   "value": 0.25
+  },
+  {
+   "key": "s4",
+   "label": "Bulge at mid-height (ft)",
+   "min": -30.0,
+   "max": 30.0,
+   "step": 0.1,
+   "value": 10.0
+  },
+  {
+   "key": "s5",
+   "label": "Floor-to-floor (ft)",
+   "min": 10.0,
+   "max": 18.0,
+   "step": 0.1,
+   "value": 13.0
+  },
+  {
+   "key": "s6",
+   "label": "Top fillet (ft)",
+   "min": 0.0,
+   "max": 15.0,
+   "step": 0.1,
+   "value": 12.0
+  },
+  {
+   "key": "s7",
+   "label": "Base fillet (ft)",
+   "min": 0.0,
+   "max": 15.0,
+   "step": 0.1,
+   "value": 6.0
+  },
+  {
+   "key": "s8",
+   "label": "Top radius (ft)",
+   "min": 30.0,
+   "max": 120.0,
+   "step": 0.1,
+   "value": 45.0
+  },
+  {
+   "key": "s9",
+   "label": "Base radius (ft)",
+   "min": 30.0,
+   "max": 120.0,
+   "step": 0.1,
+   "value": 60.0
+  },
+  {
+   "key": "s10",
+   "label": "Sides",
+   "min": 3.0,
+   "max": 12.0,
+   "step": 1,
+   "value": 4.0
+  },
+  {
+   "key": "s11",
+   "label": "Total twist (deg)",
+   "min": -180.0,
+   "max": 180.0,
+   "step": 1,
+   "value": 90.0
+  }
+ ],
+ "nodes": [
+  {
+   "id": "addition",
+   "comp": "addition",
+   "open": false,
+   "x": 1996,
+   "y": 45
+  },
+  {
+   "id": "addition2",
+   "comp": "addition",
+   "open": false,
+   "x": 1996,
+   "y": 181
+  },
+  {
+   "id": "addition3",
+   "comp": "addition",
+   "open": false,
+   "x": 2110,
+   "y": 48
+  },
+  {
+   "id": "capHoles",
+   "comp": "capHoles",
+   "open": false,
+   "x": 4038,
+   "y": 35,
+   "ghost": true
+  },
+  {
+   "id": "constructP",
+   "comp": "constructPoint",
+   "open": false,
+   "x": 1469,
+   "y": 39,
+   "set": {
+    "X": 0.0,
+    "Y": 0.0
+   }
+  },
+  {
+   "id": "data",
+   "comp": "dataParam",
+   "open": false,
+   "x": 1622,
+   "y": 104,
+   "label": "Bulge (ft)"
+  },
+  {
+   "id": "data10",
+   "comp": "dataParam",
+   "open": false,
+   "x": 4189,
+   "y": 0,
+   "label": "Skin"
+  },
+  {
+   "id": "data11",
+   "comp": "dataParam",
+   "open": false,
+   "x": 4647,
+   "y": 0,
+   "label": "Skin"
+  },
+  {
+   "id": "data12",
+   "comp": "dataParam",
+   "open": false,
+   "x": 4653,
+   "y": 52,
+   "label": "Panel grid"
+  },
+  {
+   "id": "data13",
+   "comp": "dataParam",
+   "open": false,
+   "x": 4977,
+   "y": 0,
+   "label": "Twist floors"
+  },
+  {
+   "id": "data14",
+   "comp": "dataParam",
+   "open": false,
+   "x": 5324,
+   "y": 0,
+   "label": "Points {floor}(i)"
+  },
+  {
+   "id": "data15",
+   "comp": "dataParam",
+   "open": false,
+   "x": 5656,
+   "y": 0,
+   "label": "Columns {i}(floor)"
+  },
+  {
+   "id": "data16",
+   "comp": "dataParam",
+   "open": false,
+   "x": 5966,
+   "y": 52,
+   "label": "Twist floors"
+  },
+  {
+   "id": "data17",
+   "comp": "dataParam",
+   "open": false,
+   "x": 5974,
+   "y": 0,
+   "label": "Vertical curves"
+  },
+  {
+   "id": "data2",
+   "comp": "dataParam",
+   "open": false,
+   "x": 2271,
+   "y": 0,
+   "label": "Level centres"
+  },
+  {
+   "id": "data3",
+   "comp": "dataParam",
+   "open": false,
+   "x": 2274,
+   "y": 104,
+   "label": "Fillet per floor"
+  },
+  {
+   "id": "data4",
+   "comp": "dataParam",
+   "open": false,
+   "x": 2278,
+   "y": 52,
+   "label": "Radius per floor"
+  },
+  {
+   "id": "data5",
+   "comp": "dataParam",
+   "open": false,
+   "x": 3123,
+   "y": 104,
+   "label": "Level centres"
+  },
+  {
+   "id": "data6",
+   "comp": "dataParam",
+   "open": false,
+   "x": 3124,
+   "y": 0,
+   "label": "Ease squared"
+  },
+  {
+   "id": "data7",
+   "comp": "dataParam",
+   "open": false,
+   "x": 3124,
+   "y": 52,
+   "label": "Floor outlines"
+  },
+  {
+   "id": "data8",
+   "comp": "dataParam",
+   "open": false,
+   "x": 3668,
+   "y": 0,
+   "label": "Twist floors"
+  },
+  {
+   "id": "data9",
+   "comp": "dataParam",
+   "open": false,
+   "x": 3931,
+   "y": 0,
+   "label": "Skin"
+  },
+  {
+   "id": "divideCurv",
+   "comp": "divideCurve",
+   "open": true,
+   "x": 5158,
+   "y": 47,
+   "set": {
+    "K": false
+   },
+   "question": "D03_Q03",
+   "need": "N points around every floor outline",
+   "hint": "Curve › Division.",
+   "correct": "Divide Curve gives one branch of points per floor: the data tree {floor}(point).",
+   "distractors": [
+    "divideLength",
+    "divideDistance",
+    "divideByDeviation",
+    "evaluateLength",
+    "curveFrames",
+    "perpFrames",
+    "shatter",
+    "dashPattern",
+    "curveContour",
+    "horizontalFrames",
+    "evaluateCurve",
+    "curveMiddle"
+   ],
+   "draft": true,
+   "stage": "Points on every floor: N points around every floor outline. The outlines are a list, so Divide Curve returns a tree: one branch of points per floor, {floor}(point).",
+   "stage_draft": true
+  },
+  {
+   "id": "divideDoma",
+   "comp": "divDomain2",
+   "open": true,
+   "x": 4500,
+   "y": 30,
+   "question": "D03_Q01",
+   "need": "the surface's UV domain cut into a grid",
+   "hint": "Maths › Domain. Watch for: V = Floors, so each row of panels is one storey.",
+   "correct": "Divide Domain² cuts the loft's UV domain into a grid: panels around × one row per floor.",
+   "distractors": [
+    "divideDomain",
+    "constructDomainUV",
+    "deconstructDomain",
+    "bounds2D",
+    "divideSurface",
+    "surfaceFrames",
+    "dimensions",
+    "consecutiveDomains",
+    "findDomain",
+    "includes",
+    "constructDomain"
+   ],
+   "draft": true,
+   "stage": "Split the skin into a grid: A grid of UV domains: panels around × floors up. Every surface has its own UV coordinates. Divide Domain² cuts that UV square into U × V cells without touching the geometry yet.",
+   "stage_draft": true
+  },
+  {
+   "id": "flipMatrix",
+   "comp": "flipMatrix",
+   "open": true,
+   "x": 5450,
+   "y": 54,
+   "question": "D03_Q04",
+   "need": "the tree regrouped so each branch is a vertical column",
+   "hint": "Sets › Tree. Watch for: This is the key data-tree move: the same points, grouped differently.",
+   "correct": "Flip Matrix swaps rows and columns: each branch is now a column of points running up the tower.",
+   "distractors": [
+    "flatten",
+    "graft",
+    "simplifyTree",
+    "trimTree",
+    "shiftPaths",
+    "explodeTree",
+    "pruneTree",
+    "splitTree",
+    "treeBranch",
+    "reverseList",
+    "shiftList",
+    "partitionList"
+   ],
+   "draft": true,
+   "stage": "Swap rows and columns: Branches per vertical line instead of per floor. Flip Matrix turns {floor}(point) into {point}(floor): each branch now holds one point from every floor, a vertical line of points.",
+   "stage_draft": true
+  },
+  {
+   "id": "graphMappe",
+   "comp": "graphMapper",
+   "open": false,
+   "x": 659,
+   "y": 65,
+   "graph": {
+    "type": "bezier",
+    "cp": [
+     [
+      0.0,
+      0.0
+     ],
+     [
+      0.3,
+      1.0
+     ],
+     [
+      0.7,
+      1.0
+     ],
+     [
+      1.0,
+      0.0
+     ]
+    ]
+   }
+  },
+  {
+   "id": "interpolat",
+   "comp": "interpolate",
+   "open": true,
+   "x": 5788,
+   "y": 44,
+   "set": {
+    "D": 3.0,
+    "P": false,
+    "K": 1.0
+   },
+   "question": "D03_Q05",
+   "need": "a smooth curve through each column of points",
+   "hint": "Curve › Spline. Watch for: Without Flip Matrix you'd get curves around each floor instead.",
+   "correct": "Interpolate draws a smooth curve up each column: the twisting vertical mullions.",
+   "distractors": [
+    "divideCurve",
+    "fitLine",
+    "circle3Pt",
+    "polygon",
+    "circleFit",
+    "line",
+    "arc3Pt",
+    "bezierSpan",
+    "tangentArcs",
+    "catenary",
+    "blendCurve",
+    "connectCurves"
+   ],
+   "draft": true,
+   "stage": "Curves up the tower: One smooth curve through each column of points. Interpolate draws a curve through every branch: one twisting mullion per column.",
+   "stage_draft": true
+  },
+  {
+   "id": "isotrim",
+   "comp": "isotrim",
+   "open": true,
+   "x": 4766,
+   "y": 18,
+   "question": "D03_Q02",
+   "need": "one surface patch per UV cell",
+   "hint": "Surface › Util. Watch for: The panels are slightly warped because the skin twists.",
+   "correct": "Isotrim cuts the loft into one panel per grid cell.",
+   "distractors": [
+    "divideSurface",
+    "surfaceSplit",
+    "copyTrim",
+    "retrim",
+    "untrim",
+    "surfaceFrames",
+    "isoCurve",
+    "evaluateSurface",
+    "subCurve",
+    "dimensions",
+    "brepEdges",
+    "deconstructBrep"
+   ],
+   "draft": true,
+   "stage": "Cut the panels: One surface patch per grid cell. Isotrim trims the skin to each UV cell, so the panels follow the twisted surface exactly.",
+   "stage_draft": true
+  },
+  {
+   "id": "loft",
+   "comp": "loft",
+   "open": false,
+   "x": 3784,
+   "y": 12,
+   "set": {
+    "O": false
+   }
+  },
+  {
+   "id": "multiplica",
+   "comp": "multiplication",
+   "open": false,
+   "x": 816,
+   "y": 28
+  },
+  {
+   "id": "multiplica10",
+   "comp": "multiplication",
+   "open": false,
+   "x": 3378,
+   "y": 46
+  },
+  {
+   "id": "multiplica2",
+   "comp": "multiplication",
+   "open": false,
+   "x": 1238,
+   "y": 31
+  },
+  {
+   "id": "multiplica3",
+   "comp": "multiplication",
+   "open": false,
+   "x": 1352,
+   "y": 40
+  },
+  {
+   "id": "multiplica4",
+   "comp": "multiplication",
+   "open": false,
+   "x": 1880,
+   "y": 246
+  },
+  {
+   "id": "multiplica5",
+   "comp": "multiplication",
+   "open": false,
+   "x": 1880,
+   "y": 354
+  },
+  {
+   "id": "multiplica6",
+   "comp": "multiplication",
+   "open": false,
+   "x": 1880,
+   "y": 31
+  },
+  {
+   "id": "multiplica7",
+   "comp": "multiplication",
+   "open": false,
+   "x": 1880,
+   "y": 138
+  },
+  {
+   "id": "multiplica8",
+   "comp": "multiplication",
+   "open": false,
+   "x": 2736,
+   "y": 20,
+   "set": {
+    "B": 1.5707963267948966
+   }
+  },
+  {
+   "id": "multiplica9",
+   "comp": "multiplication",
+   "open": false,
+   "x": 2962,
+   "y": 39
+  },
+  {
+   "id": "number",
+   "comp": "numberParam",
+   "open": false,
+   "x": 314,
+   "y": 0
+  },
+  {
+   "id": "number2",
+   "comp": "numberParam",
+   "open": false,
+   "x": 964,
+   "y": 0
+  },
+  {
+   "id": "number3",
+   "comp": "numberParam",
+   "open": false,
+   "x": 966,
+   "y": 52
+  },
+  {
+   "id": "number4",
+   "comp": "numberParam",
+   "open": false,
+   "x": 1618,
+   "y": 0
+  },
+  {
+   "id": "number5",
+   "comp": "numberParam",
+   "open": false,
+   "x": 1620,
+   "y": 52
+  },
+  {
+   "id": "number6",
+   "comp": "numberParam",
+   "open": false,
+   "x": 2627,
+   "y": 0
+  },
+  {
+   "id": "number7",
+   "comp": "numberParam",
+   "open": false,
+   "x": 4189,
+   "y": 52
+  },
+  {
+   "id": "number8",
+   "comp": "numberParam",
+   "open": false,
+   "x": 5010,
+   "y": 52
+  },
+  {
+   "id": "pipe",
+   "comp": "pipe",
+   "open": true,
+   "x": 6233,
+   "y": 51,
+   "set": {
+    "E": 0.0
+   },
+   "question": "D03_Q06",
+   "need": "a round tube around every vertical curve",
+   "hint": "Surface › Freeform. Watch for: The radius is in feet: 0.25 ft = 3 in.",
+   "correct": "Pipe wraps a round section around every line: solid mullions.",
+   "distractors": [
+    "sweep1",
+    "sweep2",
+    "extrude",
+    "loft",
+    "offset",
+    "filletCtR",
+    "rebuildCurve",
+    "revolution",
+    "railRevolution",
+    "patch",
+    "boundary",
+    "extrudePoint"
+   ],
+   "draft": true,
+   "stage": "Give mullions thickness: Pipes around the vertical curves and the floor outlines. One Pipe for the verticals, one for the floor lines, sharing the same radius slider.",
+   "stage_draft": true
+  },
+  {
+   "id": "pipe2",
+   "comp": "pipe",
+   "open": false,
+   "x": 6233,
+   "y": 208,
+   "set": {
+    "E": 0.0
+   }
+  },
+  {
+   "id": "polygon",
+   "comp": "polygon",
+   "open": false,
+   "x": 2476,
+   "y": 42
+  },
+  {
+   "id": "range",
+   "comp": "range",
+   "open": false,
+   "x": 164,
+   "y": 110,
+   "set": {
+    "D": [
+     1.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "id": "range2",
+   "comp": "range",
+   "open": false,
+   "x": 164,
+   "y": 25,
+   "set": {
+    "D": [
+     0.0,
+     1.0
+    ]
+   }
+  },
+  {
+   "id": "rotate",
+   "comp": "rotate",
+   "open": false,
+   "x": 3502,
+   "y": 34,
+   "degrees": true
+  },
+  {
+   "id": "sine",
+   "comp": "sine",
+   "open": false,
+   "x": 2850,
+   "y": 11
+  },
+  {
+   "id": "slider",
+   "comp": "slider",
+   "open": false,
+   "x": 0,
+   "y": 0,
+   "param": "s1",
+   "label": "Floors"
+  },
+  {
+   "id": "slider10",
+   "comp": "slider",
+   "open": false,
+   "x": 4290,
+   "y": 96,
+   "param": "s2",
+   "label": "Panels / mullions around"
+  },
+  {
+   "id": "slider11",
+   "comp": "slider",
+   "open": false,
+   "x": 6042,
+   "y": 96,
+   "param": "s3",
+   "label": "Mullion radius (ft)"
+  },
+  {
+   "id": "slider2",
+   "comp": "slider",
+   "open": false,
+   "x": 410,
+   "y": 48,
+   "param": "s4",
+   "label": "Bulge at mid-height (ft)"
+  },
+  {
+   "id": "slider3",
+   "comp": "slider",
+   "open": false,
+   "x": 1047,
+   "y": 96,
+   "param": "s5",
+   "label": "Floor-to-floor (ft)"
+  },
+  {
+   "id": "slider4",
+   "comp": "slider",
+   "open": false,
+   "x": 1689,
+   "y": 288,
+   "param": "s6",
+   "label": "Top fillet (ft)"
+  },
+  {
+   "id": "slider5",
+   "comp": "slider",
+   "open": false,
+   "x": 1691,
+   "y": 240,
+   "param": "s7",
+   "label": "Base fillet (ft)"
+  },
+  {
+   "id": "slider6",
+   "comp": "slider",
+   "open": false,
+   "x": 1694,
+   "y": 192,
+   "param": "s8",
+   "label": "Top radius (ft)"
+  },
+  {
+   "id": "slider7",
+   "comp": "slider",
+   "open": false,
+   "x": 1696,
+   "y": 147,
+   "param": "s9",
+   "label": "Base radius (ft)"
+  },
+  {
+   "id": "slider8",
+   "comp": "slider",
+   "open": false,
+   "x": 2313,
+   "y": 147,
+   "param": "s10",
+   "label": "Sides"
+  },
+  {
+   "id": "slider9",
+   "comp": "slider",
+   "open": false,
+   "x": 3190,
+   "y": 147,
+   "param": "s11",
+   "label": "Total twist (deg)"
+  }
+ ],
+ "wires": [
+  {
+   "from": "slider.N",
+   "to": "range2.N"
+  },
+  {
+   "from": "slider.N",
+   "to": "range.N"
+  },
+  {
+   "from": "number.N",
+   "to": "graphMappe.x"
+  },
+  {
+   "from": "graphMappe.y",
+   "to": "multiplica.A"
+  },
+  {
+   "from": "slider2.N",
+   "to": "multiplica.B"
+  },
+  {
+   "from": "number2.N",
+   "to": "multiplica2.A"
+  },
+  {
+   "from": "slider3.N",
+   "to": "multiplica2.B"
+  },
+  {
+   "from": "number3.N",
+   "to": "multiplica3.A"
+  },
+  {
+   "from": "multiplica2.R",
+   "to": "multiplica3.B"
+  },
+  {
+   "from": "multiplica3.R",
+   "to": "constructP.Z"
+  },
+  {
+   "from": "number4.N",
+   "to": "multiplica6.A"
+  },
+  {
+   "from": "slider7.N",
+   "to": "multiplica6.B"
+  },
+  {
+   "from": "number5.N",
+   "to": "multiplica7.A"
+  },
+  {
+   "from": "slider6.N",
+   "to": "multiplica7.B"
+  },
+  {
+   "from": "multiplica6.R",
+   "to": "addition.A"
+  },
+  {
+   "from": "multiplica7.R",
+   "to": "addition.B"
+  },
+  {
+   "from": "addition.R",
+   "to": "addition3.A"
+  },
+  {
+   "from": "data.D",
+   "to": "addition3.B"
+  },
+  {
+   "from": "number4.N",
+   "to": "multiplica4.A"
+  },
+  {
+   "from": "slider5.N",
+   "to": "multiplica4.B"
+  },
+  {
+   "from": "number5.N",
+   "to": "multiplica5.A"
+  },
+  {
+   "from": "slider4.N",
+   "to": "multiplica5.B"
+  },
+  {
+   "from": "multiplica4.R",
+   "to": "addition2.A"
+  },
+  {
+   "from": "multiplica5.R",
+   "to": "addition2.B"
+  },
+  {
+   "from": "data2.D",
+   "to": "polygon.P"
+  },
+  {
+   "from": "data4.D",
+   "to": "polygon.R"
+  },
+  {
+   "from": "slider8.N",
+   "to": "polygon.S"
+  },
+  {
+   "from": "data3.D",
+   "to": "polygon.Rf"
+  },
+  {
+   "from": "number6.N",
+   "to": "multiplica8.A"
+  },
+  {
+   "from": "multiplica8.R",
+   "to": "sine.x"
+  },
+  {
+   "from": "sine.y",
+   "to": "multiplica9.A"
+  },
+  {
+   "from": "sine.y",
+   "to": "multiplica9.B"
+  },
+  {
+   "from": "data6.D",
+   "to": "multiplica10.A"
+  },
+  {
+   "from": "slider9.N",
+   "to": "multiplica10.B"
+  },
+  {
+   "from": "data7.D",
+   "to": "rotate.G"
+  },
+  {
+   "from": "multiplica10.R",
+   "to": "rotate.A"
+  },
+  {
+   "from": "data5.D",
+   "to": "rotate.P"
+  },
+  {
+   "from": "data8.D",
+   "to": "loft.C"
+  },
+  {
+   "from": "data9.D",
+   "to": "capHoles.B"
+  },
+  {
+   "from": "data10.D",
+   "to": "divideDoma.I"
+  },
+  {
+   "from": "slider10.N",
+   "to": "divideDoma.U",
+   "check": {
+    "side": "in",
+    "prompt": "The Panels around slider goes into which input?",
+    "hint": "I = domain, U = divisions around, V = divisions up.",
+    "correct": "U runs around the tower; V runs up it.",
+    "wrong": {
+     "V": "V runs up the tower: Floors goes there.",
+     "*": "That input isn't the U count."
+    },
+    "draft": true
+   }
+  },
+  {
+   "from": "number7.N",
+   "to": "divideDoma.V"
+  },
+  {
+   "from": "data11.D",
+   "to": "isotrim.S"
+  },
+  {
+   "from": "data12.D",
+   "to": "isotrim.D"
+  },
+  {
+   "from": "data13.D",
+   "to": "divideCurv.C"
+  },
+  {
+   "from": "number8.N",
+   "to": "divideCurv.N"
+  },
+  {
+   "from": "data14.D",
+   "to": "flipMatrix.D"
+  },
+  {
+   "from": "data15.D",
+   "to": "interpolat.V"
+  },
+  {
+   "from": "data17.D",
+   "to": "pipe.C"
+  },
+  {
+   "from": "slider11.N",
+   "to": "pipe.R",
+   "check": {
+    "side": "in",
+    "prompt": "The mullion radius goes into which input of Pipe?",
+    "hint": "C = curve, R = radius, E = end caps.",
+    "correct": "R is the pipe radius.",
+    "wrong": {
+     "*": "That input isn't the radius."
+    },
+    "draft": true
+   }
+  },
+  {
+   "from": "data16.D",
+   "to": "pipe2.C"
+  },
+  {
+   "from": "slider11.N",
+   "to": "pipe2.R"
+  },
+  {
+   "from": "range2.R",
+   "to": "number.N"
+  },
+  {
+   "from": "slider.N",
+   "to": "number2.N"
+  },
+  {
+   "from": "range2.R",
+   "to": "number3.N"
+  },
+  {
+   "from": "range.R",
+   "to": "number4.N"
+  },
+  {
+   "from": "range2.R",
+   "to": "number5.N"
+  },
+  {
+   "from": "multiplica.R",
+   "to": "data.D"
+  },
+  {
+   "from": "constructP.Pt",
+   "to": "data2.D"
+  },
+  {
+   "from": "addition3.R",
+   "to": "data4.D"
+  },
+  {
+   "from": "addition2.R",
+   "to": "data3.D"
+  },
+  {
+   "from": "range2.R",
+   "to": "number6.N"
+  },
+  {
+   "from": "multiplica9.R",
+   "to": "data6.D"
+  },
+  {
+   "from": "polygon.P",
+   "to": "data7.D"
+  },
+  {
+   "from": "constructP.Pt",
+   "to": "data5.D"
+  },
+  {
+   "from": "rotate.G",
+   "to": "data8.D"
+  },
+  {
+   "from": "loft.L",
+   "to": "data9.D"
+  },
+  {
+   "from": "loft.L",
+   "to": "data10.D"
+  },
+  {
+   "from": "slider.N",
+   "to": "number7.N"
+  },
+  {
+   "from": "loft.L",
+   "to": "data11.D"
+  },
+  {
+   "from": "divideDoma.S",
+   "to": "data12.D"
+  },
+  {
+   "from": "rotate.G",
+   "to": "data13.D"
+  },
+  {
+   "from": "slider10.N",
+   "to": "number8.N"
+  },
+  {
+   "from": "divideCurv.P",
+   "to": "data14.D"
+  },
+  {
+   "from": "flipMatrix.D",
+   "to": "data15.D"
+  },
+  {
+   "from": "interpolat.C",
+   "to": "data17.D"
+  },
+  {
+   "from": "rotate.G",
+   "to": "data16.D"
+  }
+ ],
+ "order": [
+  "divideDoma",
+  "isotrim",
+  "divideCurv",
+  "flipMatrix",
+  "interpolat",
+  "pipe"
+ ]
+}

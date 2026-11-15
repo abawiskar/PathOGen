@@ -1,0 +1,402 @@
+{
+ "source": "GameLevels/LevelA/A03.ghx",
+ "definition_image": "A03-definition.svg",
+ "method": "A03",
+ "params": [
+  {
+   "key": "s1",
+   "label": "Factor",
+   "min": 0.0,
+   "max": 10.0,
+   "step": 1,
+   "value": 10.0
+  },
+  {
+   "key": "s2",
+   "label": "A",
+   "min": 0.0,
+   "max": 1000.0,
+   "step": 1,
+   "value": 360.0
+  },
+  {
+   "key": "s3",
+   "label": "B",
+   "min": 0.0,
+   "max": 10.0,
+   "step": 1,
+   "value": 5.0
+  },
+  {
+   "key": "s4",
+   "label": "B",
+   "min": 0.0,
+   "max": 1.0,
+   "step": 1,
+   "value": 1.0
+  },
+  {
+   "key": "s5",
+   "label": "Radius",
+   "min": 0.0,
+   "max": 10.0,
+   "step": 1,
+   "value": 3.0
+  }
+ ],
+ "nodes": [
+  {
+   "id": "addition",
+   "comp": "addition",
+   "open": false,
+   "x": 428,
+   "y": 302
+  },
+  {
+   "id": "constructP",
+   "comp": "constructPoint",
+   "open": true,
+   "x": 0,
+   "y": 18,
+   "set": {
+    "X": 0.0,
+    "Y": 0.0,
+    "Z": 0.0
+   },
+   "question": "A03_Q01",
+   "need": "a component that turns X coordinate, Y coordinate and Z coordinate into Point",
+   "hint": "Look in Vector › Point.",
+   "correct": "Construct Point is the component this method uses here. Builds a point from X, Y and Z numbers.",
+   "distractors": [
+    "deconstruct",
+    "pointPolar",
+    "pointCylindrical",
+    "pointOriented",
+    "numbersToPoints",
+    "pointsToNumbers",
+    "closestPoint",
+    "sortPoints",
+    "distance",
+    "vectorXYZ",
+    "plane3Pt"
+   ],
+   "draft": true,
+   "stage": "Place the centre point of the floor plate.",
+   "stage_draft": true
+  },
+  {
+   "id": "curve",
+   "comp": "curveParam",
+   "open": false,
+   "x": 1104,
+   "y": 65
+  },
+  {
+   "id": "data",
+   "comp": "dataParam",
+   "open": false,
+   "x": 137,
+   "y": 0,
+   "label": "Point"
+  },
+  {
+   "id": "data2",
+   "comp": "dataParam",
+   "open": false,
+   "x": 650,
+   "y": 95,
+   "label": "Rotations"
+  },
+  {
+   "id": "discontinu",
+   "comp": "discontinuity",
+   "open": true,
+   "x": 1199,
+   "y": 121,
+   "set": {
+    "L": 1.0
+   },
+   "question": "A03_Q05",
+   "need": "a component that turns Curve and Level into Points",
+   "hint": "Look in Curve › Analysis.",
+   "correct": "Discontinuity is the component this method uses here. Find all discontinuities along a curve.",
+   "distractors": [
+    "endPoints",
+    "controlPoints",
+    "curvature",
+    "curveMiddle",
+    "curveDomain",
+    "evaluateCurve",
+    "segmentLengths",
+    "explode",
+    "closed",
+    "controlPolygon",
+    "deconstructArc",
+    "curveFrame"
+   ],
+   "draft": true,
+   "stage": "Find the sharp corners of the outline, so the fillet knows where to round them.",
+   "stage_draft": true
+  },
+  {
+   "id": "division",
+   "comp": "division",
+   "open": false,
+   "x": 428,
+   "y": 169
+  },
+  {
+   "id": "fillet",
+   "comp": "filletCtR",
+   "open": false,
+   "x": 1358,
+   "y": 53
+  },
+  {
+   "id": "move",
+   "comp": "move",
+   "open": true,
+   "x": 436,
+   "y": 12,
+   "question": "A03_Q02",
+   "need": "a component that turns Geometry and Motion into Geometry",
+   "hint": "Look in Transform › Euclidean.",
+   "correct": "Move is the component this method uses here. Shifts geometry along a vector.",
+   "distractors": [
+    "moveToPlane",
+    "mirror",
+    "scale",
+    "rotate",
+    "moveAwayFrom",
+    "rotate3D",
+    "rotateAxis",
+    "scaleNU",
+    "shear",
+    "orient",
+    "orientDirection",
+    "linearArray"
+   ],
+   "draft": true,
+   "stage": "Push the point out along Y. This becomes the first corner of the shape.",
+   "stage_draft": true
+  },
+  {
+   "id": "point",
+   "comp": "pointParam",
+   "open": false,
+   "x": 642,
+   "y": 43
+  },
+  {
+   "id": "polyline",
+   "comp": "polyline",
+   "open": false,
+   "x": 904,
+   "y": 64,
+   "set": {
+    "C": false
+   }
+  },
+  {
+   "id": "rotate",
+   "comp": "rotate",
+   "open": true,
+   "x": 750,
+   "y": 62,
+   "degrees": true,
+   "question": "A03_Q04",
+   "need": "a component that turns Geometry, Angle and Plane into Geometry",
+   "hint": "Look in Transform › Euclidean.",
+   "correct": "Rotate is the component this method uses here. Turns geometry around a plane.",
+   "distractors": [
+    "rotatePlane",
+    "mirror",
+    "scale",
+    "move",
+    "scaleNU",
+    "shear",
+    "shearAngle",
+    "orient",
+    "orientDirection",
+    "flipPlane",
+    "alignPlane",
+    "polarArray"
+   ],
+   "draft": true,
+   "stage": "Spin the corner around the centre by each angle to get all five corners, joined by a polyline.",
+   "stage_draft": true
+  },
+  {
+   "id": "series",
+   "comp": "series",
+   "open": true,
+   "x": 524,
+   "y": 236,
+   "set": {
+    "S": 0.0
+   },
+   "question": "A03_Q03",
+   "need": "a component that turns Start, Step and Count into Series",
+   "hint": "Look in Sets › Sequence.",
+   "correct": "Series is the component this method uses here. Creates a sequence of evenly spaced values.",
+   "distractors": [
+    "range",
+    "random",
+    "duplicateData",
+    "seriesAddition",
+    "sequence",
+    "repeatData",
+    "fibonacci",
+    "jitter",
+    "randomReduce",
+    "charSequence",
+    "stackData",
+    "cullNth"
+   ],
+   "draft": true,
+   "stage": "Make a list of angles, one per corner (360° ÷ 5 steps).",
+   "stage_draft": true
+  },
+  {
+   "id": "slider",
+   "comp": "slider",
+   "open": false,
+   "x": 171,
+   "y": 43,
+   "param": "s1",
+   "label": "Factor"
+  },
+  {
+   "id": "slider2",
+   "comp": "slider",
+   "open": false,
+   "x": 269,
+   "y": 160,
+   "param": "s2",
+   "label": "A"
+  },
+  {
+   "id": "slider3",
+   "comp": "slider",
+   "open": false,
+   "x": 276,
+   "y": 199,
+   "param": "s3",
+   "label": "B"
+  },
+  {
+   "id": "slider4",
+   "comp": "slider",
+   "open": false,
+   "x": 288,
+   "y": 237,
+   "param": "s4",
+   "label": "B"
+  },
+  {
+   "id": "slider5",
+   "comp": "slider",
+   "open": false,
+   "x": 1182,
+   "y": 168,
+   "param": "s5",
+   "label": "Radius"
+  },
+  {
+   "id": "unitY",
+   "comp": "unitY",
+   "open": false,
+   "x": 322,
+   "y": 30
+  }
+ ],
+ "wires": [
+  {
+   "from": "data.D",
+   "to": "move.G"
+  },
+  {
+   "from": "unitY.V",
+   "to": "move.T"
+  },
+  {
+   "from": "slider.N",
+   "to": "unitY.F"
+  },
+  {
+   "from": "point.Pt",
+   "to": "rotate.G"
+  },
+  {
+   "from": "data2.D",
+   "to": "rotate.A"
+  },
+  {
+   "from": "division.R",
+   "to": "series.N"
+  },
+  {
+   "from": "addition.R",
+   "to": "series.C"
+  },
+  {
+   "from": "slider2.N",
+   "to": "division.A"
+  },
+  {
+   "from": "slider3.N",
+   "to": "division.B"
+  },
+  {
+   "from": "slider3.N",
+   "to": "addition.A"
+  },
+  {
+   "from": "slider4.N",
+   "to": "addition.B"
+  },
+  {
+   "from": "rotate.G",
+   "to": "polyline.V"
+  },
+  {
+   "from": "curve.C",
+   "to": "fillet.C"
+  },
+  {
+   "from": "discontinu.t",
+   "to": "fillet.t"
+  },
+  {
+   "from": "slider5.N",
+   "to": "fillet.R"
+  },
+  {
+   "from": "curve.C",
+   "to": "discontinu.C"
+  },
+  {
+   "from": "move.G",
+   "to": "point.Pt"
+  },
+  {
+   "from": "series.S",
+   "to": "data2.D"
+  },
+  {
+   "from": "polyline.Pl",
+   "to": "curve.C"
+  },
+  {
+   "from": "constructP.Pt",
+   "to": "data.D"
+  }
+ ],
+ "order": [
+  "constructP",
+  "move",
+  "series",
+  "rotate",
+  "discontinu"
+ ]
+}
