@@ -77,6 +77,8 @@ func _ready() -> void:
 	screens.map = _screen(_build_map_frame)
 	screens.battle = _screen(_build_battle)
 	screens.about = _screen(_build_about)
+	add_child(Sound.new())
+	_build_music_control()
 	_build_overlays()
 	var r := LevelLoader.load_all()
 	levels = r.levels
@@ -92,7 +94,68 @@ func _ready() -> void:
 			_m_actions(b, [["OK", "primary", close_modal]]))
 
 
+## "Music: On/Off" and a volume slider, top right inside the frame on every screen (web: js/music.js).
+var _music_btn: Button
+
+
+func _build_music_control() -> void:
+	var box := PanelContainer.new()
+	var sb := UIKit.box(Color(0.082, 0.157, 0.137, 0.9), Color(0, 0, 0, 0), 8, 0)
+	sb.content_margin_left = 10
+	sb.content_margin_right = 10
+	sb.content_margin_top = 5
+	sb.content_margin_bottom = 5
+	box.add_theme_stylebox_override("panel", sb)
+	add_child(box)
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 8)
+	box.add_child(row)
+	_music_btn = Button.new()
+	_music_btn.flat = true
+	_music_btn.focus_mode = Control.FOCUS_NONE
+	_music_btn.add_theme_font_override("font", UIKit.sans)
+	_music_btn.add_theme_font_size_override("font_size", 13)
+	_music_btn.add_theme_color_override("font_color", Color("ece9de"))
+	_music_btn.add_theme_color_override("font_hover_color", UIKit.SAGE)
+	_music_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	_music_btn.pressed.connect(func():
+		Sound.instance.set_enabled(not Sound.instance.enabled)
+		_music_btn.text = "Music: On" if Sound.instance.enabled else "Music: Off")
+	row.add_child(_music_btn)
+	var vol := HSlider.new()
+	vol.min_value = 0
+	vol.max_value = 100
+	vol.step = 1
+	vol.custom_minimum_size = Vector2(70, 0)
+	vol.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	vol.focus_mode = Control.FOCUS_NONE
+	vol.tooltip_text = "Music volume"
+	row.add_child(vol)
+	vol.value = Sound.instance.volume * 100 if Sound.instance else 22
+	vol.value_changed.connect(func(v): Sound.instance.set_volume(v / 100.0))
+	_music_btn.text = "Music: On" if (Sound.instance == null or Sound.instance.enabled) else "Music: Off"
+	box.reset_size()
+	box.position = Vector2(1600 - 58 - box.size.x, 8)
+
+
+func _sync_music() -> void:
+	if Sound.instance == null:
+		return
+	var t := "title"
+	if screens.battle.visible:
+		if battle == null or battle.won:
+			t = ""
+		elif battle.over or battle.health <= 0:
+			t = "defeat"
+		elif battle.health <= maxi(1, floori(battle.max_health * 0.3)):
+			t = "critical"
+		else:
+			t = "battle"
+	Sound.instance.choose(t)
+
+
 func _process(delta: float) -> void:
+	_sync_music()
 	if title_boss and screens.title.visible:
 		var k := 0.5 - 0.5 * cos(Time.get_ticks_msec() / 1000.0 * PI / 7.0)
 		title_boss.pivot_offset = Vector2(1120, 225)
@@ -203,7 +266,7 @@ func _build_title(s: Control) -> void:
 	tag.size.x = 1600
 	tag.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 18)
+	row.add_theme_constant_override("separation", 12)
 	row.position = Vector2(0, 556)
 	row.size = Vector2(1600, 60)
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -211,12 +274,17 @@ func _build_title(s: Control) -> void:
 	var start := UIKit.button("Begin the Hunt", "primary")
 	start.pressed.connect(func(): open_map() if not levels.is_empty() else toast("No levels loaded", "bad"))
 	row.add_child(start)
+	var free := UIKit.button("Free Play")
+	free.pressed.connect(free_play_modal)
+	row.add_child(free)
 	var help := UIKit.button("How to Play")
 	help.pressed.connect(help_modal)
 	row.add_child(help)
 	var cred := UIKit.button("About Us")
 	cred.pressed.connect(func(): show_screen("about"))
 	row.add_child(cred)
+	for b in row.get_children():
+		b.add_theme_font_size_override("font_size", 19)
 	# a browser tab can't be closed from the game, so web exports have no Exit
 	if not OS.has_feature("web"):
 		var quit := UIKit.button("Exit", "ghost")
@@ -244,9 +312,18 @@ func _title_layer(s: Control, path: String, r: Rect2) -> TextureRect:
 
 # ═════════════════════ map ═════════════════════
 var _map_nodes: Control
-var _map_path: FxViews.MapPath
+var _map_land: FxViews.CampaignLand
+var _map_progress: Label
+var _map_detail_title: Label
+var _map_detail_desc: Label
+var _map_detail_mon: Label
+var _map_detail_status: Label
+var _map_challenge: Button
+var _map_sel := -1
+var _map_markers: Array = []
 var _map_xp: Label
 var _map_rank: Label
+var _map_btn_x := 1300.0
 
 
 func _build_map_frame(s: Control) -> void:
@@ -256,18 +333,21 @@ func _build_map_frame(s: Control) -> void:
 		UIKit.sub(s, title, Vector2(x, 44), 0, 10)
 		return UIKit.label(s, "0", 26, UIKit.GOLD, UIKit.serif, Vector2(x, 58))
 	# stats sit left of the buttons; the rank shrinks to fit so long ranks never run under "Main Menu"
-	_map_xp = stat.call("Total XP", 880)
-	_map_rank = stat.call("Rank", 990)
+	_map_xp = stat.call("Total XP", 790)
+	_map_rank = stat.call("Rank", 900)
+	var hrow := HBoxContainer.new()
+	hrow.add_theme_constant_override("separation", 10)
+	s.add_child(hrow)
 	var menu := UIKit.button("Main Menu", "ghost", "small")
-	menu.position = Vector2(1328, 66)
 	menu.pressed.connect(main_menu)
-	s.add_child(menu)
+	hrow.add_child(menu)
+	var free := UIKit.button("Free Play", "", "small")
+	free.pressed.connect(free_play_modal)
+	hrow.add_child(free)
 	var help := UIKit.button("Help", "", "small")
-	help.position = Vector2(1430, 66)
 	help.pressed.connect(help_modal)
-	s.add_child(help)
+	hrow.add_child(help)
 	var reset := UIKit.button("Reset", "ghost", "small")
-	reset.position = Vector2(1500, 66)
 	reset.pressed.connect(func(): modal(func(b):
 		_m_h2(b, "Reset progress?")
 		_m_p(b, "This clears all XP, stars and unlocked levels on this device.")
@@ -275,15 +355,50 @@ func _build_map_frame(s: Control) -> void:
 			SaveData.reset()
 			close_modal()
 			open_map()]])))
-	s.add_child(reset)
-	_map_path = FxViews.MapPath.new()
-	_map_path.size = Vector2(1600, 900)
-	_map_path.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	s.add_child(_map_path)
+	hrow.add_child(reset)
+	hrow.reset_size()
+	hrow.position = Vector2(1560 - hrow.size.x, 66)
+	_map_btn_x = hrow.position.x
+	_map_land = FxViews.CampaignLand.new()
+	_map_land.size = Vector2(1600, 900)
+	s.add_child(_map_land)
 	_map_nodes = Control.new()
 	_map_nodes.size = Vector2(1600, 900)
 	_map_nodes.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	s.add_child(_map_nodes)
+	# bottom panel: the selected stage, its monster and the Challenge button
+	_map_progress = UIKit.label(s, "", 19, UIKit.SAGE, UIKit.sans_bold, Vector2(60, 656))
+	var rule := ColorRect.new()
+	rule.color = UIKit.LINE
+	rule.position = Vector2(60, 695)
+	rule.size = Vector2(1480, 1)
+	s.add_child(rule)
+	_map_detail_title = UIKit.label(s, "", 27, UIKit.GOLD, UIKit.serif, Vector2(60, 718))
+	_map_detail_desc = UIKit.label(s, "", 17, UIKit.TEXT, UIKit.sans, Vector2(60, 760), 620)
+	_map_detail_desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_map_detail_desc.custom_minimum_size = Vector2(620, 0)
+	_map_detail_desc.clip_text = false
+	_map_detail_desc.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
+	var vr := ColorRect.new()
+	vr.color = UIKit.LINE
+	vr.position = Vector2(730, 722)
+	vr.size = Vector2(1, 100)
+	s.add_child(vr)
+	_map_detail_mon = UIKit.label(s, "", 16, UIKit.SAGE, UIKit.sans_bold, Vector2(760, 738), 480)
+	_map_detail_status = UIKit.label(s, "", 14, UIKit.MUTED, UIKit.sans, Vector2(760, 768), 480)
+	_map_challenge = UIKit.button("Challenge →", "primary")
+	_map_challenge.add_theme_font_size_override("font_size", 25)
+	_map_challenge.custom_minimum_size = Vector2(260, 70)
+	_map_challenge.position = Vector2(1540 - 260, 735)
+	_map_challenge.pressed.connect(func():
+		var i := _map_sel
+		if i < 0 or i + 1 > SaveData.unlocked:
+			return
+		if levels[i].difficulties.size() > 1:
+			difficulty_picker(i)
+		else:
+			start_level(i, 0))
+	s.add_child(_map_challenge)
 
 
 func open_map() -> void:
@@ -294,86 +409,96 @@ func open_map() -> void:
 	_map_xp.text = str(xp)
 	_map_rank.text = SaveData.rank_for(xp)
 	var fs := 26
-	while fs > 14 and UIKit.serif.get_string_size(_map_rank.text, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x > 1310 - 990:
+	while fs > 14 and UIKit.serif.get_string_size(_map_rank.text, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x > _map_btn_x - 20 - 900:
 		fs -= 1
 	_map_rank.add_theme_font_size_override("font_size", fs)
 	for c in _map_nodes.get_children():
 		c.queue_free()
+	_map_markers = []
+	var n := levels.size()
 	var pts: Array = []
-	var pos: Array = MAP_POS_4 if levels.size() <= 4 else MAP_POS
-	for i in levels.size():
-		pts.append(pos[i] if i < pos.size() else Vector2(200 + (i % 5) * 300, 300 + (i / 5) * 220))
-	_map_path.points = pts
-	_map_path.queue_redraw()
-	for i in levels.size():
+	for i in n:
+		pts.append(Vector2(210 + i * (1180.0 / maxf(1, n - 1)), 390 + (95 if i % 2 == 1 else -20)))
+	_map_land.points = pts
+	_map_land.future = range(n).map(func(i): return i + 1 > SaveData.unlocked)
+	_map_land.queue_redraw()
+	var cleared := 0
+	var current := -1
+	for i in n:
 		var L: Dictionary = levels[i]
-		var m: Dictionary = GHData.monsters.get(GHData.monster_key(L), {})
 		var locked := i + 1 > SaveData.unlocked
-		var best := SaveData.stage_best(L)
-		var ndiff: int = L.difficulties.size()
-		var current := i + 1 == SaveData.unlocked and best.is_empty()
-		var border := UIKit.LINE
-		if L.get("boss", false):
-			border = UIKit.RED_DEEP
-		if current:
-			border = UIKit.GOLD
-		var card := Panel.new()
-		card.size = Vector2(250, 128 if ndiff > 1 else 110)
-		card.position = pts[i] - card.size / 2
-		card.add_theme_stylebox_override("panel", UIKit.box(UIKit.PANEL_HI, border, 8, 2 if current else 1, 12))
-		card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND if not locked else Control.CURSOR_FORBIDDEN
-		card.modulate = Color(1, 1, 1, 0.45) if locked else Color.WHITE
-		_map_nodes.add_child(card)
+		var done := not SaveData.stage_best(L).is_empty()
+		if done:
+			cleared += 1
+		elif current < 0 and not locked:
+			current = i
+		var node := Control.new()
+		node.position = pts[i] - Vector2(110, 75)
+		node.size = Vector2(220, 150)
+		node.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_map_nodes.add_child(node)
+		# monster preview beside the marker (grey when locked)
 		var art := ArtView.new()
 		art.bob = false
-		art.position = Vector2(4, 13)
-		art.size = Vector2(84, 84)
+		art.position = Vector2(154, 20)
+		art.size = Vector2(78, 72)
 		art.set_texture(UIKit.monster_texture(GHData.monster_key(L)))
-		card.add_child(art)
-		UIKit.sub(card, ("Boss" if L.get("boss", false) else "Level %d" % int(L.id)) + " · " + str(m.get("name", "")), Vector2(92, 10), 150, 9)
-		var t := UIKit.label(card, L.title, 13, UIKit.GOLD, UIKit.serif, Vector2(92, 25), 152)
-		t.clip_text = true
-		var obj := UIKit.label(card, L.objective, 11, Color(UIKit.TEXT, 0.8), UIKit.sans, Vector2(92, 46))
-		obj.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		obj.custom_minimum_size = Vector2(150, 0)
-		obj.size = Vector2(150, 36)
-		obj.max_lines_visible = 2
-		obj.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-		var stars := RichTextLabel.new()
-		stars.bbcode_enabled = true
-		stars.fit_content = true
-		stars.position = Vector2(92, 102 if ndiff > 1 else 84)
-		if ndiff > 1:
-			var pips := FxViews.DiffPips.new()
-			pips.position = Vector2(92, 86)
-			pips.size = Vector2(150, 12)
-			for df in L.difficulties:
-				pips.done.append(not SaveData.best_for(SaveData.key_for(df.level)).is_empty())
-			card.add_child(pips)
-		stars.size = Vector2(150, 20)
-		stars.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		stars.add_theme_font_size_override("normal_font_size", 14)
-		var st := ""
-		for k in 3:
-			st += "[color=%s]★[/color] " % ("#e6c35a" if not best.is_empty() and k < int(best.stars) else "#5a6b66")
-		if not best.is_empty():
-			st += "[font_size=11][color=#8fa29b]%d XP[/color][/font_size]" % int(best.xp)
-		stars.text = st
-		card.add_child(stars)
 		if locked:
-			UIKit.label(card, "🔒", 14, UIKit.TEXT, null, Vector2(222, 6))
+			art.modulate = Color(0.55, 0.55, 0.55, 0.75)
+		node.add_child(art)
+		var marker := FxViews.StageMarker.new()
+		marker.number = i + 1
+		marker.done = done
+		marker.locked = locked
+		marker.position = Vector2(69, 34)
+		marker.size = Vector2(82, 82)
+		node.add_child(marker)
+		var t := UIKit.label(node, L.title, 19, UIKit.TEXT, UIKit.serif, Vector2(-30, 131), 280)
+		t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		var ob := UIKit.label(node, L.objective, 13, Color(UIKit.TEXT, 0.82), UIKit.sans, Vector2(-10, 158), 240)
+		ob.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		ob.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		ob.clip_text = false
+		ob.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
+		ob.custom_minimum_size = Vector2(240, 0)
+		ob.set_deferred("size", Vector2(240, 0))
+		# the hero stands on the selected stage
+		var hero_img := TextureRect.new()
+		hero_img.texture = UIKit.png_texture("res://img/hero-main.png")
+		hero_img.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		hero_img.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		hero_img.position = Vector2(66, -43)
+		hero_img.size = Vector2(88, 88)
+		hero_img.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		hero_img.visible = false
+		node.add_child(hero_img)
+		_map_markers.append({"marker": marker, "hero": hero_img})
 		var idx := i
-		card.gui_input.connect(func(e):
+		marker.gui_input.connect(func(e):
 			if e is InputEventMouseButton and e.pressed and e.button_index == MOUSE_BUTTON_LEFT:
-				if idx + 1 > SaveData.unlocked:
-					toast("Defeat the previous monster first", "bad")
-				elif levels[idx].difficulties.size() > 1:
-					difficulty_picker(idx)
-				else:
-					start_level(idx, 0))
-		var home: Vector2 = card.position
-		card.mouse_entered.connect(func(): if not locked: card.position = home - Vector2(0, 3))
-		card.mouse_exited.connect(func(): card.position = home)
+				Sound.play("click")
+				_map_select(idx))
+	_map_progress.text = "%s / %s CLEARED" % [UIKit.pad2(cleared), UIKit.pad2(n)]
+	if current < 0:
+		current = mini(SaveData.unlocked, n) - 1
+	_map_select(clampi(current, 0, n - 1))
+
+
+func _map_select(i: int) -> void:
+	_map_sel = i
+	for k in _map_markers.size():
+		_map_markers[k].marker.selected = k == i
+		_map_markers[k].marker.queue_redraw()
+		_map_markers[k].hero.visible = k == i
+	var L: Dictionary = levels[i]
+	var locked := i + 1 > SaveData.unlocked
+	_map_detail_title.text = L.title
+	_map_detail_desc.text = L.objective
+	_map_detail_mon.text = "Level %d · %s" % [int(L.id), GHData.monsters.get(GHData.monster_key(L), {}).get("name", "")]
+	_map_detail_status.text = "Defeat the previous monster to unlock" if locked else "Choose your difficulty and build the script"
+	_map_challenge.text = "Locked" if locked else "Challenge →"
+	_map_challenge.disabled = locked
+	_map_challenge.modulate.a = 0.4 if locked else 1.0
 
 
 # ═════════════════════ battle layout ═════════════════════
@@ -709,6 +834,7 @@ func _build_overlays() -> void:
 
 # ═════════════════════ navigation ═════════════════════
 func main_menu() -> void:
+	Sound.stop()
 	if battle:
 		battle.clear_timer()
 	show_screen("title")
@@ -735,6 +861,7 @@ func leave_battle(go: Callable) -> void:
 # ═════════════════════ battle flow ═════════════════════
 ## Start stage i at difficulty d (default: the one last played there).
 func start_level(i: int, d := -1) -> void:
+	Sound.stop()
 	if battle:
 		battle.clear_timer()
 	var stage: Dictionary = levels[i]
@@ -1262,6 +1389,100 @@ func _m_actions(b: Control, acts: Array) -> void:
 const MODE_NAME := {"guided": "Guided", "standard": "Standard", "independent": "Independent"}
 
 
+## Free Play: every level and difficulty, unlocked (web: freePlayModal). Wins still earn stars and XP
+## and unlock the path up to that level.
+func free_play_modal() -> void:
+	if levels.is_empty():
+		toast("No levels loaded", "bad")
+		return
+	modal(func(b):
+		_m_sub(b, "Free Play")
+		_m_h2(b, "Pick any level and difficulty")
+		_m_p(b, "[color=#8fa29b]Everything is open here, so you can skip ahead or replay a favourite. Wins still earn stars and XP, and unlock the path up to that level.[/color]", 15, 1172)
+		var grid := GridContainer.new()
+		grid.columns = 2
+		grid.add_theme_constant_override("h_separation", 14)
+		grid.add_theme_constant_override("v_separation", 14)
+		b.add_child(grid)
+		for i in levels.size():
+			var S: Dictionary = levels[i]
+			var box := PanelContainer.new()
+			var sb := UIKit.box(Color(0, 0, 0, 0.18), UIKit.LINE, 8, 1)
+			sb.content_margin_left = 14
+			sb.content_margin_right = 14
+			sb.content_margin_top = 12
+			sb.content_margin_bottom = 12
+			box.add_theme_stylebox_override("panel", sb)
+			box.custom_minimum_size.x = 579
+			box.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+			grid.add_child(box)
+			var col := VBoxContainer.new()
+			col.add_theme_constant_override("separation", 6)
+			box.add_child(col)
+			var head := HBoxContainer.new()
+			head.add_theme_constant_override("separation", 12)
+			col.add_child(head)
+			var art := ArtView.new()
+			art.bob = false
+			art.custom_minimum_size = Vector2(74, 64)
+			art.set_texture(UIKit.monster_texture(GHData.monster_key(S)))
+			head.add_child(art)
+			var hcol := VBoxContainer.new()
+			hcol.add_theme_constant_override("separation", 0)
+			hcol.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			head.add_child(hcol)
+			UIKit.sub(hcol, "Level %d · %s" % [int(S.id), GHData.monsters.get(GHData.monster_key(S), {}).get("name", "")], Vector2.ZERO, 0, 10)
+			UIKit.label(hcol, S.title, 19, UIKit.GOLD, UIKit.serif)
+			var ob := UIKit.label(hcol, S.objective, 12, Color(UIKit.TEXT, 0.85), UIKit.sans)
+			ob.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			ob.custom_minimum_size.x = 460
+			for d in S.difficulties.size():
+				var df: Dictionary = S.difficulties[d]
+				var L: Dictionary = df.level
+				var bst := SaveData.best_for(SaveData.key_for(L))
+				var row := Button.new()
+				row.custom_minimum_size = Vector2(551, 44)
+				row.tooltip_text = str(df.description) if str(df.description) != "" else str(df.name)
+				row.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+				var nb := UIKit.box(Color("1a2a28"), UIKit.LINE, 5, 1)
+				var hb := UIKit.box(Color("1a2a28"), UIKit.SAGE, 5, 1)
+				row.add_theme_stylebox_override("normal", nb)
+				row.add_theme_stylebox_override("hover", hb)
+				row.add_theme_stylebox_override("pressed", hb)
+				row.add_theme_stylebox_override("focus", nb)
+				col.add_child(row)
+				var num := Panel.new()
+				num.position = Vector2(10, 8)
+				num.size = Vector2(28, 28)
+				num.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				num.add_theme_stylebox_override("panel", UIKit.box(Color(0, 0, 0, 0), UIKit.GOLD_DIM, 14, 2))
+				row.add_child(num)
+				var nl := UIKit.label(num, str(d + 1), 14, UIKit.GOLD, UIKit.serif, Vector2(0, 4), 28)
+				nl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+				UIKit.label(row, df.name, 14, UIKit.GOLD, UIKit.serif, Vector2(50, 4))
+				var meta := "%s · %d hearts · %d steps%s" % [MODE_NAME.get(L.guidance, L.guidance), int(L.health), L.steps.size(), (" · %ds timer" % int(L.timer)) if L.get("timer") != null else ""]
+				UIKit.label(row, meta.to_upper(), 10, UIKit.MUTED, UIKit.sans_bold, Vector2(50, 24))
+				var st := RichTextLabel.new()
+				st.bbcode_enabled = true
+				st.fit_content = true
+				st.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				st.position = Vector2(470, 11)
+				st.size = Vector2(70, 22)
+				st.add_theme_font_size_override("normal_font_size", 14)
+				var t := "[right]"
+				for k in 3:
+					t += "[color=%s]★[/color]" % ("#e6c35a" if not bst.is_empty() and k < int(bst.stars) else "#45524e")
+				st.text = t + "[/right]"
+				row.add_child(st)
+				var li: int = i
+				var dd: int = d
+				row.pressed.connect(func():
+					Sound.play("click")
+					close_modal()
+					start_level(li, dd))
+		_m_actions(b, [["Close", "", close_modal]]), null, true)
+
+
 func difficulty_picker(i: int) -> void:
 	var S: Dictionary = levels[i]
 	var last := SaveData.last_diff(S)
@@ -1389,7 +1610,12 @@ func definition_modal() -> void:
 		var cbox := VBoxContainer.new()
 		canvas.add_child(cbox)
 		var img := str(L.get("definition_image", ""))
-		var tex := UIKit.png_texture(LevelLoader.source_dir.path_join(L.dir).path_join(img)) if img != "" else null
+		var img_path := LevelLoader.source_dir.path_join(L.dir).path_join(img)
+		var tex: Texture2D = null
+		if img.ends_with(".svg"):
+			tex = UIKit.svg_texture(img_path, 0.5)
+		elif img != "":
+			tex = UIKit.png_texture(img_path)
 		if tex:
 			var tr := TextureRect.new()
 			tr.texture = tex
@@ -1408,7 +1634,19 @@ func definition_modal() -> void:
 			gv.custom_minimum_size = Vector2(854, 480)
 			gv.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			cbox.add_child(gv)
-		UIKit.sub(cbox, "The finished definition. Nodes outlined in gold are the ones you place.", Vector2.ZERO, 0, 10)
+		var caprow := HBoxContainer.new()
+		cbox.add_child(caprow)
+		var cap := UIKit.sub(caprow, "The finished definition. Nodes outlined in gold are the ones you place.", Vector2.ZERO, 0, 10)
+		cap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		if tex:
+			# opens the full-size picture in the system viewer (web: "Open full canvas" link)
+			var full := LinkButton.new()
+			full.text = "Open full canvas ↗"
+			full.add_theme_color_override("font_color", UIKit.GOLD)
+			full.add_theme_color_override("font_hover_color", UIKit.SAGE)
+			full.add_theme_font_size_override("font_size", 12)
+			full.pressed.connect(func(): OS.shell_open(ProjectSettings.globalize_path(img_path)))
+			caprow.add_child(full)
 		var side := VBoxContainer.new()
 		side.custom_minimum_size.x = 300
 		row.add_child(side)

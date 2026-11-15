@@ -156,3 +156,83 @@ class DiffPips extends Control:
 			x += 13.0
 		var n := done.filter(func(v): return v).size()
 		draw_string(UIKit.sans_bold, Vector2(x + 2, 10), "%d/%d" % [n, done.size()], HORIZONTAL_ALIGNMENT_LEFT, -1, 10, UIKit.MUTED)
+
+
+## The flat campaign map (web: js/campaign-map.js): a continent with region lines and a dotted gold
+## route between the stages; routes into locked stages are faded.
+class CampaignLand extends Control:
+	const CONTINENT := "85 330 130 250 220 264 280 190 370 210 405 270 520 245 595 200 690 225 750 190 850 240 960 210 1040 255 1140 205 1190 170 1260 205 1350 190 1435 260 1490 280 1470 355 1520 425 1470 480 1490 550 1410 590 1360 655 1270 640 1200 685 1130 620 1030 660 930 615 850 660 750 620 665 665 585 615 490 645 435 580 335 600 280 550 200 570 165 495 95 465 115 400"
+	const REGIONS := ["405 270 380 350 435 410 395 490 435 580", "750 190 710 300 770 385 720 470 750 620",
+		"1040 255 990 345 1065 440 1010 530 1030 660", "1260 205 1220 340 1300 445 1230 550 1270 640"]
+	var points: Array = []
+	var future: Array = []   # per route segment i (into stage i): locked?
+
+	func _ready() -> void:
+		mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	static func _pts(s: String) -> PackedVector2Array:
+		var n := s.split(" ")
+		var out := PackedVector2Array()
+		for i in range(0, n.size() - 1, 2):
+			out.append(Vector2(float(n[i]), float(n[i + 1])))
+		return out
+
+	func _draw() -> void:
+		var land := _pts(CONTINENT)
+		draw_colored_polygon(land, UIKit.PANEL)
+		var closed := land.duplicate()
+		closed.append(land[0])
+		draw_polyline(closed, UIKit.LINE, 3.0, true)
+		for r in REGIONS:
+			draw_polyline(_pts(r), Color(UIKit.LINE, 0.7), 2.0, true)
+		for i in range(1, points.size()):
+			var a: Vector2 = points[i - 1]
+			var b: Vector2 = points[i]
+			var mx := (a.x + b.x) / 2.0
+			var col := Color(UIKit.MUTED, 0.4) if (i < future.size() and future[i]) else UIKit.GOLD
+			# cubic bezier a -> (mx,a.y) -> (mx,b.y) -> b, drawn as round dots every 18 px
+			var prev := a
+			var acc := 0.0
+			draw_circle(a, 2.5, col)
+			for k in range(1, 121):
+				var t := k / 120.0
+				var u := 1.0 - t
+				var p := u * u * u * a + 3 * u * u * t * Vector2(mx, a.y) + 3 * u * t * t * Vector2(mx, b.y) + t * t * t * b
+				acc += p.distance_to(prev)
+				prev = p
+				if acc >= 18.0:
+					acc -= 18.0
+					draw_circle(p, 2.5, col)
+
+
+## A numbered round stage marker on the campaign map: gold ring; filled gold with a sage ring when selected;
+## a flag when cleared and a lock when locked.
+class StageMarker extends Control:
+	var number := 1
+	var selected := false
+	var done := false
+	var locked := false
+
+	func _ready() -> void:
+		mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+
+	func _draw() -> void:
+		var c := size / 2.0
+		var r := size.x / 2.0
+		if selected:
+			draw_arc(c, r + 9.5, 0, TAU, 64, UIKit.SAGE, 5.0, true)
+		draw_circle(c, r, UIKit.GOLD if selected else Color("1a2a28"))
+		draw_arc(c, r - 1.5, 0, TAU, 64, UIKit.GOLD, 3.0, true)
+		var txt := "%02d" % number
+		var fs := 36
+		var w := UIKit.sans_bold.get_string_size(txt, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x
+		draw_string(UIKit.sans_bold, Vector2(c.x - w / 2.0, c.y + fs * 0.35), txt, HORIZONTAL_ALIGNMENT_LEFT, -1, fs, Color("0f1c1a") if selected else UIKit.GOLD)
+		if done:
+			draw_string(UIKit.sans_bold, Vector2(c.x - 11, 4), "⚑", HORIZONTAL_ALIGNMENT_LEFT, -1, 30, UIKit.SAGE)
+		if locked:
+			# padlock: shackle arc over a small body
+			var p := Vector2(c.x + 30, 2)
+			draw_arc(p + Vector2(0, -2), 5.5, PI, TAU, 16, UIKit.TEXT, 2.5, true)
+			draw_line(p + Vector2(-5.5, -2), p + Vector2(-5.5, 3), UIKit.TEXT, 2.5)
+			draw_line(p + Vector2(5.5, -2), p + Vector2(5.5, 3), UIKit.TEXT, 2.5)
+			draw_rect(Rect2(p + Vector2(-8, 2), Vector2(16, 12)), UIKit.TEXT)

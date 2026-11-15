@@ -18,6 +18,7 @@ The web version is the source of truth. Godot reads the same files:
 | `web/js/monsters.js` (options + phases) | `data/monsters.json` | `tools/sync_from_web.py` |
 | `web/js/components_extra.js`, `web/js/gh_icons.js` | merged into `data/components.json` | `tools/sync_from_web.py` |
 | `web/img/**` (hero, monsters, start-screen art, `gh-icons/`) | `img/` | `tools/sync_from_web.py` |
+| `web/audio/**.wav` (effects + `bgm/` music) | `audio/` | `tools/sync_from_web.py` |
 
 **When you run from the editor inside the repo, levels load straight from `../web/levels`**, so level edits
 made for the web version show up without syncing. Run the sync script before exporting a build, or when
@@ -53,6 +54,13 @@ Other web files are ported by hand, so check them when the web version changes:
   the web version uses it, then delete it there.
 - A level can set `"goal": "<file>.png"` in its folder for the Goal picture; otherwise the game renders
   the finished definition.
+
+## Sound
+
+`scripts/core/sound.gd` plays the web version's effects (card select, place, wire, correct, damage, victory, button
+clicks) and music (title, battle, critical below 30% health, defeat). The Music button and volume slider sit top right
+on every screen; turning music off also mutes the effects, as on the web. Settings are kept in
+`user://pathogen_audio.json`.
 
 ## Team
 

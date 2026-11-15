@@ -171,6 +171,7 @@ func _deal_hand(anim := true) -> void:
 func select(id) -> void:
 	if over:
 		return
+	Sound.play("card_select")
 	selected = null if selected == id else id
 	changed.emit()
 
@@ -200,6 +201,9 @@ func _io_meta(c: Dictionary) -> String:
 
 
 func _on_correct(d: Dictionary, id: String) -> void:
+	Sound.play("component_place" if d.kind == "comp" else "wire_connect")
+	if di + 1 < decisions.size():
+		Sound.play("correct", 0.09 if d.kind == "comp" else 0.18)
 	clear_timer()
 	done[d.key] = true
 	var clean := dec_mistakes == 0
@@ -296,6 +300,7 @@ func _monster_attack(s: Dictionary) -> void:
 	fx.emit("anim", {"target": "monster", "name": "attack"})
 	fx.emit("anim", {"target": "flash", "name": "red", "delay": 0.22})
 	fx.emit("anim", {"target": "hero", "name": "damage", "delay": 0.22})
+	Sound.play("player_damage", 0.42)
 	match it:
 		"damage":
 			dmg = 2
@@ -341,6 +346,7 @@ func _on_timeout() -> void:
 		shield = false
 		fx.emit("toast", {"msg": "Out of time, but your shield absorbs the hit.", "cls": "good"})
 	else:
+		Sound.play("player_damage", 0.28)
 		health = maxi(0, health - 1)
 		fx.emit("anim", {"target": "monster", "name": "attack"})
 		fx.emit("anim", {"target": "flash", "name": "red"})
@@ -443,6 +449,7 @@ func use_lifesaver(k: String) -> void:
 
 # ───── victory / defeat ─────
 func _victory() -> void:
+	Sound.play("victory", 0.18)
 	over = true
 	won = true
 	clear_timer()

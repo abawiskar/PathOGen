@@ -12,6 +12,7 @@ What it does:
   web/js/gh_icons.js          (GH_ICONS)            -> components.json "gh_icons" (Grasshopper icon file per id)
   web/js/monsters.js       -> godot/data/monsters.json    (MONSTER_OPTIONS, MONSTER_PHASES)
   web/img/**               -> godot/img/**                (monster art, hero frames, start art, img/gh-icons)
+  web/audio/**.wav         -> godot/audio/**              (sound effects + bgm/; Godot imports them as AudioStreamWAV)
 
 The JS files are plain object literals, so they are converted with a small
 tokenizer (no Node.js needed). If the web team changes those files into
@@ -186,6 +187,16 @@ def main():
                 out.with_name(out.name + ".import").write_text('[remap]\n\nimporter="keep"\n', encoding="utf-8")
                 n_img += 1
 
+    # sounds: plain copies, imported by Godot (AudioStreamWAV) so they load with load() and export normally
+    a_src, a_dst = WEB / "audio", GODOT / "audio"
+    n_audio = 0
+    if a_src.is_dir():
+        for f in sorted(a_src.rglob("*.wav")):
+            out = a_dst / f.relative_to(a_src)
+            out.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(f, out)
+            n_audio += 1
+
     src, dst = WEB / "levels", GODOT / "levels"
     if dst.exists():
         shutil.rmtree(dst)
@@ -193,10 +204,10 @@ def main():
     n_levels = len(json.loads((dst / "index.json").read_text(encoding="utf-8"))["levels"])
 
     for d in dst.iterdir():   # level folders may hold goal / definition images: keep them as raw files too
-        for f in [g for ext in ("*.png", "*.jpg", "*.webp") for g in d.glob(ext)] if d.is_dir() else []:
+        for f in [g for ext in ("*.png", "*.jpg", "*.webp", "*.svg") for g in d.glob(ext)] if d.is_dir() else []:
             (d / (f.name + ".import")).write_text('[remap]\n\nimporter="keep"\n', encoding="utf-8")
     print(f"components: {len(comps)}  icons: {len(icons)}  gh icons: {len(gh_icons)}  monsters: {len(monsters['options'])}  "
-          f"phases: {len(monsters['phases'])}  images: {n_img}  levels: {n_levels}")
+          f"phases: {len(monsters['phases'])}  images: {n_img}  sounds: {n_audio}  levels: {n_levels}")
     print(f"written to {out_dir} and {dst}")
 
 

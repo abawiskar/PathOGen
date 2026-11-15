@@ -166,6 +166,7 @@ static func button(text: String, kind := "", size := "big") -> Button:
 	b.add_theme_stylebox_override("hover", hover)
 	b.add_theme_stylebox_override("pressed", pressed)
 	b.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+	b.pressed.connect(func(): Sound.play("click"))
 	b.add_theme_stylebox_override("disabled", normal)
 	b.add_theme_color_override("font_color", fg)
 	b.add_theme_color_override("font_hover_color", fg.lightened(0.15))
