@@ -1,0 +1,48 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>encode</title>
+<body style="margin:0;background:#000">
+<canvas id="c" width="1920" height="1080"></canvas>
+<script>
+// Frame-exact H.264 encode of demo/frames/*.jpg with WebCodecs. Each output frame (fixed fps) shows the latest
+// captured frame at that time. Chunks are kept in memory; encode_demo.py pulls them and writes the MP4.
+window.encode = async (fps = 30, bitrate = 14_000_000, metaUrl = 'frames.json') => {
+  const meta = await (await fetch(metaUrl, { cache: 'no-store' })).json();
+  const dir = meta.dir || 'frames';
+  const F = meta.frames, dur = F[F.length - 1][1] + 0.6;
+  const W = 1920, H = 1080;
+  const cfg = { codec: 'avc1.640028', width: W, height: H, bitrate, framerate: fps, avc: { format: 'avc' }, latencyMode: 'quality' };
+  const sup = await VideoEncoder.isConfigSupported(cfg);
+  if (!sup.supported) throw new Error('H.264 encoder not supported');
+  const chunks = []; let desc = null, err = null;
+  const enc = new VideoEncoder({
+    output: (ch, md) => { if (md && md.decoderConfig && md.decoderConfig.description) desc = new Uint8Array(md.decoderConfig.description.slice ? md.decoderConfig.description.slice(0) : md.decoderConfig.description);
+      const d = new Uint8Array(ch.byteLength); ch.copyTo(d); chunks.push({ key: ch.type === 'key', ts: ch.timestamp, d }); },
+    error: e => { err = e; } });
+  enc.configure(cfg);
+  const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+  const load = async i => createImageBitmap(await (await fetch(dir + '/' + F[i][0])).blob());
+  let shown = -1, bmp = null;
+  const total = Math.ceil(dur * fps);
+  for (let k = 0; k < total; k++) {
+    if (err) throw err;
+    const t = k / fps;
+    let idx = Math.max(0, shown); while (idx + 1 < F.length && F[idx + 1][1] <= t) idx++;
+    if (idx !== shown) { if (bmp) bmp.close(); bmp = await load(idx); ctx.drawImage(bmp, 0, 0, W, H); shown = idx; }
+    const vf = new VideoFrame(cv, { timestamp: Math.round(k * 1e6 / fps), duration: Math.round(1e6 / fps) });
+    enc.encode(vf, { keyFrame: k % (fps * 2) === 0 }); vf.close();
+    while (enc.encodeQueueSize > 8) await new Promise(r => setTimeout(r, 2));
+  }
+  await enc.flush(); enc.close();
+  if (err) throw err;
+  const size = chunks.reduce((a, c) => a + c.d.length, 0);
+  const all = new Uint8Array(size); let o = 0; for (const c of chunks) { all.set(c.d, o); o += c.d.length; }
+  window.__all = all;
+  return { fps, frames: chunks.length, keys: chunks.map(c => c.key ? 1 : 0), sizes: chunks.map(c => c.d.length), desc: Array.from(desc || []), size };
+};
+window.chunk = (i, n) => {
+  const buf = window.__all.subarray(i, i + n);
+  let s = ''; for (let k = 0; k < buf.length; k += 0x8000) s += String.fromCharCode.apply(null, buf.subarray(k, k + 0x8000));
+  return btoa(s);
+};
+</script>

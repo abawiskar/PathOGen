@@ -1,0 +1,17 @@
+  0.25s  Meet Path oh jen.
+  1.82s  Every level is a real Grasshopper script.
+  4.67s  Four levels take you from base shape to facade.
+  8.47s  Three difficulties, three different methods.
+ 11.52s  Meet the monster, and check the goal.
+ 14.14s  Fill the glowing node: pick a card, and place it.
+ 18.01s  Field notes explain why.
+ 19.42s  Wrong card? The monster strikes!
+ 22.60s  Stuck? Use a lifesaver.
+ 25.20s  Then keep building, node by node.
+ 29.11s  Wire checks: plug into the right input.
+ 34.31s  Every card is a real Grasshopper component.
+ 40.17s  The 3D preview grows live.
+ 42.31s  Loft, cap, and you've got a solid tower.
+ 49.53s  Win to earn stars and X P, and rank up.
+ 52.96s  Then drag a slider. It's fully parametric.
+ 56.02s  Build the script, survive the monster, master Grasshopper.

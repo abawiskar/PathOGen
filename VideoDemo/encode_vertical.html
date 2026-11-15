@@ -1,0 +1,142 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>encode vertical</title>
+<body style="margin:0;background:#000">
+<canvas id="c" width="1080" height="1920"></canvas>
+<script>
+// Vertical (1080x1920) composite of a landscape recording: header, full game view, big captions, and a
+// close-up that follows the cursor or the focused panel. Overlays come from the recording's "events".
+const OW = 1080, OH = 1920;
+const FULL = { x: 24, y: 190, w: 1032, h: 580 };
+const CLOSE = { x: 24, y: 1110, w: 1032, h: 770 };
+const CAPY = [790, 1095];
+const easeIO = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+const easeBack = t => { const c1 = 1.9, c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); };
+
+function rr(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+
+function parse(html) {  // -> [{w, hl}] plus {br:true}
+  const out = []; const re = /<br\s*\/?>|<span class="hl">(.*?)<\/span>|([^<]+)/g; let m;
+  while ((m = re.exec(html))) {
+    if (m[0].startsWith('<br')) { out.push({ br: true }); continue; }
+    const txt = (m[1] != null ? m[1] : m[2]).replace(/&amp;/g, '&');
+    const words = txt.split(/\s+/).filter(Boolean);
+    words.forEach((w, i) => {   // glue punctuation that follows a word directly ("GOAL.")
+      const prev = out[out.length - 1];
+      if (i === 0 && prev && !prev.br && /^\S/.test(txt) && /^[.,!?:;…]/.test(w)) prev.w += w.toUpperCase();
+      else out.push({ w: w.toUpperCase(), hl: m[1] != null });
+    });
+  }
+  return out;
+}
+function layout(ctx, toks, size, maxW) {
+  ctx.font = `900 ${size}px "Arial Black", "Segoe UI Black", Impact, sans-serif`;
+  const sp = ctx.measureText(' ').width, lines = [[]]; let lw = 0;
+  for (const t of toks) {
+    if (t.br) { lines.push([]); lw = 0; continue; }
+    const w = ctx.measureText(t.w).width;
+    if (lines[lines.length - 1].length && lw + sp + w > maxW) { lines.push([]); lw = 0; }
+    const L = lines[lines.length - 1]; L.push({ ...t, width: w }); lw += (L.length > 1 ? sp : 0) + w;
+  }
+  return { lines: lines.filter(l => l.length), sp };
+}
+function drawCaption(ctx, html, age) {
+  const toks = parse(html); let size = 92, lay;
+  for (; size > 50; size -= 4) { lay = layout(ctx, toks, size, 980); if (lay.lines.length * size * 1.12 <= 280) break; }
+  const lh = size * 1.12, cy = (CAPY[0] + CAPY[1]) / 2, top = cy - lh * lay.lines.length / 2 + size * 0.38;
+  const s = age < 0.38 ? easeBack(Math.min(1, age / 0.38)) * 0.45 + 0.55 : 1;
+  ctx.save(); ctx.translate(OW / 2, cy); ctx.scale(s, s); ctx.translate(-OW / 2, -cy);
+  ctx.globalAlpha = Math.min(1, age / 0.15);
+  ctx.lineJoin = 'round'; ctx.textBaseline = 'alphabetic';
+  lay.lines.forEach((L, i) => {
+    const tw = L.reduce((a, t) => a + t.width, 0) + lay.sp * (L.length - 1); let x = OW / 2 - tw / 2; const y = top + i * lh;
+    for (const t of L) {
+      ctx.lineWidth = size * 0.17; ctx.strokeStyle = '#000'; ctx.strokeText(t.w, x, y + 6);
+      ctx.strokeText(t.w, x, y); ctx.fillStyle = t.hl ? '#ffd84a' : '#fff'; ctx.fillText(t.w, x, y); x += t.width + lay.sp;
+    }
+  });
+  ctx.restore();
+}
+function drawCard(ctx, ev, alpha) {
+  ctx.save(); ctx.globalAlpha = alpha;
+  const g = ctx.createRadialGradient(OW / 2, OH * 0.42, 50, OW / 2, OH * 0.42, OH * 0.75); g.addColorStop(0, '#2b4a3f'); g.addColorStop(1, '#0c1513');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, OW, OH);
+  ctx.textAlign = 'center'; ctx.lineJoin = 'round';
+  ctx.font = '900 170px "Arial Black", Impact, sans-serif'; ctx.lineWidth = 16; ctx.strokeStyle = '#000';
+  ctx.strokeText(ev.h1, OW / 2, 820); ctx.fillStyle = '#ffd84a'; ctx.fillText(ev.h1, OW / 2, 820);
+  const lay = layout(ctx, parse(ev.h2), 74, 960); ctx.textAlign = 'left';
+  lay.lines.forEach((L, i) => { const tw = L.reduce((a, t) => a + t.width, 0) + lay.sp * (L.length - 1); let x = OW / 2 - tw / 2;
+    for (const t of L) { ctx.lineWidth = 12; ctx.strokeText(t.w, x, 990 + i * 88); ctx.fillStyle = '#fff'; ctx.fillText(t.w, x, 990 + i * 88); x += t.width + lay.sp; } });
+  ctx.textAlign = 'center'; ctx.font = '600 38px "Segoe UI", Arial, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,.85)';
+  ctx.fillText(ev.p.replace(/&middot;|·/g, '·'), OW / 2, 1010 + lay.lines.length * 88 + 30);
+  ctx.restore();
+}
+
+window.encode = async (fps = 30, bitrate = 12_000_000, metaUrl = 'frames_vertical.json') => {
+  const meta = await (await fetch(metaUrl, { cache: 'no-store' })).json();
+  const F = meta.frames, E = meta.events, dir = meta.dir, SW = meta.w, SH = meta.h;
+  const dur = F[F.length - 1][1] + 0.6;
+  const cfg = { codec: 'avc1.64002a', width: OW, height: OH, bitrate, framerate: fps, avc: { format: 'avc' }, latencyMode: 'quality' };
+  if (!(await VideoEncoder.isConfigSupported(cfg)).supported) throw new Error('H.264 1080x1920 not supported');
+  const chunks = []; let desc = null, err = null;
+  const enc = new VideoEncoder({ output: (ch, md) => { if (md && md.decoderConfig && md.decoderConfig.description) desc = new Uint8Array(md.decoderConfig.description.slice ? md.decoderConfig.description.slice(0) : md.decoderConfig.description);
+      const d = new Uint8Array(ch.byteLength); ch.copyTo(d); chunks.push({ key: ch.type === 'key', d }); }, error: e => { err = e; } });
+  enc.configure(cfg);
+  const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+  const load = async i => createImageBitmap(await (await fetch(dir + '/' + F[i][0])).blob());
+  const last = (t, types) => { let r = null; for (const e of E) { if (e.t > t) break; if (types.includes(e.type)) r = e; } return r; };
+  const cursorAt = t => { const m = last(t, ['move']); if (!m) return [SW / 2, SH / 2]; const k = Math.min(1, (t - m.t) / (m.ms / 1000)), e = easeIO(Math.max(0, k)); return [m.x0 + (m.x1 - m.x0) * e, m.y0 + (m.y1 - m.y0) * e]; };
+  const A = CLOSE.w / CLOSE.h;
+  const target = t => {
+    const f = last(t, ['focus']); let cx, cy, w;
+    if (f && f.rect) { const [x, y, rw, rh] = f.rect; cx = x + rw / 2; cy = y + rh / 2; w = Math.max(560, rw + 80, (rh + 80) * A); }
+    else { [cx, cy] = cursorAt(t); w = 780; }
+    w = Math.min(w, SW); let h = w / A; if (h > SH) { h = SH; w = h * A; }
+    const x = Math.min(SW - w, Math.max(0, cx - w / 2)), y = Math.min(SH - h, Math.max(0, cy - h / 2));
+    return [x, y, w, h];
+  };
+  let crop = target(0), shown = -1, bmp = null;
+  const total = Math.ceil(dur * fps);
+  for (let k = 0; k < total; k++) {
+    if (err) throw err;
+    const t = k / fps;
+    let idx = Math.max(0, shown); while (idx + 1 < F.length && F[idx + 1][1] <= t) idx++;
+    if (idx !== shown) { if (bmp) bmp.close(); bmp = await load(idx); shown = idx; }
+    const tg = target(t), a = 1 - Math.exp(-(1 / fps) / 0.2); crop = crop.map((v, i) => v + (tg[i] - v) * a);
+    // background + header
+    const g = ctx.createLinearGradient(0, 0, 0, OH); g.addColorStop(0, '#16261f'); g.addColorStop(1, '#0b1311'); ctx.fillStyle = g; ctx.fillRect(0, 0, OW, OH);
+    ctx.fillStyle = 'rgba(255,255,255,.08)'; ctx.fillRect(0, 0, OW, 12);
+    const bg = ctx.createLinearGradient(0, 0, OW, 0); bg.addColorStop(0, '#ffd84a'); bg.addColorStop(1, '#ff6a3d'); ctx.fillStyle = bg; ctx.fillRect(0, 0, OW * Math.min(1, t / dur), 12);
+    ctx.textAlign = 'center'; ctx.lineJoin = 'round';
+    ctx.font = '900 72px "Arial Black", Impact, sans-serif'; ctx.lineWidth = 10; ctx.strokeStyle = '#000'; ctx.strokeText('PathOGen', OW / 2, 108); ctx.fillStyle = '#ffd84a'; ctx.fillText('PathOGen', OW / 2, 108);
+    ctx.font = '700 30px "Segoe UI", Arial, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,.8)'; ctx.fillText('LEARN GRASSHOPPER BY BEATING MONSTERS', OW / 2, 155);
+    ctx.textAlign = 'left';
+    // full view
+    ctx.save(); rr(ctx, FULL.x, FULL.y, FULL.w, FULL.h, 22); ctx.clip(); ctx.drawImage(bmp, FULL.x, FULL.y, FULL.w, FULL.h);
+    const sx = FULL.w / SW, sy = FULL.h / SH; ctx.strokeStyle = '#ffd84a'; ctx.lineWidth = 4; ctx.setLineDash([14, 8]);
+    ctx.strokeRect(FULL.x + crop[0] * sx, FULL.y + crop[1] * sy, crop[2] * sx, crop[3] * sy); ctx.setLineDash([]); ctx.restore();
+    rr(ctx, FULL.x, FULL.y, FULL.w, FULL.h, 22); ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(168,198,144,.55)'; ctx.stroke();
+    // close-up
+    ctx.save(); rr(ctx, CLOSE.x, CLOSE.y, CLOSE.w, CLOSE.h, 26); ctx.clip(); ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(bmp, crop[0], crop[1], crop[2], crop[3], CLOSE.x, CLOSE.y, CLOSE.w, CLOSE.h); ctx.restore();
+    rr(ctx, CLOSE.x, CLOSE.y, CLOSE.w, CLOSE.h, 26); ctx.lineWidth = 5; ctx.strokeStyle = '#ffd84a'; ctx.stroke();
+    // caption
+    const cap = last(t, ['cap']);   // captions stay up until the next one (no empty band on phones)
+    if (cap && cap.type === 'cap') drawCaption(ctx, cap.html, t - cap.t);
+    else if (cap && cap.type === 'uncap' && t - cap.t < 0.2) { /* fade gap */ }
+    // title / end card
+    const cd = last(t, ['card', 'uncard']);
+    if (cd && cd.type === 'card') drawCard(ctx, cd, Math.min(1, (t - cd.t) / 0.35 + (cd.t < 0.05 ? 1 : 0)));
+    else if (cd && cd.type === 'uncard' && t - cd.t < 0.5) { const prev = E.filter(e => e.type === 'card' && e.t <= cd.t).pop(); if (prev) drawCard(ctx, prev, 1 - (t - cd.t) / 0.5); }
+    const vf = new VideoFrame(cv, { timestamp: Math.round(k * 1e6 / fps), duration: Math.round(1e6 / fps) });
+    enc.encode(vf, { keyFrame: k % (fps * 2) === 0 }); vf.close();
+    while (enc.encodeQueueSize > 8) await new Promise(r => setTimeout(r, 2));
+  }
+  await enc.flush(); enc.close(); if (err) throw err;
+  const size = chunks.reduce((a, c) => a + c.d.length, 0), all = new Uint8Array(size); let o = 0; for (const c of chunks) { all.set(c.d, o); o += c.d.length; }
+  window.__all = all;
+  return { fps, frames: chunks.length, keys: chunks.map(c => c.key ? 1 : 0), sizes: chunks.map(c => c.d.length), desc: Array.from(desc || []), size };
+};
+window.chunk = (i, n) => { const buf = window.__all.subarray(i, i + n); let s = ''; for (let k = 0; k < buf.length; k += 0x8000) s += String.fromCharCode.apply(null, buf.subarray(k, k + 0x8000)); return btoa(s); };
+window.still = async (t, metaUrl = 'frames_vertical.json') => { /* debug: not used */ };
+</script>
