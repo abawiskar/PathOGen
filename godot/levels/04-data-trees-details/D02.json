@@ -1,0 +1,910 @@
+{
+ "source": "GameLevels/LevelD/D02.ghx",
+ "method": "D02",
+ "params": [
+  {
+   "key": "s1",
+   "label": "Floors",
+   "min": 5.0,
+   "max": 80.0,
+   "step": 1,
+   "value": 30.0
+  },
+  {
+   "key": "s2",
+   "label": "Panel scale (joints)",
+   "min": 0.8,
+   "max": 1.0,
+   "step": 0.001,
+   "value": 0.95
+  },
+  {
+   "key": "s3",
+   "label": "Mullion radius (ft)",
+   "min": 0.1,
+   "max": 1.0,
+   "step": 0.01,
+   "value": 0.25
+  },
+  {
+   "key": "s4",
+   "label": "Floor-to-floor (ft)",
+   "min": 10.0,
+   "max": 18.0,
+   "step": 0.1,
+   "value": 13.0
+  },
+  {
+   "key": "s5",
+   "label": "Top fillet (ft)",
+   "min": 0.0,
+   "max": 15.0,
+   "step": 0.1,
+   "value": 6.0
+  },
+  {
+   "key": "s6",
+   "label": "Base fillet (ft)",
+   "min": 0.0,
+   "max": 15.0,
+   "step": 0.1,
+   "value": 6.0
+  },
+  {
+   "key": "s7",
+   "label": "Top radius (ft)",
+   "min": 30.0,
+   "max": 120.0,
+   "step": 0.1,
+   "value": 45.0
+  },
+  {
+   "key": "s8",
+   "label": "Base radius (ft)",
+   "min": 30.0,
+   "max": 120.0,
+   "step": 0.1,
+   "value": 60.0
+  },
+  {
+   "key": "s9",
+   "label": "Sides",
+   "min": 3.0,
+   "max": 12.0,
+   "step": 1,
+   "value": 4.0
+  },
+  {
+   "key": "s10",
+   "label": "Total twist (deg)",
+   "min": -180.0,
+   "max": 180.0,
+   "step": 1,
+   "value": 90.0
+  },
+  {
+   "key": "s11",
+   "label": "Panels around",
+   "min": 8.0,
+   "max": 120.0,
+   "step": 1,
+   "value": 32.0
+  }
+ ],
+ "nodes": [
+  {
+   "id": "addition",
+   "comp": "addition",
+   "open": false,
+   "x": 1344,
+   "y": 48
+  },
+  {
+   "id": "addition2",
+   "comp": "addition",
+   "open": false,
+   "x": 1344,
+   "y": 188
+  },
+  {
+   "id": "area",
+   "comp": "area",
+   "open": true,
+   "x": 3773,
+   "y": 40,
+   "question": "D02_Q03",
+   "need": "the centre point of every panel",
+   "hint": "Surface › Analysis. Watch for: Use the C (centroid) output.",
+   "correct": "Area's C output gives every panel's centroid: the point each panel will shrink towards.",
+   "distractors": [
+    "volume",
+    "length",
+    "dimensions",
+    "boundingBox",
+    "curveMiddle",
+    "evaluateCurve",
+    "closed",
+    "curveClosestPoint",
+    "polygonCenter",
+    "segmentLengths",
+    "planar",
+    "boxProperties"
+   ],
+   "draft": true,
+   "stage": "Find each panel's centre: A centre point for every panel. Area also returns each shape's centroid. Here we want the centroid, not the area.",
+   "stage_draft": true,
+   "preview": false
+  },
+  {
+   "id": "capHoles",
+   "comp": "capHoles",
+   "open": false,
+   "x": 2786,
+   "y": 35,
+   "ghost": true
+  },
+  {
+   "id": "constructP",
+   "comp": "constructPoint",
+   "open": false,
+   "x": 817,
+   "y": 39,
+   "set": {
+    "X": 0.0,
+    "Y": 0.0
+   }
+  },
+  {
+   "id": "data",
+   "comp": "dataParam",
+   "open": false,
+   "x": 1504,
+   "y": 0,
+   "label": "Level centres"
+  },
+  {
+   "id": "data10",
+   "comp": "dataParam",
+   "open": false,
+   "x": 3350,
+   "y": 52,
+   "label": "Panel grid"
+  },
+  {
+   "id": "data11",
+   "comp": "dataParam",
+   "open": false,
+   "x": 3665,
+   "y": 0,
+   "label": "Panels"
+  },
+  {
+   "id": "data12",
+   "comp": "dataParam",
+   "open": false,
+   "x": 4008,
+   "y": 0,
+   "label": "Panels"
+  },
+  {
+   "id": "data13",
+   "comp": "dataParam",
+   "open": false,
+   "x": 4022,
+   "y": 52,
+   "label": "Panel centres"
+  },
+  {
+   "id": "data14",
+   "comp": "dataParam",
+   "open": false,
+   "x": 4446,
+   "y": 0,
+   "label": "Twist floors"
+  },
+  {
+   "id": "data2",
+   "comp": "dataParam",
+   "open": false,
+   "x": 1506,
+   "y": 104,
+   "label": "Fillet per floor"
+  },
+  {
+   "id": "data3",
+   "comp": "dataParam",
+   "open": false,
+   "x": 1511,
+   "y": 52,
+   "label": "Radius per floor"
+  },
+  {
+   "id": "data4",
+   "comp": "dataParam",
+   "open": false,
+   "x": 1871,
+   "y": 104,
+   "label": "Level centres"
+  },
+  {
+   "id": "data5",
+   "comp": "dataParam",
+   "open": false,
+   "x": 1872,
+   "y": 52,
+   "label": "Floor outlines"
+  },
+  {
+   "id": "data6",
+   "comp": "dataParam",
+   "open": false,
+   "x": 2416,
+   "y": 0,
+   "label": "Twist floors"
+  },
+  {
+   "id": "data7",
+   "comp": "dataParam",
+   "open": false,
+   "x": 2679,
+   "y": 0,
+   "label": "Skin"
+  },
+  {
+   "id": "data8",
+   "comp": "dataParam",
+   "open": false,
+   "x": 2937,
+   "y": 0,
+   "label": "Skin"
+  },
+  {
+   "id": "data9",
+   "comp": "dataParam",
+   "open": false,
+   "x": 3344,
+   "y": 0,
+   "label": "Skin"
+  },
+  {
+   "id": "divideDoma",
+   "comp": "divDomain2",
+   "open": true,
+   "x": 3196,
+   "y": 30,
+   "question": "D02_Q01",
+   "need": "the surface's UV domain cut into a grid",
+   "hint": "Maths › Domain. Watch for: V = Floors, so each row of panels is one storey.",
+   "correct": "Divide Domain² cuts the loft's UV domain into a grid: panels around × one row per floor.",
+   "distractors": [
+    "divideDomain",
+    "constructDomainUV",
+    "deconstructDomain",
+    "bounds2D",
+    "divideSurface",
+    "surfaceFrames",
+    "dimensions",
+    "consecutiveDomains",
+    "findDomain",
+    "includes",
+    "constructDomain"
+   ],
+   "draft": true,
+   "stage": "Split the skin into a grid: A grid of UV domains: panels around × floors up. Every surface has its own UV coordinates. Divide Domain² cuts that UV square into U × V cells without touching the geometry yet.",
+   "stage_draft": true
+  },
+  {
+   "id": "isotrim",
+   "comp": "isotrim",
+   "open": true,
+   "x": 3464,
+   "y": 18,
+   "question": "D02_Q02",
+   "need": "one surface patch per UV cell",
+   "hint": "Surface › Util. Watch for: The panels are slightly warped because the skin twists.",
+   "correct": "Isotrim cuts the loft into one panel per grid cell.",
+   "distractors": [
+    "divideSurface",
+    "surfaceSplit",
+    "copyTrim",
+    "retrim",
+    "untrim",
+    "surfaceFrames",
+    "isoCurve",
+    "evaluateSurface",
+    "subCurve",
+    "dimensions",
+    "brepEdges",
+    "deconstructBrep"
+   ],
+   "draft": true,
+   "stage": "Cut the panels: One surface patch per grid cell. Isotrim trims the skin to each UV cell, so the panels follow the twisted surface exactly.",
+   "stage_draft": true
+  },
+  {
+   "id": "loft",
+   "comp": "loft",
+   "open": false,
+   "x": 2532,
+   "y": 12,
+   "set": {
+    "O": false
+   }
+  },
+  {
+   "id": "multiplica",
+   "comp": "multiplication",
+   "open": false,
+   "x": 586,
+   "y": 31
+  },
+  {
+   "id": "multiplica2",
+   "comp": "multiplication",
+   "open": false,
+   "x": 700,
+   "y": 40
+  },
+  {
+   "id": "multiplica3",
+   "comp": "multiplication",
+   "open": false,
+   "x": 1228,
+   "y": 31
+  },
+  {
+   "id": "multiplica4",
+   "comp": "multiplication",
+   "open": false,
+   "x": 1228,
+   "y": 246
+  },
+  {
+   "id": "multiplica5",
+   "comp": "multiplication",
+   "open": false,
+   "x": 1228,
+   "y": 138
+  },
+  {
+   "id": "multiplica6",
+   "comp": "multiplication",
+   "open": false,
+   "x": 1228,
+   "y": 354
+  },
+  {
+   "id": "multiplica7",
+   "comp": "multiplication",
+   "open": false,
+   "x": 2126,
+   "y": 46
+  },
+  {
+   "id": "number",
+   "comp": "numberParam",
+   "open": false,
+   "x": 312,
+   "y": 0
+  },
+  {
+   "id": "number2",
+   "comp": "numberParam",
+   "open": false,
+   "x": 314,
+   "y": 52
+  },
+  {
+   "id": "number3",
+   "comp": "numberParam",
+   "open": false,
+   "x": 966,
+   "y": 0
+  },
+  {
+   "id": "number4",
+   "comp": "numberParam",
+   "open": false,
+   "x": 968,
+   "y": 52
+  },
+  {
+   "id": "number5",
+   "comp": "numberParam",
+   "open": false,
+   "x": 1860,
+   "y": 0
+  },
+  {
+   "id": "number6",
+   "comp": "numberParam",
+   "open": false,
+   "x": 2937,
+   "y": 52
+  },
+  {
+   "id": "pipe",
+   "comp": "pipe",
+   "open": true,
+   "x": 4713,
+   "y": 58,
+   "set": {
+    "E": 0.0
+   },
+   "question": "D02_Q05",
+   "need": "a round tube along every floor outline",
+   "hint": "Surface › Freeform.",
+   "correct": "Pipe wraps every floor outline in a round section: the horizontal mullions.",
+   "distractors": [
+    "sweep1",
+    "sweep2",
+    "extrude",
+    "loft",
+    "offset",
+    "filletCtR",
+    "rebuildCurve",
+    "revolution",
+    "railRevolution",
+    "patch",
+    "boundary",
+    "extrudePoint"
+   ],
+   "draft": true,
+   "stage": "Floor-line mullions: A horizontal mullion along every floor outline. Pipe works on any curve: here the twisted floor outlines.",
+   "stage_draft": true
+  },
+  {
+   "id": "polygon",
+   "comp": "polygon",
+   "open": false,
+   "x": 1710,
+   "y": 42
+  },
+  {
+   "id": "range",
+   "comp": "range",
+   "open": false,
+   "x": 164,
+   "y": 110,
+   "set": {
+    "D": [
+     1.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "id": "range2",
+   "comp": "range",
+   "open": false,
+   "x": 164,
+   "y": 25,
+   "set": {
+    "D": [
+     0.0,
+     1.0
+    ]
+   }
+  },
+  {
+   "id": "rotate",
+   "comp": "rotate",
+   "open": false,
+   "x": 2250,
+   "y": 34,
+   "degrees": true
+  },
+  {
+   "id": "scale",
+   "comp": "scale",
+   "open": true,
+   "x": 4288,
+   "y": 54,
+   "question": "D02_Q04",
+   "need": "every panel shrunk about its own centre",
+   "hint": "Transform › Affine. Watch for: Scale about each panel's own centre, not the tower's, or the panels will slide.",
+   "correct": "Scale shrinks every panel towards its own centroid, opening an even joint between neighbours.",
+   "distractors": [
+    "scaleNU",
+    "mirror",
+    "rotate",
+    "move",
+    "shear",
+    "shearAngle",
+    "orient",
+    "orientDirection",
+    "rotateAxis",
+    "moveAwayFrom",
+    "project",
+    "linearArray"
+   ],
+   "draft": true,
+   "stage": "Open the joints: Every panel shrunk slightly about its own centre, leaving a joint. Scale each panel to 0.95 about its own centroid: the gap between neighbours becomes the joint.",
+   "stage_draft": true
+  },
+  {
+   "id": "slider",
+   "comp": "slider",
+   "open": false,
+   "x": 0,
+   "y": 0,
+   "param": "s1",
+   "label": "Floors"
+  },
+  {
+   "id": "slider10",
+   "comp": "slider",
+   "open": false,
+   "x": 4094,
+   "y": 96,
+   "param": "s2",
+   "label": "Panel scale (joints)"
+  },
+  {
+   "id": "slider11",
+   "comp": "slider",
+   "open": false,
+   "x": 4522,
+   "y": 48,
+   "param": "s3",
+   "label": "Mullion radius (ft)"
+  },
+  {
+   "id": "slider2",
+   "comp": "slider",
+   "open": false,
+   "x": 395,
+   "y": 96,
+   "param": "s4",
+   "label": "Floor-to-floor (ft)"
+  },
+  {
+   "id": "slider3",
+   "comp": "slider",
+   "open": false,
+   "x": 1037,
+   "y": 240,
+   "param": "s5",
+   "label": "Top fillet (ft)"
+  },
+  {
+   "id": "slider4",
+   "comp": "slider",
+   "open": false,
+   "x": 1039,
+   "y": 192,
+   "param": "s6",
+   "label": "Base fillet (ft)"
+  },
+  {
+   "id": "slider5",
+   "comp": "slider",
+   "open": false,
+   "x": 1042,
+   "y": 144,
+   "param": "s7",
+   "label": "Top radius (ft)"
+  },
+  {
+   "id": "slider6",
+   "comp": "slider",
+   "open": false,
+   "x": 1044,
+   "y": 96,
+   "param": "s8",
+   "label": "Base radius (ft)"
+  },
+  {
+   "id": "slider7",
+   "comp": "slider",
+   "open": false,
+   "x": 1546,
+   "y": 147,
+   "param": "s9",
+   "label": "Sides"
+  },
+  {
+   "id": "slider8",
+   "comp": "slider",
+   "open": false,
+   "x": 1938,
+   "y": 147,
+   "param": "s10",
+   "label": "Total twist (deg)"
+  },
+  {
+   "id": "slider9",
+   "comp": "slider",
+   "open": false,
+   "x": 3013,
+   "y": 96,
+   "param": "s11",
+   "label": "Panels around"
+  }
+ ],
+ "wires": [
+  {
+   "from": "slider.N",
+   "to": "range2.N"
+  },
+  {
+   "from": "slider.N",
+   "to": "range.N"
+  },
+  {
+   "from": "number.N",
+   "to": "multiplica.A"
+  },
+  {
+   "from": "slider2.N",
+   "to": "multiplica.B"
+  },
+  {
+   "from": "number2.N",
+   "to": "multiplica2.A"
+  },
+  {
+   "from": "multiplica.R",
+   "to": "multiplica2.B"
+  },
+  {
+   "from": "multiplica2.R",
+   "to": "constructP.Z"
+  },
+  {
+   "from": "number3.N",
+   "to": "multiplica3.A"
+  },
+  {
+   "from": "slider6.N",
+   "to": "multiplica3.B"
+  },
+  {
+   "from": "number4.N",
+   "to": "multiplica5.A"
+  },
+  {
+   "from": "slider5.N",
+   "to": "multiplica5.B"
+  },
+  {
+   "from": "multiplica3.R",
+   "to": "addition.A"
+  },
+  {
+   "from": "multiplica5.R",
+   "to": "addition.B"
+  },
+  {
+   "from": "number3.N",
+   "to": "multiplica4.A"
+  },
+  {
+   "from": "slider4.N",
+   "to": "multiplica4.B"
+  },
+  {
+   "from": "number4.N",
+   "to": "multiplica6.A"
+  },
+  {
+   "from": "slider3.N",
+   "to": "multiplica6.B"
+  },
+  {
+   "from": "multiplica4.R",
+   "to": "addition2.A"
+  },
+  {
+   "from": "multiplica6.R",
+   "to": "addition2.B"
+  },
+  {
+   "from": "data.D",
+   "to": "polygon.P"
+  },
+  {
+   "from": "data3.D",
+   "to": "polygon.R"
+  },
+  {
+   "from": "slider7.N",
+   "to": "polygon.S"
+  },
+  {
+   "from": "data2.D",
+   "to": "polygon.Rf"
+  },
+  {
+   "from": "number5.N",
+   "to": "multiplica7.A"
+  },
+  {
+   "from": "slider8.N",
+   "to": "multiplica7.B"
+  },
+  {
+   "from": "data5.D",
+   "to": "rotate.G"
+  },
+  {
+   "from": "multiplica7.R",
+   "to": "rotate.A"
+  },
+  {
+   "from": "data4.D",
+   "to": "rotate.P"
+  },
+  {
+   "from": "data6.D",
+   "to": "loft.C"
+  },
+  {
+   "from": "data7.D",
+   "to": "capHoles.B"
+  },
+  {
+   "from": "data8.D",
+   "to": "divideDoma.I"
+  },
+  {
+   "from": "slider9.N",
+   "to": "divideDoma.U",
+   "check": {
+    "side": "in",
+    "prompt": "The Panels around slider goes into which input?",
+    "hint": "I = domain, U = divisions around, V = divisions up.",
+    "correct": "U runs around the tower; V runs up it.",
+    "wrong": {
+     "V": "V runs up the tower: Floors goes there.",
+     "*": "That input isn't the U count."
+    },
+    "draft": true
+   }
+  },
+  {
+   "from": "number6.N",
+   "to": "divideDoma.V"
+  },
+  {
+   "from": "data9.D",
+   "to": "isotrim.S"
+  },
+  {
+   "from": "data10.D",
+   "to": "isotrim.D"
+  },
+  {
+   "from": "data11.D",
+   "to": "area.G"
+  },
+  {
+   "from": "data12.D",
+   "to": "scale.G"
+  },
+  {
+   "from": "data13.D",
+   "to": "scale.C"
+  },
+  {
+   "from": "slider10.N",
+   "to": "scale.F",
+   "check": {
+    "side": "in",
+    "prompt": "The joint slider goes into which input of Scale?",
+    "hint": "G = geometry, C = centre, F = factor.",
+    "correct": "F is the factor: 0.95 shrinks each panel 5%.",
+    "wrong": {
+     "C": "C is the centre: the panel centroids go there.",
+     "*": "That input isn't the factor."
+    },
+    "draft": true
+   }
+  },
+  {
+   "from": "data14.D",
+   "to": "pipe.C"
+  },
+  {
+   "from": "slider11.N",
+   "to": "pipe.R",
+   "check": {
+    "side": "in",
+    "prompt": "The mullion radius goes into which input of Pipe?",
+    "hint": "C = curve, R = radius, E = end caps.",
+    "correct": "R is the pipe radius.",
+    "wrong": {
+     "*": "That input isn't the radius."
+    },
+    "draft": true
+   }
+  },
+  {
+   "from": "slider.N",
+   "to": "number.N"
+  },
+  {
+   "from": "range2.R",
+   "to": "number2.N"
+  },
+  {
+   "from": "range.R",
+   "to": "number3.N"
+  },
+  {
+   "from": "range2.R",
+   "to": "number4.N"
+  },
+  {
+   "from": "constructP.Pt",
+   "to": "data.D"
+  },
+  {
+   "from": "addition.R",
+   "to": "data3.D"
+  },
+  {
+   "from": "addition2.R",
+   "to": "data2.D"
+  },
+  {
+   "from": "range2.R",
+   "to": "number5.N"
+  },
+  {
+   "from": "polygon.P",
+   "to": "data5.D"
+  },
+  {
+   "from": "constructP.Pt",
+   "to": "data4.D"
+  },
+  {
+   "from": "rotate.G",
+   "to": "data6.D"
+  },
+  {
+   "from": "loft.L",
+   "to": "data7.D"
+  },
+  {
+   "from": "loft.L",
+   "to": "data8.D"
+  },
+  {
+   "from": "slider.N",
+   "to": "number6.N"
+  },
+  {
+   "from": "loft.L",
+   "to": "data9.D"
+  },
+  {
+   "from": "divideDoma.S",
+   "to": "data10.D"
+  },
+  {
+   "from": "isotrim.S",
+   "to": "data11.D"
+  },
+  {
+   "from": "isotrim.S",
+   "to": "data12.D"
+  },
+  {
+   "from": "area.C",
+   "to": "data13.D"
+  },
+  {
+   "from": "rotate.G",
+   "to": "data14.D"
+  }
+ ],
+ "order": [
+  "divideDoma",
+  "isotrim",
+  "area",
+  "scale",
+  "pipe"
+ ]
+}

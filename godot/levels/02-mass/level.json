@@ -1,36 +1,182 @@
 {
   "id": 2,
   "title": "Build the Mass",
-  "objective": "Lift a copy of the floor plate, twist it, and loft between the two into a closed tower mass.",
+  "objective": "Grow the floor plate into a twisted tower mass: stack, scale and rotate the floors, then loft and cap them.",
   "learn": "Vectors and transforms (Move, Rotate), then turning profiles into a solid with Loft and Cap Holes.",
   "source": "GH definitions/Twisty_Simple.gh",
   "monster": "tower",
   "health": 4,
   "guidance": "guided",
-  "lifesavers": { "hint": 3, "potion": 1, "fifty": 1, "clear": 1, "shield": 1, "second": 1 },
+  "lifesavers": {
+    "hint": 3,
+    "potion": 1,
+    "fifty": 1,
+    "clear": 1,
+    "shield": 1,
+    "second": 1
+  },
   "params": [
-    { "key": "r", "label": "Radius", "min": 1, "max": 10, "step": 0.1, "value": 6 },
-    { "key": "s", "label": "Segments", "min": 3, "max": 10, "step": 1, "value": 5 },
-    { "key": "rf", "label": "Fillet", "min": 0.01, "max": 2, "step": 0.01, "value": 1.46 },
-    { "key": "h", "label": "Height", "min": 0, "max": 100, "step": 1, "value": 67 },
-    { "key": "tw", "label": "Twist (°)", "min": 0, "max": 90, "step": 1, "value": 59 }
+    {
+      "key": "r",
+      "label": "Radius",
+      "min": 1,
+      "max": 10,
+      "step": 0.1,
+      "value": 6
+    },
+    {
+      "key": "s",
+      "label": "Segments",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "value": 5
+    },
+    {
+      "key": "rf",
+      "label": "Fillet",
+      "min": 0.01,
+      "max": 2,
+      "step": 0.01,
+      "value": 1.46
+    },
+    {
+      "key": "h",
+      "label": "Height",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "value": 67
+    },
+    {
+      "key": "tw",
+      "label": "Twist (°)",
+      "min": 0,
+      "max": 90,
+      "step": 1,
+      "value": 59
+    }
   ],
   "nodes": [
-    { "id": "sx", "comp": "slider", "open": false, "label": "X", "value": 0, "x": 0, "y": 150 },
-    { "id": "sy", "comp": "slider", "open": false, "label": "Y", "value": 0, "x": 0, "y": 196 },
-    { "id": "sz", "comp": "slider", "open": false, "label": "Z", "value": 0, "x": 0, "y": 242 },
-    { "id": "cp", "comp": "constructPoint", "open": false, "x": 165, "y": 196 },
-    { "id": "sr", "comp": "slider", "open": false, "label": "Radius", "param": "r", "x": 320, "y": 40 },
-    { "id": "ss", "comp": "slider", "open": false, "label": "Segments", "param": "s", "x": 320, "y": 86 },
-    { "id": "srf", "comp": "slider", "open": false, "label": "Fillet", "param": "rf", "x": 320, "y": 132 },
-    { "id": "pol", "comp": "polygon", "open": false, "label": "Base", "x": 485, "y": 110 },
-    { "id": "sr2", "comp": "slider", "open": false, "label": "Radius", "param": "r", "x": 320, "y": 260 },
-    { "id": "ss2", "comp": "slider", "open": false, "label": "Segments", "param": "s", "x": 320, "y": 306 },
-    { "id": "srf2", "comp": "slider", "open": false, "label": "Fillet", "param": "rf", "x": 320, "y": 352 },
-    { "id": "pol2", "comp": "polygon", "open": false, "label": "Top copy", "x": 485, "y": 330 },
-    { "id": "sh", "comp": "slider", "open": false, "label": "Height", "param": "h", "x": 485, "y": 430 },
     {
-      "id": "uz", "comp": "unitZ", "open": true, "x": 640, "y": 430,
+      "id": "sx",
+      "comp": "slider",
+      "open": false,
+      "label": "X",
+      "value": 0,
+      "x": 0,
+      "y": 150
+    },
+    {
+      "id": "sy",
+      "comp": "slider",
+      "open": false,
+      "label": "Y",
+      "value": 0,
+      "x": 0,
+      "y": 196
+    },
+    {
+      "id": "sz",
+      "comp": "slider",
+      "open": false,
+      "label": "Z",
+      "value": 0,
+      "x": 0,
+      "y": 242
+    },
+    {
+      "id": "cp",
+      "comp": "constructPoint",
+      "open": false,
+      "x": 165,
+      "y": 196
+    },
+    {
+      "id": "sr",
+      "comp": "slider",
+      "open": false,
+      "label": "Radius",
+      "param": "r",
+      "x": 320,
+      "y": 40
+    },
+    {
+      "id": "ss",
+      "comp": "slider",
+      "open": false,
+      "label": "Segments",
+      "param": "s",
+      "x": 320,
+      "y": 86
+    },
+    {
+      "id": "srf",
+      "comp": "slider",
+      "open": false,
+      "label": "Fillet",
+      "param": "rf",
+      "x": 320,
+      "y": 132
+    },
+    {
+      "id": "pol",
+      "comp": "polygon",
+      "open": false,
+      "label": "Base",
+      "x": 485,
+      "y": 110
+    },
+    {
+      "id": "sr2",
+      "comp": "slider",
+      "open": false,
+      "label": "Radius",
+      "param": "r",
+      "x": 320,
+      "y": 260
+    },
+    {
+      "id": "ss2",
+      "comp": "slider",
+      "open": false,
+      "label": "Segments",
+      "param": "s",
+      "x": 320,
+      "y": 306
+    },
+    {
+      "id": "srf2",
+      "comp": "slider",
+      "open": false,
+      "label": "Fillet",
+      "param": "rf",
+      "x": 320,
+      "y": 352
+    },
+    {
+      "id": "pol2",
+      "comp": "polygon",
+      "open": false,
+      "label": "Top copy",
+      "x": 485,
+      "y": 330
+    },
+    {
+      "id": "sh",
+      "comp": "slider",
+      "open": false,
+      "label": "Height",
+      "param": "h",
+      "x": 485,
+      "y": 430
+    },
+    {
+      "id": "uz",
+      "comp": "unitZ",
+      "open": true,
+      "x": 640,
+      "y": 430,
       "need": "a vector pointing straight up, as long as the Height slider",
       "hint": "Vector › Vector. Up is the Z axis, and the factor sets the length.",
       "correct": "Unit Z makes a vector pointing up the Z axis. Its Factor is the Height slider, so the vector is exactly as tall as the tower.",
@@ -40,11 +186,22 @@
         "amplitude": "Amplitude resizes an existing vector, but there is no vector yet.",
         "*": "This slot needs a vector pointing straight up."
       },
-      "distractors": ["unitX", "constructPoint", "amplitude", "vector2pt"],
-      "draft": true
+      "distractors": [
+        "unitX",
+        "constructPoint",
+        "amplitude",
+        "vector2pt"
+      ],
+      "draft": true,
+      "stage": "A mass needs a top as well as a base. First make the “up” direction, as tall as the Height slider.",
+      "stage_draft": true
     },
     {
-      "id": "mv", "comp": "move", "open": true, "x": 790, "y": 340,
+      "id": "mv",
+      "comp": "move",
+      "open": true,
+      "x": 790,
+      "y": 340,
       "need": "a transform that lifts the top copy along the vector",
       "hint": "Transform › Euclidean. Geometry in, Motion vector in.",
       "correct": "Move translates geometry along a vector. The top copy of the plate is lifted to the full height of the tower.",
@@ -54,12 +211,35 @@
         "extrude": "Extrude would push the plate straight up into a prism — no chance to twist the top.",
         "*": "This slot needs a transform that shifts geometry along a vector."
       },
-      "distractors": ["rotate", "scale", "extrude", "mirror"],
-      "draft": true
+      "distractors": [
+        "rotate",
+        "scale",
+        "extrude",
+        "mirror"
+      ],
+      "draft": true,
+      "stage": "Lift the copy of the floor plate up that vector to the top of the tower.",
+      "stage_draft": true
     },
-    { "id": "stw", "comp": "slider", "open": false, "label": "Twist °", "param": "tw", "x": 790, "y": 440 },
     {
-      "id": "rot", "comp": "rotate", "open": true, "degrees": true, "set": { "A": 90 }, "x": 940, "y": 350,
+      "id": "stw",
+      "comp": "slider",
+      "open": false,
+      "label": "Twist °",
+      "param": "tw",
+      "x": 790,
+      "y": 440
+    },
+    {
+      "id": "rot",
+      "comp": "rotate",
+      "open": true,
+      "degrees": true,
+      "set": {
+        "A": 90
+      },
+      "x": 940,
+      "y": 350,
       "need": "a transform that twists the lifted plate by an angle",
       "hint": "Transform › Euclidean. Geometry, Angle, Plane.",
       "correct": "Rotate turns the lifted plate around the world Z axis. This Rotate has Degrees switched on (right-click the A input), so the Twist slider reads 0–90°.",
@@ -69,11 +249,22 @@
         "mirror": "Mirror flips the plate across a plane — a jump, not a gradual twist.",
         "*": "This slot needs a transform that turns geometry by an angle."
       },
-      "distractors": ["move", "scale", "mirror", "flipMatrix"],
-      "draft": true
+      "distractors": [
+        "move",
+        "scale",
+        "mirror",
+        "flipMatrix"
+      ],
+      "draft": true,
+      "stage": "Twist the lifted plate around the tower's axis by the Twist angle.",
+      "stage_draft": true
     },
     {
-      "id": "lft", "comp": "loft", "open": true, "x": 1090, "y": 240,
+      "id": "lft",
+      "comp": "loft",
+      "open": true,
+      "x": 1090,
+      "y": 240,
       "need": "a component that skins a surface between the base and the twisted top",
       "hint": "Surface › Freeform. It takes a list of section curves.",
       "correct": "Loft skins a surface through the section curves in order — base plate, then twisted top. Both wires go into the same C input, which merges them into one list.",
@@ -83,11 +274,22 @@
         "pipe": "Pipe wraps a tube around a curve.",
         "*": "This slot needs a component that skins a surface between section curves."
       },
-      "distractors": ["extrude", "boundary", "pipe", "interpolate"],
-      "draft": true
+      "distractors": [
+        "extrude",
+        "boundary",
+        "pipe",
+        "interpolate"
+      ],
+      "draft": true,
+      "stage": "Skin a surface between the base and the twisted top.",
+      "stage_draft": true
     },
     {
-      "id": "cap", "comp": "capHoles", "open": true, "x": 1230, "y": 240,
+      "id": "cap",
+      "comp": "capHoles",
+      "open": true,
+      "x": 1230,
+      "y": 240,
       "need": "a component that closes the open top and bottom of the loft",
       "hint": "Surface › Util. The loft is a tube with two planar openings.",
       "correct": "Cap Holes fills the planar openings at the top and bottom, turning the lofted tube into a closed solid mass.",
@@ -97,30 +299,92 @@
         "extrude": "Extrude would add more geometry instead of closing the existing openings.",
         "*": "This slot needs a component that closes the loft's openings."
       },
-      "distractors": ["boundary", "loft", "extrude", "area"],
-      "draft": true
+      "distractors": [
+        "boundary",
+        "loft",
+        "extrude",
+        "area"
+      ],
+      "draft": true,
+      "stage": "Close the open top and bottom to make a solid mass.",
+      "stage_draft": true
     }
   ],
   "wires": [
-    { "from": "sx.N", "to": "cp.X" }, { "from": "sy.N", "to": "cp.Y" }, { "from": "sz.N", "to": "cp.Z" },
-    { "from": "cp.Pt", "to": "pol.P" }, { "from": "sr.N", "to": "pol.R" }, { "from": "ss.N", "to": "pol.S" }, { "from": "srf.N", "to": "pol.Rf" },
-    { "from": "cp.Pt", "to": "pol2.P" }, { "from": "sr2.N", "to": "pol2.R" }, { "from": "ss2.N", "to": "pol2.S" }, { "from": "srf2.N", "to": "pol2.Rf" },
-    { "from": "sh.N", "to": "uz.F" },
-    { "from": "pol2.P", "to": "mv.G" },
     {
-      "from": "uz.V", "to": "mv.T",
+      "from": "sx.N",
+      "to": "cp.X"
+    },
+    {
+      "from": "sy.N",
+      "to": "cp.Y"
+    },
+    {
+      "from": "sz.N",
+      "to": "cp.Z"
+    },
+    {
+      "from": "cp.Pt",
+      "to": "pol.P"
+    },
+    {
+      "from": "sr.N",
+      "to": "pol.R"
+    },
+    {
+      "from": "ss.N",
+      "to": "pol.S"
+    },
+    {
+      "from": "srf.N",
+      "to": "pol.Rf"
+    },
+    {
+      "from": "cp.Pt",
+      "to": "pol2.P"
+    },
+    {
+      "from": "sr2.N",
+      "to": "pol2.R"
+    },
+    {
+      "from": "ss2.N",
+      "to": "pol2.S"
+    },
+    {
+      "from": "srf2.N",
+      "to": "pol2.Rf"
+    },
+    {
+      "from": "sh.N",
+      "to": "uz.F"
+    },
+    {
+      "from": "pol2.P",
+      "to": "mv.G"
+    },
+    {
+      "from": "uz.V",
+      "to": "mv.T",
       "check": {
         "side": "in",
         "prompt": "Which input of Move takes the Unit Z vector?",
         "hint": "G = geometry to move, T = the motion vector.",
         "correct": "T is the motion. Until it was connected, Move used its default of 10 units up — now the top sits at the full Height.",
-        "wrong": { "G": "G is the geometry to move — the top copy of the plate is already plugged in there.", "*": "That input isn't the motion vector." },
+        "wrong": {
+          "G": "G is the geometry to move — the top copy of the plate is already plugged in there.",
+          "*": "That input isn't the motion vector."
+        },
         "draft": true
       }
     },
-    { "from": "mv.G", "to": "rot.G" },
     {
-      "from": "stw.N", "to": "rot.A",
+      "from": "mv.G",
+      "to": "rot.G"
+    },
+    {
+      "from": "stw.N",
+      "to": "rot.A",
       "check": {
         "side": "in",
         "prompt": "The Twist slider should drive which input of Rotate?",
@@ -134,8 +398,74 @@
         "draft": true
       }
     },
-    { "from": "pol.P", "to": "lft.C" },
-    { "from": "rot.G", "to": "lft.C" },
-    { "from": "lft.L", "to": "cap.B" }
-  ]
+    {
+      "from": "pol.P",
+      "to": "lft.C"
+    },
+    {
+      "from": "rot.G",
+      "to": "lft.C"
+    },
+    {
+      "from": "lft.L",
+      "to": "cap.B"
+    }
+  ],
+  "difficulties": [
+    {
+      "id": "B01",
+      "name": "Hopper Hatchling",
+      "description": "Walkthrough: Lift and twist a copy of the floor plate, then skin and close it.",
+      "file": "B01.json",
+      "guidance": "guided",
+      "health": 5,
+      "hand": 3,
+      "attacks": 0,
+      "lifesavers": {
+        "hint": 3,
+        "potion": 2,
+        "fifty": 2,
+        "clear": 1,
+        "shield": 2,
+        "second": 2
+      }
+    },
+    {
+      "id": "B02",
+      "name": "Shape Scout",
+      "description": "Walkthrough: Use lists: every floor gets its own height, size and twist at once.",
+      "file": "B02.json",
+      "guidance": "guided",
+      "health": 4,
+      "hand": 4,
+      "attacks": 0,
+      "lifesavers": {
+        "hint": 3,
+        "potion": 1,
+        "fifty": 1,
+        "clear": 1,
+        "shield": 1,
+        "second": 1
+      }
+    },
+    {
+      "id": "B03",
+      "name": "Pattern Pouncer",
+      "description": "Walkthrough: Add a Graph Mapper bulge and a Sine-eased twist to the per-floor tower.",
+      "file": "B03.json",
+      "guidance": "guided",
+      "health": 4,
+      "hand": 5,
+      "attacks": 1,
+      "lifesavers": {
+        "hint": 2,
+        "potion": 1,
+        "fifty": 1,
+        "clear": 1,
+        "shield": 1,
+        "second": 1
+      }
+    }
+  ],
+  "difficulties_source": "GameLevels/LevelB/*.ghx via godot/tools/ghx_to_level.py (converted for the web build)"
 }

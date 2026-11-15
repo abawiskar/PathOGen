@@ -1,7 +1,7 @@
 {
   "id": 1,
   "title": "Build the Base Shape",
-  "objective": "Place a base point and draw a rounded five-sided floor plate around it.",
+  "objective": "Build the base shape of the tower: a floor-plate outline driven by sliders.",
   "learn": "Sliders, points and planes: how numbers become a located, adjustable shape.",
   "source": "GH definitions/Twisty_Simple.gh",
   "monster": "spaghetti",
@@ -225,12 +225,10 @@
   ],
   "difficulties": [
     {
-      "id": "1",
-      "name": "Beginner",
-      "description": "The point is already placed — just find the Polygon.",
-      "open": [
-        "pol"
-      ],
+      "id": "A01",
+      "name": "Hopper Hatchling",
+      "description": "Method A01: Construct Point → Polygon.",
+      "file": "A01.json",
       "guidance": "guided",
       "health": 5,
       "hand": 3,
@@ -245,9 +243,10 @@
       }
     },
     {
-      "id": "2",
-      "name": "Easy",
-      "description": "Build the point and the polygon, with the open nodes telling you what they need.",
+      "id": "A02",
+      "name": "Shape Scout",
+      "description": "Method A02: Construct Point → Line SDL → Rotate → End Points → Fillet.",
+      "file": "A02.json",
       "guidance": "guided",
       "health": 4,
       "hand": 4,
@@ -262,9 +261,10 @@
       }
     },
     {
-      "id": "3",
-      "name": "Medium",
-      "description": "No slot hints, more cards to choose from, and a monster that scrambles and blurs.",
+      "id": "A03",
+      "name": "Pattern Pouncer",
+      "description": "Method A03: Construct Point → Move → Series → Rotate → Discontinuity.",
+      "file": "A03.json",
       "guidance": "standard",
       "health": 4,
       "hand": 5,
@@ -279,9 +279,10 @@
       }
     },
     {
-      "id": "4",
-      "name": "Hard",
-      "description": "Card descriptions are hidden — read the icons and ports.",
+      "id": "A04",
+      "name": "Geometry Wizard",
+      "description": "Method A04: Construct Point → Divide Curve → Shift List → PolyLine → Flatten Tree.",
+      "file": "A04.json",
       "guidance": "independent",
       "health": 3,
       "hand": 6,
@@ -296,9 +297,10 @@
       }
     },
     {
-      "id": "5",
-      "name": "Expert",
-      "description": "Every decision is on a 30-second clock, and the monster uses every trick.",
+      "id": "A05",
+      "name": "Grasshopper Legend",
+      "description": "Method A05: Construct Point → Divide Curve → Trim with Region → Arc SED → Shift List → Merge.",
+      "file": "A05.json",
       "guidance": "independent",
       "health": 3,
       "hand": 6,
@@ -313,5 +315,6 @@
         "second": 0
       }
     }
-  ]
+  ],
+  "difficulties_source": "godot/levels_godot/01-base-shape/difficulties.json (tools/ghx_to_level.py from GameLevels/LevelA/A01-A05.ghx)"
 }

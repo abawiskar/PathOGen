@@ -1,10 +1,9 @@
 {
   "id": 3,
   "title": "Panels & Floors",
-  "placeholder": true,
-  "objective": "Slice the twisted mass into floors and cut its facade into panels.",
+  "objective": "Turn the tower mass into floors: slice it level by level and give every floor a solid slab.",
   "learn": "Panelization: contouring a solid into floors and subdividing a surface by its UV domain.",
-  "monster": "placeholder",
+  "monster": "voronoi",
   "health": 4,
   "guidance": "standard",
   "lifesavers": {
@@ -172,7 +171,9 @@
         "isotrim",
         "offset"
       ],
-      "draft": true
+      "draft": true,
+      "stage": "Slice the tower mass into floors, one cut every floor height.",
+      "stage_draft": true
     },
     {
       "id": "su",
@@ -213,7 +214,9 @@
         "divideCurve",
         "graft"
       ],
-      "draft": true
+      "draft": true,
+      "stage": "Plan the facade grid: split the surface's U × V space into panel cells.",
+      "stage_draft": true
     },
     {
       "id": "iso",
@@ -236,7 +239,9 @@
         "boundary",
         "listItem"
       ],
-      "draft": true
+      "draft": true,
+      "stage": "Cut the facade surface into panels along that grid.",
+      "stage_draft": true
     }
   ],
   "wires": [
@@ -324,5 +329,62 @@
         "draft": true
       }
     }
-  ]
+  ],
+  "difficulties": [
+    {
+      "id": "C01",
+      "name": "Hopper Hatchling",
+      "description": "Walkthrough: Slice the mass into floors with Contour, then give each slab thickness.",
+      "file": "C01.json",
+      "guidance": "guided",
+      "health": 5,
+      "hand": 3,
+      "attacks": 0,
+      "lifesavers": {
+        "hint": 3,
+        "potion": 2,
+        "fifty": 2,
+        "clear": 1,
+        "shield": 2,
+        "second": 2
+      }
+    },
+    {
+      "id": "C02",
+      "name": "Shape Scout",
+      "description": "Walkthrough: Set the slab edges back from the facade, then build and measure the slabs.",
+      "file": "C02.json",
+      "guidance": "guided",
+      "health": 4,
+      "hand": 4,
+      "attacks": 0,
+      "lifesavers": {
+        "hint": 3,
+        "potion": 1,
+        "fifty": 1,
+        "clear": 1,
+        "shield": 1,
+        "second": 1
+      }
+    },
+    {
+      "id": "C03",
+      "name": "Pattern Pouncer",
+      "description": "Walkthrough: Work floor by floor with a data tree (Graft), then build and measure the slabs.",
+      "file": "C03.json",
+      "guidance": "guided",
+      "health": 4,
+      "hand": 5,
+      "attacks": 1,
+      "lifesavers": {
+        "hint": 2,
+        "potion": 1,
+        "fifty": 1,
+        "clear": 1,
+        "shield": 1,
+        "second": 1
+      }
+    }
+  ],
+  "difficulties_source": "GameLevels/LevelC/*.ghx via godot/tools/ghx_to_level.py (converted for the web build)"
 }

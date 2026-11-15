@@ -19,6 +19,7 @@ The node graph **is** the answer key. The preview is computed live from it by a 
 | `order` | Optional build order of open node ids. Default: topological order of the graph |
 | `boss` | Optional, `true` for the boss level |
 | `goal` | Optional image of the finished result, e.g. `"goal.png"` placed in the level's folder (a Rhino render or viewport capture). Without it, the game renders the complete definition itself with the default slider values. Shown in the briefing and as a click-to-enlarge thumbnail in the preview |
+| `definition_image` | Optional picture of the finished Grasshopper definition, e.g. `"definition.png"` (a canvas capture) in the level's folder. Shown by the **Completed definition** button; without it the game draws the finished graph itself |
 | `source` | Optional, the Grasshopper file this level was transcribed from |
 | `placeholder` | Optional, `true` while the level is a stand-in waiting for its real script |
 
@@ -70,7 +71,10 @@ A level without `difficulties` plays as a single "Standard" difficulty.
 - `preview`: force this node's geometry on (`true`) or off (`false`). By default only "leaf" nodes preview.
 - `ghost`: draw this node's geometry faintly, as context (e.g. the tower mass behind the panels).
 - `degrees`: on Rotate, read the angle in degrees (Grasshopper's Degrees option on the A input).
+- `in_map`: Grasshopper's input modifiers, e.g. `{ "C": "flatten" }` or `{ "T": "graft" }` (port letter → modifier).
 - `passthrough`: while this open node is empty, data flows straight through it (used to show "before Graft" behaviour).
+- `stage`: one or two sentences on what this step does to the definition ("Draw a spoke out from the centre…").
+  Shown at the top of the definition panel as "Stage 2 of 5" while the player works on this node. `stage_draft: true` until reviewed.
 - Text: `need`, `hint`, `correct`, `wrong`. Card hands default to components of the same category when `distractors` is omitted.
 - `draft`: `true` while the text is unreviewed. `review.html` lists every draft entry.
 
@@ -90,4 +94,13 @@ Number Slider, Panel, Boolean Toggle, Point/Curve (baked), XY Plane, Construct P
 Line, Line SDL, Circle, Rectangle, Polygon (with fillet), Interpolate, Contour, Cap Holes, Divide Curve, Loft, Extrude, Pipe (thick curve), Boundary
 Surfaces, Divide Domain², Isotrim, Area, Series, Range, Cull Pattern, List Item, Reverse/Sort/Shift List, Graft, Flatten,
 Flip Matrix, Move, Rotate, Scale, Mirror, Sine, Multiplication, Addition, Radians, Remap, Graph Mapper.
-Any other component needs a solver added to `js/engine.js` (and an entry in `js/data.js`), or `baked` output.
+Also, for levels transcribed from `.ghx` files (ported from the Godot build): Unit Y, Division, Negative, Circle CNR, End Points,
+PolyLine, Fillet, Fillet (t), Discontinuity, Join Curves, Merge, Trim with Region, Arc SED, Evaluate Curve, and Point/Curve/Data
+parameters passing their input through.
+
+Node and card icons are David Rutten's Grasshopper icons (`img/gh-icons/`, mapped by component id in `js/gh_icons.js`);
+components without one keep a simple line icon from `js/data.js`.
+
+`js/components_extra.js` adds ~150 more components (cards, ports, descriptions) generated from the Godot build's
+`godot/data/components_godot.json`, so any card a `.ghx` level uses exists; only the ones above can be computed.
+Any other component needs a solver added to `js/engine.js`, or `baked` output.
