@@ -794,10 +794,24 @@
     modal(`<button class="x-close">&times;</button><div class="sub">Level ${L.id}${L.diffCount > 1 ? ' &middot; ' + esc(L.diffName) : ''} &middot; Completed definition</div>
       <h2>${esc(L.title)}</h2>
       <div class="def-layout">
-        <div class="def-canvas">${pic}<div class="def-cap def-cap-row"><span>The finished definition. Nodes outlined in gold are the ones you place.</span>${fullCanvas}</div></div>
+          <div class="def-canvas"><div class="def-tools"><button class="btn small" id="def-zoom-out" aria-label="Zoom out">−</button><output id="def-zoom-label" aria-live="polite"></output><button class="btn small" id="def-zoom-in" aria-label="Zoom in">+</button><button class="btn small" id="def-fit">Fit all</button><span>Scroll to explore the definition</span></div><div class="def-viewport" tabindex="0" role="region" aria-label="Completed definition, scroll to explore">${pic}</div><div class="def-cap def-cap-row"><span>The finished definition. Nodes outlined in gold are the ones you place.</span>${fullCanvas}</div></div>
         <div class="def-side"><div class="def-cap top">Output</div><img class="def-out" src="${goalImage(L)}" alt="Finished result"><p class="muted">What the definition produces with the default slider values.</p></div>
       </div>
       <div class="actions"><button class="btn primary" data-act="close">Back to building</button></div>`, null, true);
+      const viewport = $('.def-viewport'), art = viewport.firstElementChild;
+      let zoom = 1;
+      const nativeWidth = () => art.tagName.toLowerCase() === 'svg' ? art.viewBox.baseVal.width : art.naturalWidth;
+      const resize = () => {
+        const width = nativeWidth();
+        if (!width) return;
+        art.style.width = `${width * zoom}px`;
+        $('#def-zoom-label').textContent = `${Math.round(zoom * 100)}%`;
+      };
+      $('#def-zoom-out').onclick = () => { zoom = Math.max(.1, zoom / 1.25); resize(); };
+      $('#def-zoom-in').onclick = () => { zoom = Math.min(4, zoom * 1.25); resize(); };
+      $('#def-fit').onclick = () => { if (nativeWidth()) { zoom = viewport.clientWidth / nativeWidth(); resize(); viewport.scrollTo(0, 0); } };
+      if (art.tagName.toLowerCase() === 'img') art.addEventListener('load', resize, { once: true });
+      resize();
   }
 
   function goalModal() {

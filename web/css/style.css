@@ -446,13 +446,15 @@ button { font-family: inherit; cursor: pointer; }
 .mn-diff span { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-left: 4px; }
 
 /* About Us */
-.about { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding-top: 70px; }
+.about { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding: 70px 0 24px; }
+.about > * { flex-shrink: 0; }
+#btn-about-back { position: absolute; top: 32px; left: 40px; z-index: 2; }
 .about-title { font-family: var(--serif); font-size: 56px; color: var(--gold); margin: 0; letter-spacing: .04em; }
 .about-event { font-family: var(--serif); font-size: 24px; color: var(--sage); margin-top: 10px; }
 .about-text { width: 800px; text-align: center; font-size: 17px; line-height: 1.55; margin: 26px 0 0; }
 .about-head { font-family: var(--serif); font-size: 26px; color: var(--gold); margin: 34px 0 18px; font-weight: 700; }
 .team { width: 1272px; display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 24px; }
-.team-card { width: 300px; min-height: 70px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 14px;
+.team-card { width: 300px; height: 244px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 10px 14px;
   cursor: pointer; text-align: center; transition: border-color .15s, transform .15s; font-family: var(--serif); font-size: 22px; color: var(--text);
   background: linear-gradient(180deg, var(--panel-hi), var(--panel)); border: 1px solid var(--line); border-radius: 6px;
   box-shadow: inset 0 0 0 4px rgba(0,0,0,.18), inset 0 0 0 5px rgba(120,150,140,.12), 0 10px 30px rgba(0,0,0,.35); }
@@ -475,6 +477,12 @@ button { font-family: inherit; cursor: pointer; }
 .def-layout { display: grid; grid-template-columns: 1fr 300px; gap: 18px; margin-top: 12px; align-items: start; }
 .def-canvas { background: radial-gradient(ellipse at center, #1d2e2b, #142120); border: 1px solid var(--line); border-radius: 6px; padding: 10px; }
 .def-svg, .def-img { display: block; width: 100%; max-height: 520px; }
+.def-layout > * { min-width: 0; }
+.def-tools { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.def-tools output { min-width: 52px; text-align: center; color: var(--gold); }
+.def-tools span { color: var(--muted); font-size: 12px; margin-left: auto; }
+.def-viewport { height: 460px; overflow: auto; border: 1px solid var(--line-soft); }
+.def-viewport .def-svg, .def-viewport .def-img { max-width: none; max-height: none; height: auto; }
 .def-open .body { stroke: var(--gold) !important; stroke-width: 2.2 !important; }
 .def-cap { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-top: 8px; }
 .def-cap-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
