@@ -56,15 +56,51 @@ The four levels build one twisted tower, from a floor plate up to a detailed fac
 
 There are five difficulties, from *Hopper Hatchling* through *Shape Scout*, *Pattern Pouncer* and *Geometry Wizard* to *Grasshopper Legend*. Each one is a different way of building the same result, with fewer hints, bigger hands of cards and tougher monsters as you go up.
 
+## Tech stack
+
+PathOGen runs on its own geometry engine, so **you don't need Rhino or a Rhino.Compute server to play**.
+
+```mermaid
+flowchart LR
+    A["<b>Level authoring</b><br/>Grasshopper .ghx<br/>Python conversion tools<br/>JSON level data"]
+    B["<b>Custom geometry engine</b><br/>Simplified Grasshopper-style solver<br/>Components and data trees<br/>Live 3D wireframe previews<br/><i>JavaScript / GDScript</i>"]
+    C["<b>Game clients</b><br/>Web: HTML / CSS / JavaScript<br/>with SVG and HTML Canvas<br/>Desktop: Godot 4 + GDScript"]
+    A --> B --> C
+```
+
+| Layer | Built with | What it does |
+|---|---|---|
+| **Level authoring** | Grasshopper `.ghx`, Python conversion tools, JSON | The team builds each level and difficulty as a real Grasshopper definition. Python tools convert it into JSON level data: the component graph that serves as the answer key, the sliders and the card text. |
+| **Custom geometry engine** | JavaScript (web), GDScript (desktop) | A simplified Grasshopper-style solver with data trees, longest-list matching and about 55 component solvers. It re-runs the definition after every move and draws a live 3D wireframe preview. |
+| **Web client** | HTML, CSS, JavaScript, SVG, HTML Canvas | The browser game, with no framework, build step or dependencies. Its 3D viewport is drawn on a 2D canvas. |
+| **Desktop client** | Godot 4, GDScript | The Windows build (`PathOGen.exe`). It reads the same level, component and monster data as the web client. |
+
+Art is painted PNG and WebP images, plus Grasshopper SVG icons for 282 components. Progress is saved locally: in the browser's `localStorage` for the web version, and in a save file for the desktop build.
+
 ## Play it locally
 
-The game is plain HTML, CSS and JavaScript in [`web/`](web/), with no build step and no dependencies. It loads its levels with `fetch()`, so you need to serve the folder over http rather than open the file directly:
+### On Windows: run the exe
+
+No install needed:
+
+1. Download the repository (**Code → Download ZIP**, then unzip it) or clone it.
+2. Double-click **[`PathOGen.exe`](PathOGen.exe)** in the main folder.
+
+Keep `PathOGen.exe` and `PathOGen.pck` in the same folder, because the `.pck` holds the game's data. The exe isn't code-signed, so Windows SmartScreen may warn you the first time. Click **More info → Run anyway**.
+
+This is the Godot build of the game. It plays the same levels as the browser version and saves your progress on your computer.
+
+> **Not on Windows, or prefer the browser?** You can also play PathOGen through localhost. See [In a browser](#in-a-browser) below.
+
+### In a browser
+
+The browser version is plain HTML, CSS and JavaScript in [`web/`](web/), with no build step and no dependencies. It loads its levels with `fetch()`, so you need to serve the folder over http rather than open the file directly:
 
 ```bash
 python -m http.server 5173 --directory web
 ```
 
-Then open <http://localhost:5173>.
+Then open <http://localhost:5173>. These URL options are useful for testing:
 
 | URL option | What it does |
 |---|---|
@@ -78,12 +114,13 @@ Then open <http://localhost:5173>.
 
 | Path | What it holds |
 |---|---|
-| [`web/`](web/) | The game itself. See [`web/README.md`](web/README.md) for the code structure |
+| [`PathOGen.exe`](PathOGen.exe) + [`PathOGen.pck`](PathOGen.pck) | The Windows build of the game: double-click the exe to play |
+| [`web/`](web/) | The browser version of the game. See [`web/README.md`](web/README.md) for the code structure |
 | [`web/levels/`](web/levels/) | One folder per level: `level.json` holds the component graph (the answer key), sliders and card text, plus one JSON file per difficulty |
 | [`GameLevels/`](GameLevels/) | The team's Grasshopper files for each level and difficulty (`LevelA/A01.ghx` … `LevelD/D03.ghx`) |
 | [`GH definitions/`](GH%20definitions/) | The original Grasshopper definitions the path is based on |
 | [`Images/`](Images/) | Source art: monsters, the Spaghetti Hero, team avatars and their animation frames |
-| [`godot/`](godot/) | A Godot 4 version that plays the same levels from the same data |
+| [`godot/`](godot/) | The Godot 4 project behind the Windows build. It plays the same levels from the same data |
 | [`VideoDemo/`](VideoDemo/) | Demo videos of the game |
 | [`PathOGen-Game-Overview.md`](PathOGen-Game-Overview.md) | Full game design: screens, turns, attacks, lifesavers, scoring, levels |
 | [`PathOGen_Level_Builder.md`](PathOGen_Level_Builder.md) | How to turn a Grasshopper definition into a level |
