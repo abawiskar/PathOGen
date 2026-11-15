@@ -493,7 +493,14 @@ func open_map() -> void:
 			if e is InputEventMouseButton and e.pressed and e.button_index == MOUSE_BUTTON_LEFT:
 				Sound.play("click")
 				_map_select(idx))
-	_map_progress.text = "%s / %s CLEARED" % [UIKit.pad2(cleared), UIKit.pad2(n)]
+	# stars earned across every level and difficulty, out of 3 per difficulty
+	var stars := 0
+	var max_stars := 0
+	for S in levels:
+		for df in S.difficulties:
+			max_stars += 3
+			stars += int(SaveData.best_for(SaveData.key_for(df.level)).get("stars", 0))
+	_map_progress.text = "%d of %d Stars ★" % [stars, max_stars]
 	if current < 0:
 		current = mini(SaveData.unlocked, n) - 1
 	_map_select(clampi(current, 0, n - 1))
