@@ -122,19 +122,31 @@
   const levelHP = (L) => buildDecisions(L).reduce((a, d) => a + (d.kind === 'comp' ? 10 : 5), 0);
   /* hero sprite reactions (frames cut from the hero sheet) */
   const HERO_FRAMES = { success: 4, damage: 4, defeat: 4 };
+  const AVATAR_STATES = ['idle', 'success', 'damage', 'defeat', 'hint'];
+  function preloadAvatar(id) { if (id === 'spaghetti') return; AVATAR_STATES.forEach(st => [0, 1, 2].forEach(i => { new Image().src = `img/avatars/${id}/${st}-${i}.webp`; })); }
   let heroTimer = null;
   function heroReact(kind) {
     const el = $('#hero img'); if (!el) return;
     clearInterval(heroTimer); clearTimeout(heroTimer);
     const h = hero(), box = $('#hero');
     box.classList.remove('av-defeat');
-    if (!h.frames) {   // a team avatar is one picture: react with motion instead of sprite frames
-      el.src = h.img; el.className = 'hero-main avatar';
-      if (kind === 'success') anim(box, 'av-success', 700);
-      else if (kind === 'damage') anim(box, 'av-damage', 600);
-      else if (kind === 'defeat') box.classList.add('av-defeat');
+    if (!h.frames) {   // a team avatar: 3-frame states from Images/Avatar/<Name>/Animations (img/avatars/<key>/<state>-<i>.webp)
+      const f = (st, i) => `img/avatars/${h.id}/${st}-${i}.webp`;
+      el.className = 'hero-main avatar';
+      if (!AVATAR_STATES.includes(kind) || kind === 'idle') {   // idle: a slow breathing loop 0-1-2-1
+        const seq = [0, 1, 2, 1]; let i = 0; el.src = f('idle', 0);
+        heroTimer = setInterval(() => { i = (i + 1) % seq.length; el.src = f('idle', seq[i]); }, 420);
+        return;
+      }
+      let i = 0; el.src = f(kind, 0);
+      heroTimer = setInterval(() => {
+        if (++i < 3) { el.src = f(kind, i); return; }
+        clearInterval(heroTimer);
+        if (kind !== 'defeat') heroTimer = setTimeout(() => heroReact('idle'), 650);
+      }, 170);
       return;
     }
+    if (kind === 'hint') kind = 'idle';   // the Spaghetti Hero has no hint frames
     if (!HERO_FRAMES[kind]) { el.src = 'img/hero-main.png'; el.className = 'hero-main'; return; }
     let i = 0; el.className = 'hero-frame'; el.src = `img/hero-${kind}-0.png`;
     heroTimer = setInterval(() => {
@@ -419,6 +431,7 @@
         break;
       }
     }
+    heroReact('hint');   // team avatars play their Use Hint Card frames for every lifesaver card
     renderAll();
   }
 
@@ -539,7 +552,7 @@
   ];
   function hero() { return HEROES.find(h => h.id === save.hero) || HEROES[0]; }
   function applyHero() {
-    const h = hero();
+    const h = hero(); preloadAvatar(h.id);
     const box = $('#hero'); box.classList.remove('av-defeat');
     box.innerHTML = `<img class="hero-main${h.frames ? '' : ' avatar'}" src="${h.img}" alt="${esc(h.name)}">`;
     const t = $('#title-hero');
