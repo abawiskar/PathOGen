@@ -547,3 +547,43 @@ button { font-family: inherit; cursor: pointer; }
 .about .about-head { margin: 22px 0 14px; }
 .about .about-fonts { margin-top: 22px; }
 .about .btn { margin-top: 18px; }
+
+/* ───────── Battle layout v2 ─────────
+   Goal + Sliders sit top right (where the health panel was) as regular panels,
+   and health is a compact plate under the hero. Overrides the rules above. */
+#goal, #params { top: 48px; height: 164px; }
+#goal > header, #params > header { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 9px 12px 0; }
+#goal h3, #params h3 { font-size: 15px; }
+#goal .sub, #params .sub { font-size: 9px; letter-spacing: .14em; white-space: nowrap; }
+#goal { left: 1112px; width: 188px; cursor: zoom-in; transition: border-color .15s; }
+#goal:hover { border-color: var(--sage); }
+#goal img { display: block; margin: 6px 9px 0; width: calc(100% - 18px); height: 124px; object-fit: contain; background: #b9c3c6; border: 1px solid var(--line); border-radius: 3px; }
+#params { left: 1308px; width: 244px; }
+.param-list { position: absolute; left: 12px; right: 5px; top: 33px; bottom: 9px; overflow-y: auto; padding-right: 7px; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+.param-list::-webkit-scrollbar { width: 6px; }
+.param-list::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
+#params .param { grid-template-columns: 82px 1fr 34px; color: var(--text); min-height: 24px; cursor: pointer; }
+#params .param > span { font-size: 10.5px; }
+#params .param input { accent-color: var(--sage); cursor: pointer; }
+#params .param b { color: var(--gold); }
+.param-none { margin: 6px 0 0; font-size: 12px; color: var(--muted); }
+#effects { top: 220px; }
+#p-monster { top: 260px; height: 408px; }
+
+#p-health { left: 54px; top: 826px; width: 286px; height: 58px; padding: 7px 12px 0; z-index: 2; transition: border-color .3s; }
+#p-health .hp-row { display: flex; align-items: center; gap: 9px; height: 27px; }
+#p-health .hp-label { font-family: var(--serif); font-weight: 900; font-size: 14px; letter-spacing: .14em; color: var(--sage); }
+#p-health .hearts { flex: 1; padding: 0; gap: 4px; }
+#p-health .heart, #p-health .hearts.five .heart { width: 31px; height: 27px; border-width: 1px; box-shadow: inset 0 0 0 2px rgba(0,0,0,.22); }
+#p-health .heart svg { width: 16px; }
+#p-health .hearts.shielded::after { inset: -4px -5px; border-radius: 5px; box-shadow: 0 0 10px rgba(143,208,230,.5); }
+#p-health #hp-text { font-family: var(--serif); color: var(--gold); font-size: 19px; letter-spacing: .08em; white-space: nowrap; }
+#p-health .xp-row { padding: 5px 0 0; gap: 10px; font-size: 9px; letter-spacing: .1em; white-space: nowrap; }
+#p-health .xp-row b { font-size: 11px; }
+#level-chip { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+#p-health.low { border-color: var(--red); }
+#p-health.low #hp-text { color: #ff9f9f; }
+/* the hero stands on the health plate */
+#hero img { bottom: 64px; }
+#hero img.hero-main, #hero img.hero-main.avatar { height: 196px; }
+#hero .hero-svg { height: calc(100% - 70px); }

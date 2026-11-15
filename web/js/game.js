@@ -261,7 +261,7 @@
     const dmg = d.kind === 'comp' ? 10 : 5; st.hp = Math.max(0, st.hp - dmg);
     st.streak++;
     st.lastPlaced = d.kind === 'comp' ? d.step.key : null;
-    floatText($('#mon-art'), `-${dmg}`, ''); floatText($('#p-health'), `+${gain} XP`, 'good', 360, 110);
+    floatText($('#mon-art'), `-${dmg}`, ''); floatText($('#p-health'), `+${gain} XP`, 'good', 150, -40);
     anim($('#mon-art'), 'hurt', 500); heroReact('success');
 
     if (d.kind === 'comp') {
@@ -336,7 +336,7 @@
     }
     st.health = Math.max(0, st.health - dmg);
     setTimeout(() => toast(`${monster().name}: ${ATTACK_NAME[intent]}!${dmg > 1 ? ' (-2)' : ''}`, 'bad'), 250);
-    floatText($('#p-health'), `-${dmg}`, 'bad', 200, 70);
+    floatText($('#p-health'), `-${dmg}`, 'bad', 40, -44);
     st.snap = snap;
     rollIntent();
     renderAll();
@@ -353,7 +353,7 @@
       sfx('player_damage', 280);
       st.health = Math.max(0, st.health - 1);
       anim($('#mon-art'), 'attack', 550); anim($('#flash'), 'red', 500); heroReact('damage');
-      toast('Too slow! The monster strikes.', 'bad'); floatText($('#p-health'), '-1', 'bad', 200, 70);
+      toast('Too slow! The monster strikes.', 'bad'); floatText($('#p-health'), '-1', 'bad', 40, -44);
     }
     st.journal.push({ cls: 'bad', title: '✗ Out of time', text: 'Hesitation cost a heart. Lifesavers like Hint and 50/50 can speed up a tough decision.' });
     renderAll();
@@ -410,7 +410,7 @@
         st.journal.push({ cls: 'aid', title: '★ Hint', text: txt });
         break;
       }
-      case 'potion': st.health = Math.min(st.max, st.health + 1); toast('+1 heart', 'good'); floatText($('#p-health'), '+1', 'good', 200, 70); break;
+      case 'potion': st.health = Math.min(st.max, st.health + 1); toast('+1 heart', 'good'); floatText($('#p-health'), '+1', 'good', 40, -44); break;
       case 'fifty': {
         const rm = shuffle(wrongCards()).slice(0, 2);
         st.hand = st.hand.filter(h => !rm.includes(h)); if (rm.includes(st.selected)) st.selected = null;
@@ -942,13 +942,14 @@
 
   function renderHealth() {
     $('#hp-text').textContent = `${st.health} / ${st.max}`;
+    $('#p-health').classList.toggle('low', st.health <= 1);
     const h = $('#hearts');
     const prev = h.dataset.hp != null ? +h.dataset.hp : st.health;
     h.className = 'hearts' + (st.max > 4 ? ' five' : '') + (st.shield ? ' shielded' : '');
     h.innerHTML = Array.from({ length: st.max }, (_, i) => `<div class="heart${i < st.health ? '' : ' empty'}${i >= st.health && i < prev ? ' lost' : ''}">${ART.heart}</div>`).join('');
     h.dataset.hp = st.health;
     $('#xp-text').textContent = st.xp;
-    $('#level-chip').textContent = `Level ${level().id} · ${level().title}${level().diffCount > 1 ? ' · ' + level().diffName : ''}`;
+    $('#level-chip').textContent = $('#level-chip').title = `Level ${level().id} · ${level().title}${level().diffCount > 1 ? ' · ' + level().diffName : ''}`;
   }
 
   function renderEffects() {
@@ -993,14 +994,15 @@
 
   function renderParams() {
     const L = level();
-    $('#params').innerHTML = `<div class="ph">Sliders</div>` + L.params.map(p => `
-      <label class="param"><span>${esc(p.label)}</span><input type="range" min="${p.min}" max="${p.max}" step="${p.step}" value="${st.params[p.key]}" data-k="${p.key}"><b>${G.fmt(st.params[p.key])}</b></label>`).join('');
+    // the list scrolls inside the panel when a level has more sliders than fit
+    $('#params').innerHTML = `<header><h3 class="smallcaps">Sliders</h3><span class="sub">${L.params.length > 5 ? 'Scroll for more' : ''}</span></header><div class="param-list">` + (L.params.map(p => `
+      <label class="param"><span>${esc(p.label)}</span><input type="range" min="${p.min}" max="${p.max}" step="${p.step}" value="${st.params[p.key]}" data-k="${p.key}"><b>${G.fmt(st.params[p.key])}</b></label>`).join('') || '<p class="param-none">This level has no sliders.</p>') + '</div>';
     $$('#params input').forEach(inp => inp.addEventListener('input', () => {
       st.params[inp.dataset.k] = +inp.value; inp.nextElementSibling.textContent = G.fmt(+inp.value);
       updatePreview(); renderGraph();
     }));
     $('#preview-foot').textContent = `World XY • ${L.title} preview`;
-    $('#goal').innerHTML = `<div class="ph">Goal <span>click to enlarge</span></div><img src="${goalImage(L)}" alt="Finished result">`;
+    $('#goal').innerHTML = `<header><h3 class="smallcaps">Goal</h3><span class="sub">Click to enlarge</span></header><img src="${goalImage(L)}" alt="Finished result">`;
   }
 
   function updatePreview(freshKey) {
