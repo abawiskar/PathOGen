@@ -444,6 +444,8 @@ func use_lifesaver(k: String) -> void:
 			fb = {"cls": "hint", "head": "Second chance", "title": "Mistake undone", "body": "Health, penalties and your hand are restored. Think it through: the explanation still applies.", "meta": ""}
 			journal.append({"cls": "aid", "title": "↺ Second Chance", "text": "Last mistake undone."})
 			fx.emit("toast", {"msg": "Time rewinds…", "cls": "good"})
+	# team avatars play their "use hint card" frames for every lifesaver card
+	fx.emit("anim", {"target": "hero", "name": "hint"})
 	changed.emit()
 
 

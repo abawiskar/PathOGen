@@ -17,9 +17,11 @@ var bob_period := 3.2
 ## Title screen: fit the width instead and keep bobbing.
 var fit_width := false
 
-## A team avatar (one picture, img/avatars/<id>.png) instead of the Spaghetti Hero's sprite frames:
-## it reacts with motion (jump, shake, slump), as the web's .av-success / .av-damage / .av-defeat.
+## A team avatar instead of the Spaghetti Hero: 3-frame states (img/avatars/<id>/<state>-<i>.webp, as heroReact()
+## in game.js). Idle breathes 0-1-2-1 every 420 ms; success / damage / hint / defeat play 3 frames at 170 ms,
+## then return to idle after 650 ms (defeat holds its last frame). Falls back to the single picture <id>.png.
 var avatar_path := ""
+const AV_STATES := ["idle", "success", "damage", "defeat", "hint"]
 var avatar_h := 230.0
 var avatar_max_w := 300.0
 
@@ -34,10 +36,12 @@ func _ready() -> void:
 
 func react(kind: String) -> void:
 	if avatar_path != "":
-		_kind = kind if kind in ["success", "damage", "defeat"] else ""
+		_kind = kind if kind in AV_STATES and kind != "idle" else ""
 		_t = 0.0
 		queue_redraw()
 		return
+	if kind == "hint":
+		kind = "idle"   # the Spaghetti Hero has no hint frames
 	if not FRAMES.has(kind):
 		_kind = ""
 	else:
@@ -50,8 +54,9 @@ func react(kind: String) -> void:
 func _process(delta: float) -> void:
 	if avatar_path != "":
 		_t += delta
-		if (_kind == "success" and _t > 0.7) or (_kind == "damage" and _t > 0.6):
+		if _kind != "" and _kind != "defeat" and _t >= 3 * 0.17 + 0.65:
 			_kind = ""
+			_t = 0.0
 		queue_redraw()
 		return
 	if _kind != "":
@@ -99,8 +104,20 @@ static func _ease(keys: Array, t: float) -> float:
 	return keys[-1][1]
 
 
+func _avatar_frame() -> Texture2D:
+	var dir := avatar_path.get_basename()   # res://img/avatars/joel
+	var path := ""
+	if _kind == "":
+		var seq := [0, 1, 2, 1]
+		path = "%s/idle-%d.webp" % [dir, seq[int(Time.get_ticks_msec() / 420.0) % 4]]
+	else:
+		path = "%s/%s-%d.webp" % [dir, _kind, mini(int(_t / 0.17), 2)]
+	var tex := UIKit.png_texture(path)
+	return tex if tex else UIKit.png_texture(avatar_path)
+
+
 func _draw_avatar() -> void:
-	var tex := UIKit.png_texture(avatar_path)
+	var tex := _avatar_frame()
 	if tex == null:
 		return
 	var ts := tex.get_size()
@@ -109,30 +126,6 @@ func _draw_avatar() -> void:
 	if w > avatar_max_w:
 		w = avatar_max_w
 		h = ts.y * w / ts.x
-	var off := Vector2.ZERO
-	var rot := 0.0
-	var tint := Color.WHITE
-	var tm := Time.get_ticks_msec() / 1000.0
-	match _kind:
-		"success":
-			var k := _t / 0.7
-			off.y = _ease([[0, 0], [0.4, -22], [0.7, -4], [1, 0]], k)
-			rot = deg_to_rad(_ease([[0, 0], [0.4, -3], [0.7, 0], [1, 0]], k))
-		"damage":
-			var k2 := _t / 0.6
-			off.x = w * _ease([[0, 0], [0.2, -0.06], [0.45, 0.06], [0.7, -0.02], [1, 0]], k2)
-			var red := _ease([[0, 0], [0.2, 1], [0.45, 0], [1, 0]], k2)
-			tint = Color.WHITE.lerp(Color(1.6, 0.55, 0.45), red)
-		"defeat":
-			var k3 := minf(_t / 0.6, 1.0)
-			off.y = 26 * k3
-			rot = deg_to_rad(-10 * k3)
-			tint = Color.WHITE.lerp(Color(0.5, 0.5, 0.5), k3)
-		_:
-			off.y = -bob_amp * (0.5 - 0.5 * cos(tm * TAU / bob_period))
-	var base := Vector2(size.x / 2.0, size.y - 8.0) + off
-	draw_set_transform(base, rot, Vector2.ONE)
-	var r := Rect2(Vector2(-w / 2.0, -h), Vector2(w, h))
+	var r := Rect2(Vector2((size.x - w) / 2.0, size.y - 8.0 - h), Vector2(w, h))
 	draw_texture_rect(tex, Rect2(r.position + Vector2(0, 8), r.size), false, Color(0, 0, 0, 0.3))
-	draw_texture_rect(tex, r, false, tint)
-	draw_set_transform(Vector2.ZERO, 0, Vector2.ONE)
+	draw_texture_rect(tex, r, false)
