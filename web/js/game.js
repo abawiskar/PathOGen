@@ -534,7 +534,7 @@
     () => { if (monster().frenzy && !st.over && !st.timer) startTimer(monster().frenzy); });
   }
 
-  /* the team (alphabetical by last name, as in the Godot build's TEAM list); click a name on About Us for the details */
+  /* the team (alphabetical by last name, as in the Godot build's TEAM list); shown with role and studio on About Us */
   const TEAM = [
     { name: 'Abhishek Bawiskar', title: 'Senior Associate Application Developer', org: 'Thornton Tomasetti', avatar: 'abhishek' },
     { name: 'Garrett Herbst', title: 'Director of Emerging Technologies', org: 'Little', avatar: 'garrett' },
@@ -1065,17 +1065,12 @@
       <p class="muted">Levels are loaded with fetch(), so the game must be served over http — e.g. <code>python -m http.server 5173 --directory web</code> — not opened as a file.</p>`);
   });
   $('#btn-title-help').onclick = helpModal;
-  $('#team').innerHTML = TEAM.map(t => `<div class="team-card" role="button" tabindex="0" aria-expanded="false" data-hero="${t.avatar}">
+  $('#team').innerHTML = TEAM.map(t => `<div class="team-card" data-hero="${t.avatar}">
       <img class="tc-avatar" src="img/avatars/${t.avatar}.png" alt="">
       <span class="tc-name">${esc(t.name)}</span>
       <span class="tc-more"><b>${esc(t.title)}</b>${esc(t.org)}
-        <button class="btn small tc-pick" data-pick="${t.avatar}">Choose as my guide</button></span>
-      <span class="tc-hint">Click for more</span></div>`).join('');
-  $$('#team .team-card').forEach(c => {
-    const toggle = () => { const open = !c.classList.contains('open'); c.classList.toggle('open', open); c.setAttribute('aria-expanded', open); };
-    c.onclick = (e) => { if (e.target.closest('.tc-pick')) { e.stopPropagation(); setHero(c.dataset.hero); return; } toggle(); };
-    c.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } };
-  });
+        <button class="btn small tc-pick" data-pick="${t.avatar}">Choose as my guide</button></span></div>`).join('');
+  $$('#team .tc-pick').forEach(b => { b.onclick = () => setHero(b.dataset.pick); });
   applyHero();   // marks the current guide's card
   $('#btn-hero').onclick = heroModal;
   $('#btn-about').onclick = () => show('screen-about');
