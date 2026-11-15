@@ -85,6 +85,7 @@ func _ready() -> void:
 	load_errors = r.errors
 	if unlock_all:
 		SaveData.unlocked = levels.size()
+	apply_hero()
 	show_screen("title")
 	if not load_errors.is_empty():
 		modal(func(b):
@@ -246,7 +247,15 @@ func _build_title(s: Control) -> void:
 		pool.size = Vector2(1344, 522)
 		pool.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		s.add_child(pool)
-		_title_layer(s, "res://img/start-hero.webp", Rect2(58, 436, 300, 380))
+		_title_hero_art = _title_layer(s, "res://img/start-hero.webp", Rect2(58, 436, 300, 380))
+		# a team avatar replaces the composed Spaghetti Hero artwork when chosen as the guide
+		_title_avatar = HeroView.new()
+		_title_avatar.avatar_h = 340
+		_title_avatar.avatar_max_w = 300
+		_title_avatar.position = Vector2(58, 900 - 84 - 360)
+		_title_avatar.size = Vector2(300, 368)
+		_title_avatar.visible = false
+		s.add_child(_title_avatar)
 	var logo := RichTextLabel.new()
 	logo.bbcode_enabled = true
 	logo.fit_content = true
@@ -285,6 +294,12 @@ func _build_title(s: Control) -> void:
 	row.add_child(cred)
 	for b in row.get_children():
 		b.add_theme_font_size_override("font_size", 19)
+	_hero_btn = UIKit.button("Guide", "", "small")
+	_hero_btn.text = "Guide"
+	_hero_btn.add_theme_font_size_override("font_size", 12)
+	_hero_btn.pressed.connect(hero_modal)
+	_hero_btn.position = Vector2(700, 636)
+	s.add_child(_hero_btn)
 	# a browser tab can't be closed from the game, so web exports have no Exit
 	if not OS.has_feature("web"):
 		var quit := UIKit.button("Exit", "ghost")
@@ -464,7 +479,7 @@ func open_map() -> void:
 		ob.set_deferred("size", Vector2(240, 0))
 		# the hero stands on the selected stage
 		var hero_img := TextureRect.new()
-		hero_img.texture = UIKit.png_texture("res://img/hero-main.png")
+		hero_img.texture = UIKit.png_texture(hero_def().img)
 		hero_img.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		hero_img.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		hero_img.position = Vector2(66, -43)
@@ -1772,14 +1787,120 @@ func credits() -> void:
 
 ## Alphabetical by last name (web: TEAM in game.js). Click a name on About Us for the details.
 const TEAM := [
-	{"name": "Abhishek Bawiskar", "title": "Senior Associate Application Developer", "org": "Thornton Tomasetti"},
-	{"name": "Garrett Herbst", "title": "Director of Emerging Technologies", "org": "Little"},
-	{"name": "Joel Hills", "title": "Senior Digital Design Technologist", "org": "Thornton Tomasetti"},
-	{"name": "Riku Kanemitsu", "title": "Graduate Student", "org": "Waseda University & ADL Intern"},
-	{"name": "Danny Karas", "title": "Associate Computational Designer", "org": "Thornton Tomasetti"},
-	{"name": "Maya Mashiach", "title": "Design Technology Specialist", "org": "LPA Design Studios"},
-	{"name": "Kazu Tajima", "title": "Graduate Student", "org": "Waseda University & ADL Intern"},
+	{"name": "Abhishek Bawiskar", "title": "Senior Associate Application Developer", "org": "Thornton Tomasetti", "avatar": "abhishek"},
+	{"name": "Garrett Herbst", "title": "Director of Emerging Technologies", "org": "Little", "avatar": "garrett"},
+	{"name": "Joel Hills", "title": "Senior Digital Design Technologist", "org": "Thornton Tomasetti", "avatar": "joel"},
+	{"name": "Riku Kanemitsu", "title": "Graduate Student", "org": "Waseda University & ADL Intern", "avatar": "riku"},
+	{"name": "Danny Karas", "title": "Associate Computational Designer", "org": "Thornton Tomasetti", "avatar": "danny"},
+	{"name": "Maya Mashiach", "title": "Design Technology Specialist", "org": "LPA Design Studios", "avatar": "maya"},
+	{"name": "Kazu Tajima", "title": "Graduate Student", "org": "Waseda University & ADL Intern", "avatar": "kazu"},
 ]
+
+
+## Guides: the hero beside you in battle, on the map and on the title screen (web: HEROES / applyHero).
+## The Spaghetti Hero is the default; every team member can be picked too. Saved per device.
+func heroes() -> Array:
+	var out := [{"id": "spaghetti", "name": "The Spaghetti Hero", "sub": "The original guide", "img": "res://img/hero-main.png", "frames": true}]
+	for t in TEAM:
+		out.append({"id": t.avatar, "name": t.name, "sub": "%s · %s" % [t.title, t.org], "img": "res://img/avatars/%s.png" % t.avatar, "frames": false})
+	return out
+
+
+func hero_def() -> Dictionary:
+	for h in heroes():
+		if h.id == SaveData.hero:
+			return h
+	return heroes()[0]
+
+
+func apply_hero() -> void:
+	var h := hero_def()
+	if hero:
+		hero.avatar_path = "" if h.frames else h.img
+		hero.react("idle")
+	if _title_hero_art:
+		_title_hero_art.visible = h.frames
+	if _title_avatar:
+		_title_avatar.visible = not h.frames
+		_title_avatar.avatar_path = "" if h.frames else h.img
+	if _hero_btn:
+		_hero_btn.text = "Guide: %s · change" % str(h.name).trim_prefix("The ")
+		_hero_btn.reset_size()
+		_hero_btn.position.x = (1600 - _hero_btn.size.x) / 2.0
+	for e in _team_cards:
+		var guide: bool = e.avatar == h.id
+		e.name.text = e.base_name + (" ★" if guide else "")
+		e.card.add_theme_stylebox_override("panel", UIKit.box(UIKit.PANEL_HI, UIKit.GOLD if guide else (UIKit.GOLD_DIM if e.open else UIKit.LINE), 6, 1, 12))
+
+
+func set_hero(id: String) -> void:
+	for h in heroes():
+		if h.id == id:
+			SaveData.hero = id
+			SaveData.write()
+			apply_hero()
+			toast("%s will guide you" % h.name, "good")
+			return
+
+
+func hero_modal() -> void:
+	var cur: String = hero_def().id
+	modal(func(b):
+		_m_sub(b, "Choose your guide")
+		_m_h2(b, "Who will guide you?")
+		_m_p(b, "[color=#8fa29b]Your guide stands beside you in every battle, on the map and on the title screen. The Spaghetti Hero is the original; the rest of the crew are the people who made PathOGen.[/color]", 15, 1172)
+		var grid := GridContainer.new()
+		grid.columns = 4
+		grid.add_theme_constant_override("h_separation", 12)
+		grid.add_theme_constant_override("v_separation", 12)
+		b.add_child(grid)
+		for h in heroes():
+			var on: bool = h.id == cur
+			var pick := Button.new()
+			pick.custom_minimum_size = Vector2(284, 236)
+			pick.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+			var nb := UIKit.box(Color(0, 0, 0, 0.2), UIKit.GOLD if on else UIKit.LINE, 8, 2 if on else 1)
+			var hb := UIKit.box(Color(0, 0, 0, 0.2), UIKit.SAGE, 8, 1)
+			pick.add_theme_stylebox_override("normal", nb)
+			pick.add_theme_stylebox_override("hover", hb)
+			pick.add_theme_stylebox_override("pressed", hb)
+			pick.add_theme_stylebox_override("focus", nb)
+			grid.add_child(pick)
+			var art := TextureRect.new()
+			art.texture = UIKit.png_texture(h.img)
+			art.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			art.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			art.position = Vector2(10, 10)
+			art.size = Vector2(264, 150)
+			art.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			pick.add_child(art)
+			var nm := UIKit.label(pick, h.name, 16, UIKit.GOLD, UIKit.serif, Vector2(8, 166), 268)
+			nm.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			var sb := UIKit.label(pick, h.sub, 11, UIKit.MUTED, UIKit.sans, Vector2(12, 190), 260)
+			sb.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			sb.clip_text = false
+			sb.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
+			sb.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			sb.custom_minimum_size = Vector2(260, 0)
+			sb.set_deferred("size", Vector2(260, 0))
+			if on:
+				var badge := PanelContainer.new()
+				var bsb := UIKit.box(UIKit.GOLD, Color(0, 0, 0, 0), 10, 0)
+				bsb.content_margin_left = 7
+				bsb.content_margin_right = 7
+				bsb.content_margin_top = 2
+				bsb.content_margin_bottom = 2
+				badge.add_theme_stylebox_override("panel", bsb)
+				badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+				pick.add_child(badge)
+				UIKit.label(badge, "YOUR GUIDE", 9, Color("0f1c1a"), UIKit.sans_bold)
+				badge.position = Vector2(284 - 8 - 80, 8)
+			var hid: String = h.id
+			pick.pressed.connect(func():
+				Sound.play("click")
+				set_hero(hid)
+				hero_modal())
+		_m_actions(b, [["Done", "primary", close_modal]]), null, true)
 
 
 func _m_team(b: Control) -> void:
@@ -1789,15 +1910,15 @@ func _m_team(b: Control) -> void:
 
 # ═════════════════════ about us ═════════════════════
 func _build_about(s: Control) -> void:
-	var title := UIKit.label(s, "About Us", 56, UIKit.GOLD, UIKit.serif, Vector2(0, 90))
+	var title := UIKit.label(s, "About Us", 56, UIKit.GOLD, UIKit.serif, Vector2(0, 50))
 	title.size.x = 1600
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	var ev := UIKit.label(s, "Made at the AECTech Hackathon 2026", 24, UIKit.SAGE, UIKit.serif, Vector2(0, 176))
+	var ev := UIKit.label(s, "Made at the AECTech Hackathon 2026", 24, UIKit.SAGE, UIKit.serif, Vector2(0, 134))
 	ev.size.x = 1600
 	ev.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	var about := UIKit.rich(s, Vector2(400, 232), Vector2(800, 120), 17)
+	var about := UIKit.rich(s, Vector2(400, 184), Vector2(800, 60), 17)
 	about.text = "[center]PathOGen teaches Grasshopper by playing it: every card you place adds a real component to a working definition, and a live 3D preview shows what your script builds. Get it right to beat the monster.[/center]"
-	var head := UIKit.label(s, "The team", 26, UIKit.GOLD, UIKit.serif, Vector2(0, 372))
+	var head := UIKit.label(s, "The team", 26, UIKit.GOLD, UIKit.serif, Vector2(0, 254))
 	head.size.x = 1600
 	head.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	# name cards, 4 on the first row and 3 on the second; click a card for the person's role
@@ -1809,18 +1930,33 @@ func _build_about(s: Control) -> void:
 		card.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 		card.clip_contents = true
 		s.add_child(card)
-		var nl := UIKit.label(card, t.name, 22, UIKit.TEXT, UIKit.serif, Vector2(0, 12), 300)
+		var av := TextureRect.new()
+		av.texture = UIKit.png_texture("res://img/avatars/%s.png" % t.avatar)
+		av.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		av.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		av.position = Vector2(90, 8)
+		av.size = Vector2(120, 96)
+		av.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(av)
+		var nl := UIKit.label(card, t.name, 22, UIKit.TEXT, UIKit.serif, Vector2(0, 108), 300)
 		nl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		var hint := UIKit.label(card, "CLICK FOR MORE", 9, UIKit.MUTED, UIKit.sans_bold, Vector2(0, 44), 300)
+		var hint := UIKit.label(card, "CLICK FOR MORE", 9, UIKit.MUTED, UIKit.sans_bold, Vector2(0, 138), 300)
 		hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		var role := UIKit.label(card, t.title, 14, UIKit.GOLD, UIKit.sans_bold, Vector2(10, 44), 280)
+		var role := UIKit.label(card, t.title, 14, UIKit.GOLD, UIKit.sans_bold, Vector2(10, 138), 280)
 		role.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		role.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		var org := UIKit.label(card, t.org, 13, UIKit.TEXT, UIKit.sans, Vector2(10, 64), 280)
+		var org := UIKit.label(card, t.org, 13, UIKit.TEXT, UIKit.sans, Vector2(10, 158), 280)
 		org.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		var pickb := UIKit.button("Choose as my guide", "", "small")
+		pickb.add_theme_font_size_override("font_size", 10)
+		card.add_child(pickb)
+		pickb.reset_size()
+		pickb.position = Vector2((300 - pickb.size.x) / 2.0, 182)
+		var av_id: String = t.avatar
+		pickb.pressed.connect(func(): set_hero(av_id))
 		role.visible = false
 		org.visible = false
-		var entry := {"card": card, "hint": hint, "role": role, "org": org, "open": false}
+		pickb.visible = false
+		var entry := {"card": card, "hint": hint, "role": role, "org": org, "pick": pickb, "open": false, "avatar": t.avatar, "name": nl, "base_name": t.name}
 		_team_cards.append(entry)
 		card.gui_input.connect(func(e):
 			if e is InputEventMouseButton and e.pressed and e.button_index == MOUSE_BUTTON_LEFT:
@@ -1828,7 +1964,8 @@ func _build_about(s: Control) -> void:
 				entry.hint.visible = not entry.open
 				entry.role.visible = entry.open
 				entry.org.visible = entry.open
-				card.add_theme_stylebox_override("panel", UIKit.box(UIKit.PANEL_HI, UIKit.GOLD_DIM if entry.open else UIKit.LINE, 6, 1, 12))
+				entry.pick.visible = entry.open
+				apply_hero()
 				_layout_team())
 	_about_bottom = []
 	var fonts := UIKit.sub(s, "Fonts: Cinzel and Barlow (SIL Open Font License)  ·  Grasshopper component icons by David Rutten / Robert McNeel & Associates", Vector2(0, 640), 1600, 11)
@@ -1841,9 +1978,13 @@ func _build_about(s: Control) -> void:
 	back.position = Vector2((1600 - back.size.x) / 2.0, 700)
 	_about_bottom.append(back)
 	_layout_team()
+	apply_hero()
 
 
 var _team_cards: Array = []
+var _title_hero_art: TextureRect
+var _title_avatar: HeroView
+var _hero_btn: Button
 var _about_bottom: Array = []
 
 
@@ -1851,23 +1992,23 @@ var _about_bottom: Array = []
 func _layout_team() -> void:
 	var w := 300.0
 	var gap := 24.0
-	var y := 428.0
+	var y := 300.0
 	var rows := [_team_cards.slice(0, 4), _team_cards.slice(4)]
 	for r in rows:
 		var n_r: int = r.size()
 		var x0: float = (1600.0 - (n_r * w + (n_r - 1) * gap)) / 2.0
-		var rh := 70.0
+		var rh := 160.0
 		for e in r:
 			if e.open:
-				rh = 92.0
+				rh = 218.0
 		for i in r.size():
 			var e: Dictionary = r[i]
 			e.card.position = Vector2(x0 + i * (w + gap), y)
-			e.card.size = Vector2(w, 92.0 if e.open else 70.0)
+			e.card.size = Vector2(w, 218.0 if e.open else 160.0)
 		y += rh + gap
 	if _about_bottom.size() == 2:
 		_about_bottom[0].position.y = y + 14
-		_about_bottom[1].position.y = y + 60
+		_about_bottom[1].position.y = y + 50
 
 
 func help_modal() -> void:

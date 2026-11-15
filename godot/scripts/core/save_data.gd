@@ -9,6 +9,7 @@ const RANKS := [[0, "Novice"], [600, "Apprentice"], [1500, "Wirebender"], [3000,
 static var best: Dictionary = {}   # "<level id>:<difficulty id>" -> { xp, stars }
 static var unlocked := 1
 static var diff: Dictionary = {}   # str(level id) -> last difficulty index played
+static var hero := "spaghetti"     # chosen guide (see HEROES in main.gd)
 static var _loaded := false
 
 
@@ -24,12 +25,13 @@ static func ensure_loaded() -> void:
 		best = d.get("best", {})
 		unlocked = int(d.get("unlocked", 1))
 		diff = d.get("diff", {})
+		hero = str(d.get("hero", "spaghetti"))
 
 
 static func write() -> void:
 	var f := FileAccess.open(PATH, FileAccess.WRITE)
 	if f:
-		f.store_string(JSON.stringify({"best": best, "unlocked": unlocked, "diff": diff}))
+		f.store_string(JSON.stringify({"best": best, "unlocked": unlocked, "diff": diff, "hero": hero}))
 
 
 static func reset() -> void:

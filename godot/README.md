@@ -62,6 +62,12 @@ clicks) and music (title, battle, critical below 30% health, defeat). The Music 
 on every screen; turning music off also mutes the effects, as on the web. Settings are kept in
 `user://pathogen_audio.json`.
 
+## Guides
+
+"Choose your guide" (title screen, or a card on About Us) swaps the hero for any team member's avatar
+(`img/avatars/*.png`, synced from `web/img/avatars`). Avatars react with motion (jump, shake, slump) since they are
+single pictures; the Spaghetti Hero keeps its sprite frames. The choice is saved with the progress.
+
 ## Team
 
 Made at the AECTech Hackathon 2026 by Abhishek Bawiskar, Garrett Herbst, Joel Hills, Riku Kanemitsu, Danny Karas,
