@@ -455,18 +455,12 @@ button { font-family: inherit; cursor: pointer; }
 .about-head { font-family: var(--serif); font-size: 26px; color: var(--gold); margin: 34px 0 18px; font-weight: 700; }
 .team { width: 1272px; display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 24px; }
 .team-card { width: 300px; height: 244px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 10px 14px;
-  cursor: pointer; text-align: center; transition: border-color .15s, transform .15s; font-family: var(--serif); font-size: 22px; color: var(--text);
+  text-align: center; transition: border-color .15s; font-family: var(--serif); font-size: 22px; color: var(--text);
   background: linear-gradient(180deg, var(--panel-hi), var(--panel)); border: 1px solid var(--line); border-radius: 6px;
   box-shadow: inset 0 0 0 4px rgba(0,0,0,.18), inset 0 0 0 5px rgba(120,150,140,.12), 0 10px 30px rgba(0,0,0,.35); }
-.team-card:hover { border-color: var(--sage); transform: translateY(-2px); }
-.team-card .tc-hint { font-family: var(--sans); font-size: 9.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-top: 3px; }
-.team-card .tc-more { display: none; font-family: var(--sans); font-size: 13.5px; line-height: 1.35; color: var(--text); margin-top: 6px; }
+.team-card .tc-more { display: block; font-family: var(--sans); font-size: 13.5px; line-height: 1.35; color: var(--text); margin-top: 6px; }
 .team-card .tc-more b { display: block; color: var(--gold); font-weight: 700; font-size: 14px; }
-.team-card.open { border-color: var(--gold-dim); }
-.team-card.open .tc-more { display: block; animation: fadein .25s; }
-.team-card.open .tc-hint { display: none; }
 .about-fonts { margin-top: 34px; font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
-.about .btn { margin-top: 26px; }
 
 /* Completed definition preview */
 #p-graph > header { position: relative; }
@@ -538,7 +532,7 @@ button { font-family: inherit; cursor: pointer; }
 #screen-title .title-hero.avatar-mode::before { display: none; }
 #screen-title .title-hero.avatar-mode img { clip-path: none; width: 100%; height: 340px; object-fit: contain; object-position: bottom; animation: bob 3.2s ease-in-out infinite; filter: drop-shadow(0 10px 14px rgba(0,0,0,.5)); }
 /* About Us: avatars on the team cards */
-.team-card .tc-avatar { height: 96px; max-width: 120px; object-fit: contain; margin-bottom: 6px; filter: drop-shadow(0 6px 8px rgba(0,0,0,.4)); transition: transform .2s; }
+.team-card .tc-avatar { height: 90px; max-width: 120px; object-fit: contain; margin-bottom: 6px; filter: drop-shadow(0 6px 8px rgba(0,0,0,.4)); transition: transform .2s; }
 .team-card:hover .tc-avatar { transform: translateY(-3px) scale(1.04); }
 .team-card .tc-pick { display: block; margin: 9px auto 0; font-size: 10.5px; }
 .team-card.is-guide { border-color: var(--gold); }
@@ -546,7 +540,6 @@ button { font-family: inherit; cursor: pointer; }
 .about .about-text { margin-top: 18px; }
 .about .about-head { margin: 22px 0 14px; }
 .about .about-fonts { margin-top: 22px; }
-.about .btn { margin-top: 18px; }
 
 /* ───────── Battle layout v2 ─────────
    Goal + Sliders sit top right (where the health panel was) as regular panels,
