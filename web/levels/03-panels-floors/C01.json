@@ -28,14 +28,6 @@
   },
   {
    "key": "s4",
-   "label": "Floors",
-   "min": 5.0,
-   "max": 80.0,
-   "step": 1,
-   "value": 30.0
-  },
-  {
-   "key": "s5",
    "label": "Top fillet (ft)",
    "min": 0.0,
    "max": 15.0,
@@ -43,12 +35,20 @@
    "value": 6.0
   },
   {
-   "key": "s6",
+   "key": "s5",
    "label": "Top radius (ft)",
    "min": 30.0,
    "max": 120.0,
    "step": 0.1,
    "value": 45.0
+  },
+  {
+   "key": "s6",
+   "label": "Floors",
+   "min": 5.0,
+   "max": 80.0,
+   "step": 1,
+   "value": 30.0
   },
   {
    "key": "s7",
@@ -77,22 +77,56 @@
  ],
  "nodes": [
   {
+   "id": "area",
+   "comp": "area",
+   "open": true,
+   "x": 4924,
+   "y": 52,
+   "question": "C01_Q06",
+   "need": "the area of every floor plate",
+   "hint": "Surface › Analysis. Watch for: Drag Top radius: upper floors shrink and their areas drop.",
+   "correct": "Area gives every floor plate's area in square feet. The Panel lists one value per floor.",
+   "distractors": [
+    "volume",
+    "length",
+    "dimensions",
+    "boundingBox",
+    "curveMiddle",
+    "evaluateCurve",
+    "closed",
+    "curveClosestPoint",
+    "polygonCenter",
+    "segmentLengths",
+    "planar",
+    "boxProperties"
+   ],
+   "draft": true,
+   "stage": "Check the floor areas: The area of every floor plate in sf. Area on flat closed curves gives the enclosed area: the floor plate per level, the first number a client asks for.",
+   "wrong": {
+    "length": "Length measures the outline's perimeter, not the floor area.",
+    "*": "This step needs the enclosed area."
+   },
+   "stage_draft": true,
+   "preview": false
+  },
+  {
    "id": "capHoles",
    "comp": "capHoles",
    "open": false,
-   "x": 2190,
-   "y": 9
+   "x": 2902,
+   "y": 35,
+   "ghost": true
   },
   {
    "id": "capHoles2",
    "comp": "capHoles",
    "open": true,
-   "x": 3560,
-   "y": 9,
-   "question": "C01_Q04",
-   "need": "a component that turns Brep into Brep",
-   "hint": "Look in Surface › Util.",
-   "correct": "Cap Holes is the component this method uses here. Closes the planar openings of a brep.",
+   "x": 4586,
+   "y": 14,
+   "question": "C01_Q05",
+   "need": "closed slabs: lids on every extrusion",
+   "hint": "Surface › Util. Watch for: The same Cap Holes as Level B: recall it.",
+   "correct": "Cap Holes closes every extrusion, so each floor is a solid slab.",
    "distractors": [
     "boundary",
     "brepJoin",
@@ -108,7 +142,11 @@
     "untrim"
    ],
    "draft": true,
-   "stage": "Close each slab top and bottom so every floor is a solid slab.",
+   "stage": "Close the slabs: Solid slabs: lids on each extrusion. Extruding a closed curve leaves the top and bottom open, just like Loft did.",
+   "wrong": {
+    "boundary": "Boundary Surfaces would make loose discs, not closed slabs.",
+    "*": "This step needs to close the extrusions."
+   },
    "stage_draft": true
   },
   {
@@ -127,7 +165,7 @@
    "id": "contour",
    "comp": "contour",
    "open": true,
-   "x": 2490,
+   "x": 3208,
    "y": 32,
    "set": {
     "N": [
@@ -137,9 +175,9 @@
     ]
    },
    "question": "C01_Q01",
-   "need": "a component that turns Shape, Point, Direction and Distance into Contours",
-   "hint": "Look in Intersect › Mathematical.",
-   "correct": "Contour is the component this method uses here. Slices a shape into evenly spaced section curves.",
+   "need": "a floor outline every Floor-to-floor feet up the mass",
+   "hint": "Intersect › Mathematical. Parallel slices through a solid. Watch for: The direction defaults to Z (up), so the slices are horizontal.",
+   "correct": "Contour slices the tower every 13 ft, giving one floor outline per level.",
    "distractors": [
     "brepPlane",
     "brepWireframe",
@@ -155,99 +193,123 @@
     "dimensions"
    ],
    "draft": true,
-   "stage": "Slice the tower mass into floor outlines, one every floor-to-floor height.",
+   "stage": "Slice into floors: One outline at every floor line, cut from the tower mass. Contour slices a solid with parallel planes at a fixed spacing: the Floor-to-floor height.",
    "stage_draft": true
   },
   {
    "id": "data",
    "comp": "dataParam",
    "open": false,
-   "x": 984,
+   "x": 1480,
    "y": 0,
-   "label": "Value"
+   "label": "Height (ft)"
   },
   {
    "id": "data10",
    "comp": "dataParam",
    "open": false,
-   "x": 3448,
+   "x": 4142,
    "y": 0,
-   "label": "Slab sides"
+   "label": "Floor lines"
+  },
+  {
+   "id": "data11",
+   "comp": "dataParam",
+   "open": false,
+   "x": 4144,
+   "y": 52,
+   "label": "Slab vector"
+  },
+  {
+   "id": "data12",
+   "comp": "dataParam",
+   "open": false,
+   "x": 4472,
+   "y": 0,
+   "label": "Slab edges"
+  },
+  {
+   "id": "data13",
+   "comp": "dataParam",
+   "open": false,
+   "x": 4810,
+   "y": 0,
+   "label": "Floor lines"
   },
   {
    "id": "data2",
    "comp": "dataParam",
    "open": false,
-   "x": 984,
+   "x": 1776,
    "y": 52,
-   "label": "Outline"
+   "label": "Up vector"
   },
   {
    "id": "data3",
    "comp": "dataParam",
    "open": false,
-   "x": 1359,
+   "x": 1780,
    "y": 0,
-   "label": "Lifted top"
+   "label": "Top outline"
   },
   {
    "id": "data4",
    "comp": "dataParam",
    "open": false,
-   "x": 1788,
+   "x": 2046,
    "y": 0,
-   "label": "Outline"
+   "label": "Lift top"
   },
   {
    "id": "data5",
    "comp": "dataParam",
    "open": false,
-   "x": 1808,
+   "x": 2484,
    "y": 52,
-   "label": "Twisted outlines"
+   "label": "Twist top"
   },
   {
    "id": "data6",
    "comp": "dataParam",
    "open": false,
-   "x": 2083,
+   "x": 2491,
    "y": 0,
-   "label": "Skin"
+   "label": "Base outline"
   },
   {
    "id": "data7",
    "comp": "dataParam",
    "open": false,
-   "x": 2336,
+   "x": 2796,
    "y": 0,
-   "label": "Tower"
+   "label": "Skin"
   },
   {
    "id": "data8",
    "comp": "dataParam",
    "open": false,
-   "x": 3174,
-   "y": 52,
-   "label": "Vector"
+   "x": 3064,
+   "y": 0,
+   "label": "Tower mass"
   },
   {
    "id": "data9",
    "comp": "dataParam",
    "open": false,
-   "x": 3180,
+   "x": 3826,
    "y": 0,
-   "label": "Floor lines"
+   "label": "Thickness down"
   },
   {
    "id": "extrude",
    "comp": "extrude",
    "open": true,
-   "x": 3294,
-   "y": 12,
-   "question": "C01_Q03",
-   "need": "a component that turns Base and Direction into Extrusion",
-   "hint": "Look in Surface › Freeform.",
-   "correct": "Extrude is the component this method uses here. Pushes a profile along a vector.",
+   "x": 4258,
+   "y": 32,
+   "question": "C01_Q04",
+   "need": "floor outlines pushed along the slab vector",
+   "hint": "Surface › Freeform. A base curve and a direction vector. Watch for: The direction is a vector, not a number.",
+   "correct": "Extrude pushes every floor outline down by the slab thickness: one slab edge per floor.",
    "distractors": [
     "extrudePoint",
     "extrudeAlong",
@@ -263,14 +325,19 @@
     "fragmentPatch"
    ],
    "draft": true,
-   "stage": "Push every floor outline up by that thickness to form the slab edges.",
+   "stage": "Give floors thickness: Each floor outline pushed down into a slab. Extrude pushes a curve along a vector. A closed outline becomes the edge of a slab.",
+   "wrong": {
+    "loft": "Loft would skin between the outlines: one surface for the whole tower, not slabs.",
+    "move": "Move just shifts the outlines down, with no thickness.",
+    "*": "This step needs a curve pushed along a vector."
+   },
    "stage_draft": true
   },
   {
    "id": "loft",
    "comp": "loft",
    "open": false,
-   "x": 1936,
+   "x": 2609,
    "y": 12,
    "set": {
     "O": false
@@ -280,29 +347,29 @@
    "id": "move",
    "comp": "move",
    "open": false,
-   "x": 1206,
-   "y": 15
+   "x": 1898,
+   "y": 21
   },
   {
    "id": "multiplica",
    "comp": "multiplication",
    "open": false,
-   "x": 834,
-   "y": 124
+   "x": 1326,
+   "y": 31
   },
   {
    "id": "multiplica2",
    "comp": "multiplication",
    "open": true,
-   "x": 2914,
-   "y": 12,
+   "x": 3658,
+   "y": 48,
    "set": {
     "B": -1.0
    },
    "question": "C01_Q02",
-   "need": "a component that turns A and B into Result",
-   "hint": "Look in Maths › Operators.",
-   "correct": "Multiplication is the component this method uses here. Multiplies two values.",
+   "need": "the slab thickness flipped negative: thickness × -1",
+   "hint": "Maths › Operators. Watch for: The -1 is typed into the B input; it isn't a slider.",
+   "correct": "Multiplication by -1 turns 1 ft into -1 ft, so the slab will extrude downward from each floor line.",
    "distractors": [
     "addition",
     "subtraction",
@@ -318,78 +385,89 @@
     "cosine"
    ],
    "draft": true,
-   "stage": "Set the slab thickness as an upward distance.",
+   "stage": "Slab thickness, downward: The slab thickness as a negative number. Multiplying by -1 flips the direction: each slab hangs below its floor line instead of sitting on top.",
+   "wrong": {
+    "addition": "Adding -1 only works for one particular thickness.",
+    "*": "This step needs the thickness times -1."
+   },
    "stage_draft": true
   },
   {
    "id": "number",
    "comp": "numberParam",
    "open": false,
-   "x": 561,
+   "x": 645,
    "y": 52
   },
   {
    "id": "number2",
    "comp": "numberParam",
    "open": false,
-   "x": 2359,
+   "x": 3077,
    "y": 104
+  },
+  {
+   "id": "panel",
+   "comp": "panel",
+   "open": false,
+   "x": 5092,
+   "y": 35
   },
   {
    "id": "point",
    "comp": "pointParam",
    "open": false,
-   "x": 149,
+   "x": 233,
    "y": 0
   },
   {
    "id": "point2",
    "comp": "pointParam",
    "open": false,
-   "x": 561,
+   "x": 645,
    "y": 0
   },
   {
    "id": "point3",
    "comp": "pointParam",
    "open": false,
-   "x": 1354,
+   "x": 2046,
    "y": 52
   },
   {
    "id": "point4",
    "comp": "pointParam",
    "open": false,
-   "x": 2336,
+   "x": 3054,
    "y": 52
   },
   {
    "id": "polygon",
    "comp": "polygon",
    "open": false,
-   "x": 412,
-   "y": 32
+   "x": 496,
+   "y": 36
   },
   {
    "id": "polygon2",
    "comp": "polygon",
    "open": false,
-   "x": 836,
-   "y": 32
+   "x": 904,
+   "y": 34
   },
   {
    "id": "rotate",
    "comp": "rotate",
    "open": false,
-   "x": 1632,
-   "y": 22,
+   "x": 2324,
+   "y": 27,
    "degrees": true
   },
   {
    "id": "slider",
    "comp": "slider",
    "open": false,
-   "x": 204,
+   "x": 288,
    "y": 48,
    "param": "s1",
    "label": "Sides"
@@ -398,7 +476,7 @@
    "id": "slider2",
    "comp": "slider",
    "open": false,
-   "x": 222,
+   "x": 306,
    "y": 144,
    "param": "s2",
    "label": "Base fillet (ft)"
@@ -407,7 +485,7 @@
    "id": "slider3",
    "comp": "slider",
    "open": false,
-   "x": 226,
+   "x": 310,
    "y": 96,
    "param": "s3",
    "label": "Base radius (ft)"
@@ -416,35 +494,35 @@
    "id": "slider4",
    "comp": "slider",
    "open": false,
-   "x": 617,
-   "y": 192,
+   "x": 716,
+   "y": 144,
    "param": "s4",
-   "label": "Floors"
+   "label": "Top fillet (ft)"
   },
   {
    "id": "slider5",
    "comp": "slider",
    "open": false,
-   "x": 632,
-   "y": 144,
+   "x": 720,
+   "y": 96,
    "param": "s5",
-   "label": "Top fillet (ft)"
+   "label": "Top radius (ft)"
   },
   {
    "id": "slider6",
    "comp": "slider",
    "open": false,
-   "x": 636,
-   "y": 96,
+   "x": 1109,
+   "y": 0,
    "param": "s6",
-   "label": "Top radius (ft)"
+   "label": "Floors"
   },
   {
    "id": "slider7",
    "comp": "slider",
    "open": false,
-   "x": 644,
-   "y": 240,
+   "x": 1136,
+   "y": 48,
    "param": "s7",
    "label": "Floor-to-floor (ft)"
   },
@@ -452,7 +530,7 @@
    "id": "slider8",
    "comp": "slider",
    "open": false,
-   "x": 1434,
+   "x": 2126,
    "y": 96,
    "param": "s8",
    "label": "Total twist (deg)"
@@ -461,7 +539,7 @@
    "id": "slider9",
    "comp": "slider",
    "open": false,
-   "x": 2722,
+   "x": 3467,
    "y": 0,
    "param": "s9",
    "label": "Slab thickness (ft)"
@@ -470,15 +548,41 @@
    "id": "unitZ",
    "comp": "unitZ",
    "open": false,
-   "x": 1090,
-   "y": 4
+   "x": 1592,
+   "y": 28
   },
   {
    "id": "unitZ2",
    "comp": "unitZ",
-   "open": false,
-   "x": 3028,
-   "y": 4
+   "open": true,
+   "x": 3952,
+   "y": 33,
+   "question": "C01_Q03",
+   "need": "a vertical vector, slab-thickness long",
+   "hint": "Vector › Vector. Watch for: Unit X and Unit Y would push the slabs sideways.",
+   "correct": "Unit Z with a negative factor makes a short vector pointing down: the slab's thickness.",
+   "distractors": [
+    "unitX",
+    "unitY",
+    "vectorXYZ",
+    "amplitude",
+    "vector2pt",
+    "reverse",
+    "vectorLength",
+    "deconstructVector",
+    "crossProduct",
+    "dotProduct",
+    "angle",
+    "unitVector"
+   ],
+   "draft": true,
+   "stage": "Point it down: A vector as long as the slab is thick, pointing down. The same Unit Z as Level B: a negative factor makes it point down.",
+   "wrong": {
+    "unitX": "Unit X points sideways.",
+    "unitY": "Unit Y points sideways.",
+    "*": "This step needs a vertical vector."
+   },
+   "stage_draft": true
   }
  ],
  "wires": [
@@ -503,7 +607,7 @@
    "to": "polygon2.P"
   },
   {
-   "from": "slider6.N",
+   "from": "slider5.N",
    "to": "polygon2.R"
   },
   {
@@ -511,11 +615,11 @@
    "to": "polygon2.S"
   },
   {
-   "from": "slider5.N",
+   "from": "slider4.N",
    "to": "polygon2.Rf"
   },
   {
-   "from": "slider4.N",
+   "from": "slider6.N",
    "to": "multiplica.A"
   },
   {
@@ -527,15 +631,15 @@
    "to": "unitZ.F"
   },
   {
-   "from": "data2.D",
+   "from": "data3.D",
    "to": "move.G"
   },
   {
-   "from": "unitZ.V",
+   "from": "data2.D",
    "to": "move.T"
   },
   {
-   "from": "data3.D",
+   "from": "data4.D",
    "to": "rotate.G"
   },
   {
@@ -547,7 +651,7 @@
    "to": "rotate.P"
   },
   {
-   "from": "data4.D",
+   "from": "data6.D",
    "to": "loft.C"
   },
   {
@@ -555,11 +659,11 @@
    "to": "loft.C"
   },
   {
-   "from": "data6.D",
+   "from": "data7.D",
    "to": "capHoles.B"
   },
   {
-   "from": "data7.D",
+   "from": "data8.D",
    "to": "contour.S"
   },
   {
@@ -568,27 +672,57 @@
   },
   {
    "from": "number2.N",
-   "to": "contour.D"
+   "to": "contour.D",
+   "check": {
+    "side": "in",
+    "prompt": "Floor-to-floor goes into which input of Contour?",
+    "hint": "S = shape, P = start point, N = direction, D = distance.",
+    "correct": "D is the spacing between slices: one floor every Floor-to-floor feet.",
+    "wrong": {
+     "N": "N is the slicing direction: it stays Z (up).",
+     "*": "That input isn't the spacing."
+    },
+    "draft": true
+   }
   },
   {
    "from": "slider9.N",
    "to": "multiplica2.A"
   },
   {
-   "from": "multiplica2.R",
+   "from": "data9.D",
    "to": "unitZ2.F"
   },
   {
-   "from": "data9.D",
+   "from": "data10.D",
    "to": "extrude.B"
   },
   {
-   "from": "data8.D",
-   "to": "extrude.D"
+   "from": "data11.D",
+   "to": "extrude.D",
+   "check": {
+    "side": "in",
+    "prompt": "The slab vector goes into which input of Extrude?",
+    "hint": "B = base curve, D = direction vector.",
+    "correct": "D is the direction: the downward vector sets how far and which way each outline is pushed.",
+    "wrong": {
+     "B": "B is the base: the floor outlines are already there.",
+     "*": "That input isn't the direction."
+    },
+    "draft": true
+   }
   },
   {
-   "from": "data10.D",
+   "from": "data12.D",
    "to": "capHoles2.B"
+  },
+  {
+   "from": "data13.D",
+   "to": "area.G"
+  },
+  {
+   "from": "area.A",
+   "to": "panel.in"
   },
   {
    "from": "constructP.Pt",
@@ -608,11 +742,15 @@
   },
   {
    "from": "polygon2.P",
+   "to": "data3.D"
+  },
+  {
+   "from": "unitZ.V",
    "to": "data2.D"
   },
   {
    "from": "move.G",
-   "to": "data3.D"
+   "to": "data4.D"
   },
   {
    "from": "constructP.Pt",
@@ -620,7 +758,7 @@
   },
   {
    "from": "polygon.P",
-   "to": "data4.D"
+   "to": "data6.D"
   },
   {
    "from": "rotate.G",
@@ -628,11 +766,11 @@
   },
   {
    "from": "loft.L",
-   "to": "data6.D"
+   "to": "data7.D"
   },
   {
    "from": "capHoles.B",
-   "to": "data7.D"
+   "to": "data8.D"
   },
   {
    "from": "constructP.Pt",
@@ -643,22 +781,32 @@
    "to": "number2.N"
   },
   {
-   "from": "contour.C",
+   "from": "multiplica2.R",
    "to": "data9.D"
   },
   {
+   "from": "contour.C",
+   "to": "data10.D"
+  },
+  {
    "from": "unitZ2.V",
-   "to": "data8.D"
+   "to": "data11.D"
   },
   {
    "from": "extrude.E",
-   "to": "data10.D"
+   "to": "data12.D"
+  },
+  {
+   "from": "contour.C",
+   "to": "data13.D"
   }
  ],
  "order": [
   "contour",
   "multiplica2",
+  "unitZ2",
   "extrude",
-  "capHoles2"
+  "capHoles2",
+  "area"
  ]
 }

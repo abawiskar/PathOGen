@@ -97,32 +97,32 @@
    "comp": "addition",
    "open": false,
    "x": 1996,
-   "y": 12
+   "y": 181
   },
   {
    "id": "addition2",
    "comp": "addition",
    "open": false,
    "x": 1996,
-   "y": 84
+   "y": 45
   },
   {
    "id": "addition3",
    "comp": "addition",
    "open": false,
    "x": 2110,
-   "y": 12
+   "y": 48
   },
   {
    "id": "area",
    "comp": "area",
    "open": true,
-   "x": 6148,
-   "y": 12,
-   "question": "C03_Q06",
-   "need": "a component that turns Geometry into Area",
-   "hint": "Look in Surface › Analysis.",
-   "correct": "Area is the component this method uses here. Measures area and finds the centroid.",
+   "x": 6494,
+   "y": 52,
+   "question": "C03_Q07",
+   "need": "the area of every floor plate",
+   "hint": "Surface › Analysis. Watch for: Drag Top radius: upper floors shrink and their areas drop.",
+   "correct": "Area gives every floor plate's area in square feet. The Panel lists one value per floor.",
    "distractors": [
     "volume",
     "length",
@@ -138,26 +138,32 @@
     "boxProperties"
    ],
    "draft": true,
-   "stage": "Measure each slab: its floor area and its centre point.",
-   "stage_draft": true
+   "stage": "Check the floor areas: The area of every floor plate in sf. Area on flat closed curves gives the enclosed area: the floor plate per level, the first number a client asks for.",
+   "wrong": {
+    "length": "Length measures the outline's perimeter, not the floor area.",
+    "*": "This step needs the enclosed area."
+   },
+   "stage_draft": true,
+   "preview": false
   },
   {
    "id": "capHoles",
    "comp": "capHoles",
    "open": false,
-   "x": 4060,
-   "y": 9
+   "x": 4038,
+   "y": 35,
+   "ghost": true
   },
   {
    "id": "capHoles2",
    "comp": "capHoles",
    "open": true,
-   "x": 5868,
-   "y": 9,
-   "question": "C03_Q05",
-   "need": "a component that turns Brep into Brep",
-   "hint": "Look in Surface › Util.",
-   "correct": "Cap Holes is the component this method uses here. Closes the planar openings of a brep.",
+   "x": 6144,
+   "y": 14,
+   "question": "C03_Q06",
+   "need": "closed slabs: lids on every extrusion",
+   "hint": "Surface › Util. Watch for: The same Cap Holes as Level B: recall it.",
+   "correct": "Cap Holes closes every extrusion, so each floor is a solid slab.",
    "distractors": [
     "boundary",
     "brepJoin",
@@ -173,7 +179,11 @@
     "untrim"
    ],
    "draft": true,
-   "stage": "Close each slab top and bottom so every floor is a solid slab.",
+   "stage": "Close the slabs: Solid slabs: lids on each extrusion. Extruding a closed curve leaves the top and bottom open, just like Loft did.",
+   "wrong": {
+    "boundary": "Boundary Surfaces would make loose discs, not closed slabs.",
+    "*": "This step needs to close the extrusions."
+   },
    "stage_draft": true
   },
   {
@@ -181,7 +191,7 @@
    "comp": "constructPoint",
    "open": false,
    "x": 1469,
-   "y": 22,
+   "y": 39,
    "set": {
     "X": 0.0,
     "Y": 0.0
@@ -191,31 +201,31 @@
    "id": "data",
    "comp": "dataParam",
    "open": false,
-   "x": 1618,
+   "x": 1622,
    "y": 104,
-   "label": "Value"
+   "label": "Bulge (ft)"
   },
   {
    "id": "data10",
    "comp": "dataParam",
    "open": false,
-   "x": 4207,
-   "y": 52,
-   "label": "Point"
+   "x": 4198,
+   "y": 0,
+   "label": "Twist floors"
   },
   {
    "id": "data11",
    "comp": "dataParam",
    "open": false,
-   "x": 4228,
-   "y": 0,
-   "label": "Twisted outlines"
+   "x": 4202,
+   "y": 52,
+   "label": "Level centres"
   },
   {
    "id": "data12",
    "comp": "dataParam",
    "open": false,
-   "x": 4504,
+   "x": 4510,
    "y": 0,
    "label": "Floors {i}"
   },
@@ -223,39 +233,47 @@
    "id": "data13",
    "comp": "dataParam",
    "open": false,
-   "x": 4504,
+   "x": 4524,
    "y": 52,
-   "label": "Floors {i}"
+   "label": "Level points {i}"
   },
   {
    "id": "data14",
    "comp": "dataParam",
    "open": false,
-   "x": 5471,
-   "y": 52,
-   "label": "Vector"
+   "x": 5384,
+   "y": 0,
+   "label": "Thickness down"
   },
   {
    "id": "data15",
    "comp": "dataParam",
    "open": false,
-   "x": 5484,
-   "y": 0,
-   "label": "Slab outlines"
+   "x": 5702,
+   "y": 52,
+   "label": "Slab vector"
   },
   {
    "id": "data16",
    "comp": "dataParam",
    "open": false,
-   "x": 5756,
+   "x": 5706,
    "y": 0,
-   "label": "Slab sides"
+   "label": "Slab outlines"
   },
   {
    "id": "data17",
    "comp": "dataParam",
    "open": false,
-   "x": 6028,
+   "x": 6030,
+   "y": 0,
+   "label": "Slab edges"
+  },
+  {
+   "id": "data18",
+   "comp": "dataParam",
+   "open": false,
+   "x": 6374,
    "y": 0,
    "label": "Slab outlines"
   },
@@ -263,63 +281,63 @@
    "id": "data2",
    "comp": "dataParam",
    "open": false,
-   "x": 2258,
-   "y": 52,
-   "label": "Value"
+   "x": 2271,
+   "y": 0,
+   "label": "Level centres"
   },
   {
    "id": "data3",
    "comp": "dataParam",
    "open": false,
-   "x": 2258,
-   "y": 0,
-   "label": "Point"
+   "x": 2274,
+   "y": 104,
+   "label": "Fillet per floor"
   },
   {
    "id": "data4",
    "comp": "dataParam",
    "open": false,
-   "x": 2258,
-   "y": 104,
-   "label": "Value"
+   "x": 2278,
+   "y": 52,
+   "label": "Radius per floor"
   },
   {
    "id": "data5",
    "comp": "dataParam",
    "open": false,
-   "x": 3110,
-   "y": 52,
-   "label": "Outline"
+   "x": 3123,
+   "y": 104,
+   "label": "Level centres"
   },
   {
    "id": "data6",
    "comp": "dataParam",
    "open": false,
-   "x": 3110,
-   "y": 104,
-   "label": "Point"
+   "x": 3124,
+   "y": 0,
+   "label": "Ease squared"
   },
   {
    "id": "data7",
    "comp": "dataParam",
    "open": false,
-   "x": 3110,
-   "y": 0,
-   "label": "Value"
+   "x": 3124,
+   "y": 52,
+   "label": "Floor outlines"
   },
   {
    "id": "data8",
    "comp": "dataParam",
    "open": false,
-   "x": 3680,
+   "x": 3668,
    "y": 0,
-   "label": "Twisted outlines"
+   "label": "Twist floors"
   },
   {
    "id": "data9",
    "comp": "dataParam",
    "open": false,
-   "x": 3954,
+   "x": 3931,
    "y": 0,
    "label": "Skin"
   },
@@ -327,12 +345,12 @@
    "id": "extrude",
    "comp": "extrude",
    "open": true,
-   "x": 5604,
-   "y": 12,
-   "question": "C03_Q04",
-   "need": "a component that turns Base and Direction into Extrusion",
-   "hint": "Look in Surface › Freeform.",
-   "correct": "Extrude is the component this method uses here. Pushes a profile along a vector.",
+   "x": 5824,
+   "y": 32,
+   "question": "C03_Q05",
+   "need": "floor outlines pushed along the slab vector",
+   "hint": "Surface › Freeform. A base curve and a direction vector. Watch for: The direction is a vector, not a number.",
+   "correct": "Extrude pushes every floor outline down by the slab thickness: one slab edge per floor.",
    "distractors": [
     "extrudePoint",
     "extrudeAlong",
@@ -348,19 +366,24 @@
     "fragmentPatch"
    ],
    "draft": true,
-   "stage": "Push every slab outline up by that thickness.",
+   "stage": "Give floors thickness: Each floor outline pushed down into a slab. Extrude pushes a curve along a vector. A closed outline becomes the edge of a slab.",
+   "wrong": {
+    "loft": "Loft would skin between the outlines: one surface for the whole tower, not slabs.",
+    "move": "Move just shifts the outlines down, with no thickness.",
+    "*": "This step needs a curve pushed along a vector."
+   },
    "stage_draft": true
   },
   {
    "id": "graftTree",
    "comp": "graft",
    "open": true,
-   "x": 4354,
-   "y": 144,
+   "x": 4322,
+   "y": 26,
    "question": "C03_Q01",
-   "need": "a component that turns Tree into Tree",
-   "hint": "Look in Sets › Tree.",
-   "correct": "Graft Tree is the component this method uses here. Puts every item on its own branch.",
+   "need": "each floor in its own branch",
+   "hint": "Sets › Tree. Watch for: Graft both the outlines and the points, so the branches line up.",
+   "correct": "Graft Tree gives every floor its own branch {0}, {1}, {2}..., so each slab stays separate.",
    "distractors": [
     "flatten",
     "simplifyTree",
@@ -376,15 +399,18 @@
     "cleanTree"
    ],
    "draft": true,
-   "stage": "Put each floor's centre point on its own branch, so every floor is handled on its own.",
+   "stage": "One branch per floor: A data tree with every floor outline (and its centre point) in its own branch. Graft puts each item in its own branch, so everything after it is processed floor by floor and kept separate per level.",
+   "wrong": {
+    "*": "This step needs every item moved into its own branch."
+   },
    "stage_draft": true
   },
   {
    "id": "graftTree2",
    "comp": "graft",
    "open": false,
-   "x": 4354,
-   "y": 26
+   "x": 4322,
+   "y": 144
   },
   {
    "id": "graphMappe",
@@ -418,7 +444,7 @@
    "id": "loft",
    "comp": "loft",
    "open": false,
-   "x": 3807,
+   "x": 3784,
    "y": 12,
    "set": {
     "O": false
@@ -429,28 +455,28 @@
    "comp": "multiplication",
    "open": false,
    "x": 816,
-   "y": 12
+   "y": 28
   },
   {
    "id": "multiplica10",
    "comp": "multiplication",
    "open": false,
    "x": 3378,
-   "y": 12
+   "y": 46
   },
   {
    "id": "multiplica11",
    "comp": "multiplication",
    "open": true,
-   "x": 5210,
-   "y": 12,
+   "x": 5216,
+   "y": 48,
    "set": {
     "B": -1.0
    },
    "question": "C03_Q03",
-   "need": "a component that turns A and B into Result",
-   "hint": "Look in Maths › Operators.",
-   "correct": "Multiplication is the component this method uses here. Multiplies two values.",
+   "need": "the slab thickness flipped negative: thickness × -1",
+   "hint": "Maths › Operators. Watch for: The -1 is typed into the B input; it isn't a slider.",
+   "correct": "Multiplication by -1 turns 1 ft into -1 ft, so the slab will extrude downward from each floor line.",
    "distractors": [
     "addition",
     "subtraction",
@@ -466,7 +492,11 @@
     "cosine"
    ],
    "draft": true,
-   "stage": "Set the slab thickness as an upward distance.",
+   "stage": "Slab thickness, downward: The slab thickness as a negative number. Multiplying by -1 flips the direction: each slab hangs below its floor line instead of sitting on top.",
+   "wrong": {
+    "addition": "Adding -1 only works for one particular thickness.",
+    "*": "This step needs the thickness times -1."
+   },
    "stage_draft": true
   },
   {
@@ -474,49 +504,49 @@
    "comp": "multiplication",
    "open": false,
    "x": 1238,
-   "y": 12
+   "y": 31
   },
   {
    "id": "multiplica3",
    "comp": "multiplication",
    "open": false,
    "x": 1352,
-   "y": 12
+   "y": 40
   },
   {
    "id": "multiplica4",
    "comp": "multiplication",
    "open": false,
    "x": 1880,
-   "y": 156
+   "y": 31
   },
   {
    "id": "multiplica5",
    "comp": "multiplication",
    "open": false,
    "x": 1880,
-   "y": 12
+   "y": 354
   },
   {
    "id": "multiplica6",
    "comp": "multiplication",
    "open": false,
    "x": 1880,
-   "y": 84
+   "y": 138
   },
   {
    "id": "multiplica7",
    "comp": "multiplication",
    "open": false,
    "x": 1880,
-   "y": 228
+   "y": 246
   },
   {
    "id": "multiplica8",
    "comp": "multiplication",
    "open": false,
    "x": 2736,
-   "y": 12,
+   "y": 20,
    "set": {
     "B": 1.5707963267948966
    }
@@ -526,7 +556,7 @@
    "comp": "multiplication",
    "open": false,
    "x": 2962,
-   "y": 12
+   "y": 39
   },
   {
    "id": "number",
@@ -574,15 +604,15 @@
    "id": "panel",
    "comp": "panel",
    "open": false,
-   "x": 6301,
-   "y": 50
+   "x": 6662,
+   "y": 35
   },
   {
    "id": "polygon",
    "comp": "polygon",
    "open": false,
    "x": 2476,
-   "y": 32
+   "y": 42
   },
   {
    "id": "range",
@@ -615,19 +645,19 @@
    "comp": "rotate",
    "open": false,
    "x": 3502,
-   "y": 22,
+   "y": 34,
    "degrees": true
   },
   {
    "id": "scale",
    "comp": "scale",
    "open": true,
-   "x": 4786,
-   "y": 22,
+   "x": 4792,
+   "y": 38,
    "question": "C03_Q02",
-   "need": "a component that turns Geometry, Centre and Factor into Geometry",
-   "hint": "Look in Transform › Affine.",
-   "correct": "Scale is the component this method uses here. Resizes geometry around a centre point.",
+   "need": "each floor outline shrunk slightly about its own centre",
+   "hint": "Transform › Affine. Watch for: Scaling about the world origin would also slide the slab sideways: use each floor's centre.",
+   "correct": "Scale shrinks every floor outline about its own centre point, setting the slab edge back from the facade.",
    "distractors": [
     "scaleNU",
     "mirror",
@@ -643,7 +673,11 @@
     "linearArray"
    ],
    "draft": true,
-   "stage": "Pull each floor outline in towards its own centre: the slab setback.",
+   "stage": "Set back the slab edge: Each floor outline pulled in slightly from the facade. Scale about each floor's own centre point shrinks it evenly: 0.98 = 2% smaller.",
+   "wrong": {
+    "move": "Move would shift the outlines, not pull them in.",
+    "*": "This step needs geometry resized about a point."
+   },
    "stage_draft": true
   },
   {
@@ -651,7 +685,7 @@
    "comp": "sine",
    "open": false,
    "x": 2850,
-   "y": 7
+   "y": 11
   },
   {
    "id": "slider",
@@ -666,7 +700,7 @@
    "id": "slider10",
    "comp": "slider",
    "open": false,
-   "x": 4590,
+   "x": 4596,
    "y": 96,
    "param": "s2",
    "label": "Slab scale (setback)"
@@ -675,7 +709,7 @@
    "id": "slider11",
    "comp": "slider",
    "open": false,
-   "x": 5019,
+   "x": 5025,
    "y": 0,
    "param": "s3",
    "label": "Slab thickness (ft)"
@@ -755,9 +789,35 @@
   {
    "id": "unitZ",
    "comp": "unitZ",
-   "open": false,
-   "x": 5324,
-   "y": 4
+   "open": true,
+   "x": 5510,
+   "y": 33,
+   "question": "C03_Q04",
+   "need": "a vertical vector, slab-thickness long",
+   "hint": "Vector › Vector. Watch for: Unit X and Unit Y would push the slabs sideways.",
+   "correct": "Unit Z with a negative factor makes a short vector pointing down: the slab's thickness.",
+   "distractors": [
+    "unitX",
+    "unitY",
+    "vectorXYZ",
+    "amplitude",
+    "vector2pt",
+    "reverse",
+    "vectorLength",
+    "deconstructVector",
+    "crossProduct",
+    "dotProduct",
+    "angle",
+    "unitVector"
+   ],
+   "draft": true,
+   "stage": "Point it down: A vector as long as the slab is thick, pointing down. The same Unit Z as Level B: a negative factor makes it point down.",
+   "wrong": {
+    "unitX": "Unit X points sideways.",
+    "unitY": "Unit Y points sideways.",
+    "*": "This step needs a vertical vector."
+   },
+   "stage_draft": true
   }
  ],
  "wires": [
@@ -803,11 +863,11 @@
   },
   {
    "from": "number4.N",
-   "to": "multiplica5.A"
+   "to": "multiplica4.A"
   },
   {
    "from": "slider7.N",
-   "to": "multiplica5.B"
+   "to": "multiplica4.B"
   },
   {
    "from": "number5.N",
@@ -818,15 +878,15 @@
    "to": "multiplica6.B"
   },
   {
-   "from": "multiplica5.R",
-   "to": "addition.A"
+   "from": "multiplica4.R",
+   "to": "addition2.A"
   },
   {
    "from": "multiplica6.R",
-   "to": "addition.B"
+   "to": "addition2.B"
   },
   {
-   "from": "addition.R",
+   "from": "addition2.R",
    "to": "addition3.A"
   },
   {
@@ -835,34 +895,34 @@
   },
   {
    "from": "number4.N",
-   "to": "multiplica4.A"
-  },
-  {
-   "from": "slider5.N",
-   "to": "multiplica4.B"
-  },
-  {
-   "from": "number5.N",
    "to": "multiplica7.A"
   },
   {
-   "from": "slider4.N",
+   "from": "slider5.N",
    "to": "multiplica7.B"
   },
   {
-   "from": "multiplica4.R",
-   "to": "addition2.A"
+   "from": "number5.N",
+   "to": "multiplica5.A"
+  },
+  {
+   "from": "slider4.N",
+   "to": "multiplica5.B"
   },
   {
    "from": "multiplica7.R",
-   "to": "addition2.B"
+   "to": "addition.A"
   },
   {
-   "from": "data3.D",
-   "to": "polygon.P"
+   "from": "multiplica5.R",
+   "to": "addition.B"
   },
   {
    "from": "data2.D",
+   "to": "polygon.P"
+  },
+  {
+   "from": "data4.D",
    "to": "polygon.R"
   },
   {
@@ -870,7 +930,7 @@
    "to": "polygon.S"
   },
   {
-   "from": "data4.D",
+   "from": "data3.D",
    "to": "polygon.Rf"
   },
   {
@@ -890,7 +950,7 @@
    "to": "multiplica9.B"
   },
   {
-   "from": "data7.D",
+   "from": "data6.D",
    "to": "multiplica10.A"
   },
   {
@@ -898,7 +958,7 @@
    "to": "multiplica10.B"
   },
   {
-   "from": "data5.D",
+   "from": "data7.D",
    "to": "rotate.G"
   },
   {
@@ -906,7 +966,7 @@
    "to": "rotate.A"
   },
   {
-   "from": "data6.D",
+   "from": "data5.D",
    "to": "rotate.P"
   },
   {
@@ -918,12 +978,12 @@
    "to": "capHoles.B"
   },
   {
-   "from": "data11.D",
-   "to": "graftTree2.T"
-  },
-  {
    "from": "data10.D",
    "to": "graftTree.T"
+  },
+  {
+   "from": "data11.D",
+   "to": "graftTree2.T"
   },
   {
    "from": "data12.D",
@@ -935,30 +995,52 @@
   },
   {
    "from": "slider10.N",
-   "to": "scale.F"
+   "to": "scale.F",
+   "check": {
+    "side": "in",
+    "prompt": "The setback slider goes into which input of Scale?",
+    "hint": "G = geometry, C = centre, F = factor.",
+    "correct": "F is the scale factor: 0.98 makes each outline 2% smaller.",
+    "wrong": {
+     "C": "C is the centre to scale about: the floor centre points go there.",
+     "*": "That input isn't the factor."
+    },
+    "draft": true
+   }
   },
   {
    "from": "slider11.N",
    "to": "multiplica11.A"
   },
   {
-   "from": "multiplica11.R",
+   "from": "data14.D",
    "to": "unitZ.F"
   },
   {
-   "from": "data15.D",
+   "from": "data16.D",
    "to": "extrude.B"
   },
   {
-   "from": "data14.D",
-   "to": "extrude.D"
-  },
-  {
-   "from": "data16.D",
-   "to": "capHoles2.B"
+   "from": "data15.D",
+   "to": "extrude.D",
+   "check": {
+    "side": "in",
+    "prompt": "The slab vector goes into which input of Extrude?",
+    "hint": "B = base curve, D = direction vector.",
+    "correct": "D is the direction: the downward vector sets how far and which way each outline is pushed.",
+    "wrong": {
+     "B": "B is the base: the floor outlines are already there.",
+     "*": "That input isn't the direction."
+    },
+    "draft": true
+   }
   },
   {
    "from": "data17.D",
+   "to": "capHoles2.B"
+  },
+  {
+   "from": "data18.D",
    "to": "area.G"
   },
   {
@@ -991,15 +1073,15 @@
   },
   {
    "from": "constructP.Pt",
-   "to": "data3.D"
-  },
-  {
-   "from": "addition3.R",
    "to": "data2.D"
   },
   {
-   "from": "addition2.R",
+   "from": "addition3.R",
    "to": "data4.D"
+  },
+  {
+   "from": "addition.R",
+   "to": "data3.D"
   },
   {
    "from": "range2.R",
@@ -1007,15 +1089,15 @@
   },
   {
    "from": "multiplica9.R",
-   "to": "data7.D"
+   "to": "data6.D"
   },
   {
    "from": "polygon.P",
-   "to": "data5.D"
+   "to": "data7.D"
   },
   {
    "from": "constructP.Pt",
-   "to": "data6.D"
+   "to": "data5.D"
   },
   {
    "from": "rotate.G",
@@ -1027,41 +1109,46 @@
   },
   {
    "from": "rotate.G",
-   "to": "data11.D"
-  },
-  {
-   "from": "constructP.Pt",
    "to": "data10.D"
   },
   {
-   "from": "graftTree2.T",
-   "to": "data12.D"
+   "from": "constructP.Pt",
+   "to": "data11.D"
   },
   {
    "from": "graftTree.T",
+   "to": "data12.D"
+  },
+  {
+   "from": "graftTree2.T",
    "to": "data13.D"
   },
   {
-   "from": "scale.G",
-   "to": "data15.D"
-  },
-  {
-   "from": "unitZ.V",
+   "from": "multiplica11.R",
    "to": "data14.D"
   },
   {
-   "from": "extrude.E",
+   "from": "scale.G",
    "to": "data16.D"
   },
   {
-   "from": "scale.G",
+   "from": "unitZ.V",
+   "to": "data15.D"
+  },
+  {
+   "from": "extrude.E",
    "to": "data17.D"
+  },
+  {
+   "from": "scale.G",
+   "to": "data18.D"
   }
  ],
  "order": [
   "graftTree",
   "scale",
   "multiplica11",
+  "unitZ",
   "extrude",
   "capHoles2",
   "area"

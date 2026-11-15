@@ -97,35 +97,36 @@
    "comp": "addition",
    "open": false,
    "x": 1996,
-   "y": 12
+   "y": 45
   },
   {
    "id": "addition2",
    "comp": "addition",
    "open": false,
    "x": 1996,
-   "y": 84
+   "y": 181
   },
   {
    "id": "addition3",
    "comp": "addition",
    "open": false,
    "x": 2110,
-   "y": 12
+   "y": 48
   },
   {
    "id": "capHoles",
    "comp": "capHoles",
    "open": false,
-   "x": 4060,
-   "y": 9
+   "x": 4038,
+   "y": 35,
+   "ghost": true
   },
   {
    "id": "constructP",
    "comp": "constructPoint",
    "open": false,
    "x": 1469,
-   "y": 22,
+   "y": 39,
    "set": {
     "X": 0.0,
     "Y": 0.0
@@ -135,15 +136,15 @@
    "id": "data",
    "comp": "dataParam",
    "open": false,
-   "x": 1618,
+   "x": 1622,
    "y": 104,
-   "label": "Value"
+   "label": "Bulge (ft)"
   },
   {
    "id": "data10",
    "comp": "dataParam",
    "open": false,
-   "x": 4207,
+   "x": 4189,
    "y": 0,
    "label": "Skin"
   },
@@ -151,7 +152,7 @@
    "id": "data11",
    "comp": "dataParam",
    "open": false,
-   "x": 4665,
+   "x": 4647,
    "y": 0,
    "label": "Skin"
   },
@@ -159,111 +160,111 @@
    "id": "data12",
    "comp": "dataParam",
    "open": false,
-   "x": 4668,
+   "x": 4653,
    "y": 52,
-   "label": "Domains"
+   "label": "Panel grid"
   },
   {
    "id": "data13",
    "comp": "dataParam",
    "open": false,
-   "x": 4946,
+   "x": 4977,
    "y": 0,
-   "label": "Twisted outlines"
+   "label": "Twist floors"
   },
   {
    "id": "data14",
    "comp": "dataParam",
    "open": false,
-   "x": 5272,
+   "x": 5324,
    "y": 0,
-   "label": "Points {i}(j)"
+   "label": "Points {floor}(i)"
   },
   {
    "id": "data15",
    "comp": "dataParam",
    "open": false,
-   "x": 5550,
+   "x": 5656,
    "y": 0,
-   "label": "Columns {j}(i)"
+   "label": "Columns {i}(floor)"
   },
   {
    "id": "data16",
    "comp": "dataParam",
    "open": false,
-   "x": 5837,
-   "y": 0,
-   "label": "Mullion curves"
+   "x": 5966,
+   "y": 52,
+   "label": "Twist floors"
   },
   {
    "id": "data17",
    "comp": "dataParam",
    "open": false,
-   "x": 5840,
-   "y": 52,
-   "label": "Twisted outlines"
+   "x": 5974,
+   "y": 0,
+   "label": "Vertical curves"
   },
   {
    "id": "data2",
    "comp": "dataParam",
    "open": false,
-   "x": 2258,
+   "x": 2271,
    "y": 0,
-   "label": "Point"
+   "label": "Level centres"
   },
   {
    "id": "data3",
    "comp": "dataParam",
    "open": false,
-   "x": 2258,
+   "x": 2274,
    "y": 104,
-   "label": "Value"
+   "label": "Fillet per floor"
   },
   {
    "id": "data4",
    "comp": "dataParam",
    "open": false,
-   "x": 2258,
+   "x": 2278,
    "y": 52,
-   "label": "Value"
+   "label": "Radius per floor"
   },
   {
    "id": "data5",
    "comp": "dataParam",
    "open": false,
-   "x": 3110,
-   "y": 52,
-   "label": "Outline"
+   "x": 3123,
+   "y": 104,
+   "label": "Level centres"
   },
   {
    "id": "data6",
    "comp": "dataParam",
    "open": false,
-   "x": 3110,
-   "y": 104,
-   "label": "Point"
+   "x": 3124,
+   "y": 0,
+   "label": "Ease squared"
   },
   {
    "id": "data7",
    "comp": "dataParam",
    "open": false,
-   "x": 3110,
-   "y": 0,
-   "label": "Value"
+   "x": 3124,
+   "y": 52,
+   "label": "Floor outlines"
   },
   {
    "id": "data8",
    "comp": "dataParam",
    "open": false,
-   "x": 3680,
+   "x": 3668,
    "y": 0,
-   "label": "Twisted outlines"
+   "label": "Twist floors"
   },
   {
    "id": "data9",
    "comp": "dataParam",
    "open": false,
-   "x": 3954,
+   "x": 3931,
    "y": 0,
    "label": "Skin"
   },
@@ -271,15 +272,15 @@
    "id": "divideCurv",
    "comp": "divideCurve",
    "open": true,
-   "x": 5116,
-   "y": 22,
+   "x": 5158,
+   "y": 47,
    "set": {
     "K": false
    },
    "question": "D03_Q03",
-   "need": "a component that turns Curve, Count and Kinks into Points",
-   "hint": "Look in Curve › Division.",
-   "correct": "Divide Curve is the component this method uses here. Splits a curve into N equal-length parts.",
+   "need": "N points around every floor outline",
+   "hint": "Curve › Division.",
+   "correct": "Divide Curve gives one branch of points per floor: the data tree {floor}(point).",
    "distractors": [
     "divideLength",
     "divideDistance",
@@ -295,19 +296,19 @@
     "curveMiddle"
    ],
    "draft": true,
-   "stage": "Place the same number of points around every floor: one branch of points per floor.",
+   "stage": "Points on every floor: N points around every floor outline. The outlines are a list, so Divide Curve returns a tree: one branch of points per floor, {floor}(point).",
    "stage_draft": true
   },
   {
    "id": "divideDoma",
    "comp": "divDomain2",
    "open": true,
-   "x": 4518,
-   "y": 22,
+   "x": 4500,
+   "y": 30,
    "question": "D03_Q01",
-   "need": "a component that turns Domain, U Count and V Count into Segments",
-   "hint": "Look in Maths › Domain.",
-   "correct": "Divide Domain² is the component this method uses here. Splits a 2D domain into a U×V grid.",
+   "need": "the surface's UV domain cut into a grid",
+   "hint": "Maths › Domain. Watch for: V = Floors, so each row of panels is one storey.",
+   "correct": "Divide Domain² cuts the loft's UV domain into a grid: panels around × one row per floor.",
    "distractors": [
     "divideDomain",
     "constructDomainUV",
@@ -322,19 +323,19 @@
     "constructDomain"
    ],
    "draft": true,
-   "stage": "Plan the facade grid: split the tower skin into panels around and up.",
+   "stage": "Split the skin into a grid: A grid of UV domains: panels around × floors up. Every surface has its own UV coordinates. Divide Domain² cuts that UV square into U × V cells without touching the geometry yet.",
    "stage_draft": true
   },
   {
    "id": "flipMatrix",
    "comp": "flipMatrix",
    "open": true,
-   "x": 5388,
-   "y": 8,
+   "x": 5450,
+   "y": 54,
    "question": "D03_Q04",
-   "need": "a component that turns Data into Data",
-   "hint": "Look in Sets › Tree.",
-   "correct": "Flip Matrix is the component this method uses here. Swaps rows and columns of a data tree.",
+   "need": "the tree regrouped so each branch is a vertical column",
+   "hint": "Sets › Tree. Watch for: This is the key data-tree move: the same points, grouped differently.",
+   "correct": "Flip Matrix swaps rows and columns: each branch is now a column of points running up the tower.",
    "distractors": [
     "flatten",
     "graft",
@@ -350,7 +351,7 @@
     "partitionList"
    ],
    "draft": true,
-   "stage": "Regroup the points so each branch holds one column: the same position on every floor.",
+   "stage": "Swap rows and columns: Branches per vertical line instead of per floor. Flip Matrix turns {floor}(point) into {point}(floor): each branch now holds one point from every floor, a vertical line of points.",
    "stage_draft": true
   },
   {
@@ -385,17 +386,17 @@
    "id": "interpolat",
    "comp": "interpolate",
    "open": true,
-   "x": 5672,
-   "y": 32,
+   "x": 5788,
+   "y": 44,
    "set": {
     "D": 3.0,
     "P": false,
     "K": 1.0
    },
    "question": "D03_Q05",
-   "need": "a component that turns Vertices, Degree, Periodic and Knot style into Curve",
-   "hint": "Look in Curve › Spline.",
-   "correct": "Interpolate is the component this method uses here. Draws a smooth curve through points.",
+   "need": "a smooth curve through each column of points",
+   "hint": "Curve › Spline. Watch for: Without Flip Matrix you'd get curves around each floor instead.",
+   "correct": "Interpolate draws a smooth curve up each column: the twisting vertical mullions.",
    "distractors": [
     "divideCurve",
     "fitLine",
@@ -411,19 +412,19 @@
     "connectCurves"
    ],
    "draft": true,
-   "stage": "Draw a smooth curve up each column: the vertical mullions follow the twist and the bulge.",
+   "stage": "Curves up the tower: One smooth curve through each column of points. Interpolate draws a curve through every branch: one twisting mullion per column.",
    "stage_draft": true
   },
   {
    "id": "isotrim",
    "comp": "isotrim",
    "open": true,
-   "x": 4778,
+   "x": 4766,
    "y": 18,
    "question": "D03_Q02",
-   "need": "a component that turns Surface and Domain into Surface",
-   "hint": "Look in Surface › Util.",
-   "correct": "Isotrim is the component this method uses here. Cuts a surface into pieces by UV domains.",
+   "need": "one surface patch per UV cell",
+   "hint": "Surface › Util. Watch for: The panels are slightly warped because the skin twists.",
+   "correct": "Isotrim cuts the loft into one panel per grid cell.",
    "distractors": [
     "divideSurface",
     "surfaceSplit",
@@ -439,14 +440,14 @@
     "deconstructBrep"
    ],
    "draft": true,
-   "stage": "Cut the tower skin into panels along that grid.",
+   "stage": "Cut the panels: One surface patch per grid cell. Isotrim trims the skin to each UV cell, so the panels follow the twisted surface exactly.",
    "stage_draft": true
   },
   {
    "id": "loft",
    "comp": "loft",
    "open": false,
-   "x": 3807,
+   "x": 3784,
    "y": 12,
    "set": {
     "O": false
@@ -457,63 +458,63 @@
    "comp": "multiplication",
    "open": false,
    "x": 816,
-   "y": 12
+   "y": 28
   },
   {
    "id": "multiplica10",
    "comp": "multiplication",
    "open": false,
    "x": 3378,
-   "y": 12
+   "y": 46
   },
   {
    "id": "multiplica2",
    "comp": "multiplication",
    "open": false,
    "x": 1238,
-   "y": 12
+   "y": 31
   },
   {
    "id": "multiplica3",
    "comp": "multiplication",
    "open": false,
    "x": 1352,
-   "y": 12
+   "y": 40
   },
   {
    "id": "multiplica4",
    "comp": "multiplication",
    "open": false,
    "x": 1880,
-   "y": 228
+   "y": 246
   },
   {
    "id": "multiplica5",
    "comp": "multiplication",
    "open": false,
    "x": 1880,
-   "y": 84
+   "y": 354
   },
   {
    "id": "multiplica6",
    "comp": "multiplication",
    "open": false,
    "x": 1880,
-   "y": 156
+   "y": 31
   },
   {
    "id": "multiplica7",
    "comp": "multiplication",
    "open": false,
    "x": 1880,
-   "y": 12
+   "y": 138
   },
   {
    "id": "multiplica8",
    "comp": "multiplication",
    "open": false,
    "x": 2736,
-   "y": 12,
+   "y": 20,
    "set": {
     "B": 1.5707963267948966
    }
@@ -523,7 +524,7 @@
    "comp": "multiplication",
    "open": false,
    "x": 2962,
-   "y": 12
+   "y": 39
   },
   {
    "id": "number",
@@ -571,36 +572,36 @@
    "id": "number7",
    "comp": "numberParam",
    "open": false,
-   "x": 4207,
+   "x": 4189,
    "y": 52
   },
   {
    "id": "number8",
    "comp": "numberParam",
    "open": false,
-   "x": 4968,
+   "x": 5010,
    "y": 52
   },
   {
    "id": "pipe",
    "comp": "pipe",
    "open": true,
-   "x": 6096,
-   "y": 114,
+   "x": 6233,
+   "y": 51,
    "set": {
     "E": 0.0
    },
    "question": "D03_Q06",
-   "need": "a component that turns Curve, Radius and Caps into Pipe",
-   "hint": "Look in Surface › Freeform.",
-   "correct": "Pipe is the component this method uses here. Gives a curve solid thickness.",
+   "need": "a round tube around every vertical curve",
+   "hint": "Surface › Freeform. Watch for: The radius is in feet: 0.25 ft = 3 in.",
+   "correct": "Pipe wraps a round section around every line: solid mullions.",
    "distractors": [
     "sweep1",
     "sweep2",
     "extrude",
     "loft",
     "offset",
-    "fillet",
+    "filletCtR",
     "rebuildCurve",
     "revolution",
     "railRevolution",
@@ -609,15 +610,15 @@
     "extrudePoint"
    ],
    "draft": true,
-   "stage": "Give the mullions real thickness.",
+   "stage": "Give mullions thickness: Pipes around the vertical curves and the floor outlines. One Pipe for the verticals, one for the floor lines, sharing the same radius slider.",
    "stage_draft": true
   },
   {
    "id": "pipe2",
    "comp": "pipe",
    "open": false,
-   "x": 6096,
-   "y": 22,
+   "x": 6233,
+   "y": 208,
    "set": {
     "E": 0.0
    }
@@ -627,7 +628,7 @@
    "comp": "polygon",
    "open": false,
    "x": 2476,
-   "y": 32
+   "y": 42
   },
   {
    "id": "range",
@@ -660,7 +661,7 @@
    "comp": "rotate",
    "open": false,
    "x": 3502,
-   "y": 22,
+   "y": 34,
    "degrees": true
   },
   {
@@ -668,7 +669,7 @@
    "comp": "sine",
    "open": false,
    "x": 2850,
-   "y": 7
+   "y": 11
   },
   {
    "id": "slider",
@@ -683,7 +684,7 @@
    "id": "slider10",
    "comp": "slider",
    "open": false,
-   "x": 4308,
+   "x": 4290,
    "y": 96,
    "param": "s2",
    "label": "Panels / mullions around"
@@ -692,7 +693,7 @@
    "id": "slider11",
    "comp": "slider",
    "open": false,
-   "x": 5904,
+   "x": 6042,
    "y": 96,
    "param": "s3",
    "label": "Mullion radius (ft)"
@@ -813,26 +814,26 @@
   },
   {
    "from": "number4.N",
-   "to": "multiplica7.A"
+   "to": "multiplica6.A"
   },
   {
    "from": "slider7.N",
-   "to": "multiplica7.B"
+   "to": "multiplica6.B"
   },
   {
    "from": "number5.N",
-   "to": "multiplica5.A"
+   "to": "multiplica7.A"
   },
   {
    "from": "slider6.N",
-   "to": "multiplica5.B"
+   "to": "multiplica7.B"
   },
   {
-   "from": "multiplica7.R",
+   "from": "multiplica6.R",
    "to": "addition.A"
   },
   {
-   "from": "multiplica5.R",
+   "from": "multiplica7.R",
    "to": "addition.B"
   },
   {
@@ -845,26 +846,26 @@
   },
   {
    "from": "number4.N",
-   "to": "multiplica6.A"
-  },
-  {
-   "from": "slider5.N",
-   "to": "multiplica6.B"
-  },
-  {
-   "from": "number5.N",
    "to": "multiplica4.A"
   },
   {
-   "from": "slider4.N",
+   "from": "slider5.N",
    "to": "multiplica4.B"
   },
   {
-   "from": "multiplica6.R",
-   "to": "addition2.A"
+   "from": "number5.N",
+   "to": "multiplica5.A"
+  },
+  {
+   "from": "slider4.N",
+   "to": "multiplica5.B"
   },
   {
    "from": "multiplica4.R",
+   "to": "addition2.A"
+  },
+  {
+   "from": "multiplica5.R",
    "to": "addition2.B"
   },
   {
@@ -900,7 +901,7 @@
    "to": "multiplica9.B"
   },
   {
-   "from": "data7.D",
+   "from": "data6.D",
    "to": "multiplica10.A"
   },
   {
@@ -908,7 +909,7 @@
    "to": "multiplica10.B"
   },
   {
-   "from": "data5.D",
+   "from": "data7.D",
    "to": "rotate.G"
   },
   {
@@ -916,7 +917,7 @@
    "to": "rotate.A"
   },
   {
-   "from": "data6.D",
+   "from": "data5.D",
    "to": "rotate.P"
   },
   {
@@ -933,7 +934,18 @@
   },
   {
    "from": "slider10.N",
-   "to": "divideDoma.U"
+   "to": "divideDoma.U",
+   "check": {
+    "side": "in",
+    "prompt": "The Panels around slider goes into which input?",
+    "hint": "I = domain, U = divisions around, V = divisions up.",
+    "correct": "U runs around the tower; V runs up it.",
+    "wrong": {
+     "V": "V runs up the tower: Floors goes there.",
+     "*": "That input isn't the U count."
+    },
+    "draft": true
+   }
   },
   {
    "from": "number7.N",
@@ -964,20 +976,30 @@
    "to": "interpolat.V"
   },
   {
+   "from": "data17.D",
+   "to": "pipe.C"
+  },
+  {
+   "from": "slider11.N",
+   "to": "pipe.R",
+   "check": {
+    "side": "in",
+    "prompt": "The mullion radius goes into which input of Pipe?",
+    "hint": "C = curve, R = radius, E = end caps.",
+    "correct": "R is the pipe radius.",
+    "wrong": {
+     "*": "That input isn't the radius."
+    },
+    "draft": true
+   }
+  },
+  {
    "from": "data16.D",
    "to": "pipe2.C"
   },
   {
    "from": "slider11.N",
    "to": "pipe2.R"
-  },
-  {
-   "from": "data17.D",
-   "to": "pipe.C"
-  },
-  {
-   "from": "slider11.N",
-   "to": "pipe.R"
   },
   {
    "from": "range2.R",
@@ -1021,15 +1043,15 @@
   },
   {
    "from": "multiplica9.R",
-   "to": "data7.D"
+   "to": "data6.D"
   },
   {
    "from": "polygon.P",
-   "to": "data5.D"
+   "to": "data7.D"
   },
   {
    "from": "constructP.Pt",
-   "to": "data6.D"
+   "to": "data5.D"
   },
   {
    "from": "rotate.G",
@@ -1073,11 +1095,11 @@
   },
   {
    "from": "interpolat.C",
-   "to": "data16.D"
+   "to": "data17.D"
   },
   {
    "from": "rotate.G",
-   "to": "data17.D"
+   "to": "data16.D"
   }
  ],
  "order": [

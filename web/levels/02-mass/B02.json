@@ -71,20 +71,13 @@
   {
    "id": "addition",
    "comp": "addition",
-   "open": false,
-   "x": 1344,
-   "y": 188
-  },
-  {
-   "id": "addition2",
-   "comp": "addition",
    "open": true,
    "x": 1344,
    "y": 48,
    "question": "B02_Q03",
    "need": "the radius for each floor: base share + top share",
-   "hint": "Maths › Operators.",
-   "correct": "Addition blends the two shares: base share + top share.",
+   "hint": "Maths › Operators. Watch for: Multiply first, then add: the two shares add up to one value per floor.",
+   "correct": "Addition adds the base share and the top share, giving a radius that tapers smoothly from base to top.",
    "distractors": [
     "subtraction",
     "division",
@@ -100,19 +93,30 @@
     "negative"
    ],
    "draft": true,
-   "stage": "Taper the size: a radius for every floor, blending from the base radius to the top radius.",
+   "stage": "Taper the size: A radius and a fillet for every floor, blending from the base values to the top values. Blend = base × (1 - t) + top × t. At the base t = 0, so you get the base radius; at the top t = 1, the top radius.",
+   "wrong": {
+    "multiplication": "Multiplying the shares would shrink the middle floors to almost nothing.",
+    "*": "This step needs the sum of the two shares."
+   },
    "stage_draft": true
+  },
+  {
+   "id": "addition2",
+   "comp": "addition",
+   "open": false,
+   "x": 1344,
+   "y": 188
   },
   {
    "id": "area",
    "comp": "area",
    "open": true,
-   "x": 3063,
+   "x": 3219,
    "y": 46,
    "question": "B02_Q08",
-   "need": "the envelope area",
-   "hint": "Surface › Analysis.",
-   "correct": "Area reads the envelope area of the solid.",
+   "need": "the surface area of the tower",
+   "hint": "Surface › Analysis. Area works on curves, surfaces and solids. Watch for: Set Total twist to 0: the area drops, because twisting stretches the skin.",
+   "correct": "Area measures the tower's envelope in square feet and finds its centroid. The Panel shows the number.",
    "distractors": [
     "volume",
     "length",
@@ -128,7 +132,12 @@
     "boxProperties"
    ],
    "draft": true,
-   "stage": "Check your result: the envelope area in sf.",
+   "stage": "Check your result: A number that proves the mass is right. Read outputs as data, not just as a picture. Area gives the surface area (sf) and the centroid.",
+   "wrong": {
+    "volume": "Volume would be a good check too, but this step reads the envelope area.",
+    "length": "Length measures curves, not surfaces.",
+    "*": "This step needs the surface area of the solid."
+   },
    "stage_draft": true,
    "preview": false
   },
@@ -136,12 +145,12 @@
    "id": "capHoles",
    "comp": "capHoles",
    "open": true,
-   "x": 2808,
-   "y": 9,
+   "x": 2860,
+   "y": 35,
    "question": "B02_Q07",
-   "need": "a closed solid",
-   "hint": "Surface › Util.",
-   "correct": "Cap Holes closes the planar top and bottom.",
+   "need": "a closed solid: lids on the loft's open top and bottom",
+   "hint": "Surface › Util. The loft is a tube with two flat openings. Watch for: Only flat (planar) openings can be capped.",
+   "correct": "Cap Holes fills the planar openings at the top and bottom, turning the lofted tube into a closed solid.",
    "distractors": [
     "boundary",
     "brepJoin",
@@ -157,7 +166,12 @@
     "untrim"
    ],
    "draft": true,
-   "stage": "Close the mass: a closed solid tower.",
+   "stage": "Close the mass: A closed solid (Brep): the tower mass. Loft leaves the top and bottom open; Cap Holes adds flat lids to planar openings.",
+   "wrong": {
+    "boundary": "Boundary Surfaces would make loose discs, not one joined solid.",
+    "brepJoin": "Brep Join joins existing pieces: there are no lids yet to join.",
+    "*": "This step needs to close the loft's openings."
+   },
    "stage_draft": true,
    "preview": true
   },
@@ -200,31 +214,31 @@
    "id": "data4",
    "comp": "dataParam",
    "open": false,
-   "x": 1860,
-   "y": 52,
-   "label": "Outlines"
-  },
-  {
-   "id": "data5",
-   "comp": "dataParam",
-   "open": false,
    "x": 1871,
    "y": 104,
    "label": "Level centres"
   },
   {
+   "id": "data5",
+   "comp": "dataParam",
+   "open": false,
+   "x": 1872,
+   "y": 52,
+   "label": "Floor outlines"
+  },
+  {
    "id": "data6",
    "comp": "dataParam",
    "open": false,
-   "x": 2428,
+   "x": 2416,
    "y": 0,
-   "label": "Twisted outlines"
+   "label": "Twist floors"
   },
   {
    "id": "data7",
    "comp": "dataParam",
    "open": false,
-   "x": 2702,
+   "x": 2754,
    "y": 0,
    "label": "Skin"
   },
@@ -232,23 +246,23 @@
    "id": "data8",
    "comp": "dataParam",
    "open": false,
-   "x": 2955,
+   "x": 3101,
    "y": 0,
-   "label": "Cap"
+   "label": "Tower mass"
   },
   {
    "id": "loft",
    "comp": "loft",
    "open": true,
-   "x": 2555,
+   "x": 2532,
    "y": 12,
    "set": {
     "O": false
    },
    "question": "B02_Q06",
    "need": "one surface through all the floor outlines",
-   "hint": "Surface › Freeform.",
-   "correct": "Loft skins through all the floor outlines, in order.",
+   "hint": "Surface › Freeform. It takes a list of section curves. Watch for: The outlines must arrive in floor order, base to roof: Range already guarantees that.",
+   "correct": "Loft skins one surface through every floor outline in order.",
    "distractors": [
     "sweep1",
     "sweep2",
@@ -264,7 +278,13 @@
     "extrudeLinear"
    ],
    "draft": true,
-   "stage": "Skin the floors: one surface through every floor outline.",
+   "stage": "Skin the floors: One surface through every floor outline. With many section curves, Loft makes one smooth skin that follows every floor's size and twist.",
+   "wrong": {
+    "extrude": "Extrude pushes one curve along a vector: it can't connect different profiles.",
+    "boundary": "Boundary Surfaces only fills flat outlines: you'd get separate floor discs.",
+    "sweep1": "Sweep1 needs a rail curve to follow. Here there are only section curves.",
+    "*": "This step needs a surface through section curves."
+   },
    "stage_draft": true
   },
   {
@@ -274,9 +294,9 @@
    "x": 586,
    "y": 31,
    "question": "B02_Q02",
-   "need": "the total tower height",
-   "hint": "Maths › Operators.",
-   "correct": "Multiplication: the same derived-value step as B01, now on a whole list.",
+   "need": "the total tower height: Floors × Floor-to-floor",
+   "hint": "Maths › Operators. Watch for: This replaces B01's Unit Z + Move: every floor gets its own height in one go.",
+   "correct": "Multiplication gives the total height; a second Multiplication scales it by t to get every floor's height.",
    "distractors": [
     "addition",
     "subtraction",
@@ -292,7 +312,11 @@
     "cosine"
    ],
    "draft": true,
-   "stage": "Floor levels: work out the tower height, then a centre point at every floor's height.",
+   "stage": "Floor levels: A centre point at the height of every floor. Total height = Floors × Floor-to-floor. Each floor's height = t × total. Construct Point turns those heights into points.",
+   "wrong": {
+    "addition": "Addition gives Floors + Floor-to-floor, not the stacked height.",
+    "*": "This step needs the product of two numbers."
+   },
    "stage_draft": true
   },
   {
@@ -307,7 +331,7 @@
    "comp": "multiplication",
    "open": false,
    "x": 1228,
-   "y": 354
+   "y": 31
   },
   {
    "id": "multiplica4",
@@ -328,7 +352,7 @@
    "comp": "multiplication",
    "open": false,
    "x": 1228,
-   "y": 31
+   "y": 354
   },
   {
    "id": "multiplica7",
@@ -376,19 +400,19 @@
    "id": "panel",
    "comp": "panel",
    "open": false,
-   "x": 3231,
-   "y": 25
+   "x": 3387,
+   "y": 35
   },
   {
    "id": "polygon",
    "comp": "polygon",
    "open": true,
    "x": 1710,
-   "y": 32,
+   "y": 42,
    "question": "B02_Q04",
-   "need": "one outline per floor",
-   "hint": "Curve › Primitive.",
-   "correct": "Polygon, the same node as Level A, now drawing one outline per floor.",
+   "need": "one outline per floor from centre points, radii and fillets",
+   "hint": "Curve › Primitive. The same node as Level A. Watch for: One point, one radius and one fillet per floor: the lists line up item by item.",
+   "correct": "Polygon draws one outline per floor, each at its own centre point with its own radius and fillet.",
    "distractors": [
     "polygonCenter",
     "rectangle",
@@ -404,11 +428,24 @@
     "curveToPolyline"
    ],
    "draft": true,
-   "stage": "Floor outlines: one outline per floor, at its own height and size.",
+   "stage": "Floor outlines: One outline per floor, at its own height and size. Polygon accepts lists: a list of centre points and a list of radii draws one outline per item.",
    "stage_draft": true
   },
   {
    "id": "range",
+   "comp": "range",
+   "open": false,
+   "x": 164,
+   "y": 110,
+   "set": {
+    "D": [
+     1.0,
+     0.0
+    ]
+   }
+  },
+  {
+   "id": "range2",
    "comp": "range",
    "open": true,
    "x": 164,
@@ -420,9 +457,9 @@
     ]
    },
    "question": "B02_Q01",
-   "need": "one value per floor, from 0 to 1",
-   "hint": "Sets › Sequence.",
-   "correct": "Range divides a domain into evenly spaced values: one per floor.",
+   "need": "one value per floor, evenly spaced from 0 to 1",
+   "hint": "Sets › Sequence. It divides a domain into a number of equal steps. Watch for: The second Range has its domain set to 1 to 0. That makes the mirror list (1 - t) with no extra maths.",
+   "correct": "Range divides the 0–1 domain into Floors equal steps, so every floor gets its own t value.",
    "distractors": [
     "series",
     "random",
@@ -438,33 +475,25 @@
     "stackData"
    ],
    "draft": true,
-   "stage": "One value per floor: a list from 0 (base) to 1 (top), one value per floor.",
+   "stage": "One value per floor: A list from 0 (base) to 1 (top), one value per floor, and its mirror from 1 down to 0. Range splits a domain into equal steps. Every node after it now works on the whole list: all floors at once.",
+   "wrong": {
+    "series": "Series counts up by a fixed step size: you'd have to work out the step yourself. Range takes the domain and the number of steps.",
+    "random": "Random gives scattered values: floors must be evenly spaced.",
+    "*": "This step needs evenly spaced values between 0 and 1."
+   },
    "stage_draft": true
-  },
-  {
-   "id": "range2",
-   "comp": "range",
-   "open": false,
-   "x": 164,
-   "y": 110,
-   "set": {
-    "D": [
-     1.0,
-     0.0
-    ]
-   }
   },
   {
    "id": "rotate",
    "comp": "rotate",
    "open": true,
    "x": 2250,
-   "y": 22,
+   "y": 34,
    "degrees": true,
    "question": "B02_Q05",
    "need": "each floor outline turned by its own angle",
-   "hint": "Transform › Euclidean.",
-   "correct": "Rotate, as in B01, but every floor gets its own angle.",
+   "hint": "Transform › Euclidean. Geometry, Angle and Plane. Watch for: Degrees is switched on for the A input; without it 90 would mean 90 radians.",
+   "correct": "Rotate turns every floor outline by its own angle around its own centre point: a smooth twist up the tower.",
    "distractors": [
     "rotatePlane",
     "mirror",
@@ -480,7 +509,13 @@
     "polarArray"
    ],
    "draft": true,
-   "stage": "Twist each floor: each outline turned a little more than the one below.",
+   "stage": "Twist each floor: Each outline turned a little more than the one below. Angle per floor = t × Total twist: the base turns 0° and the roof the full twist. Rotate pairs each outline with its own angle and centre.",
+   "wrong": {
+    "move": "Move shifts geometry. The outline has to turn, not shift.",
+    "mirror": "Mirror flips across a plane: a jump, not a gradual twist.",
+    "orient": "Orient maps geometry from one plane to another: much more set-up than a simple turn.",
+    "*": "This step needs a transform that turns geometry by an angle."
+   },
    "stage_draft": true
   },
   {
@@ -559,11 +594,11 @@
  "wires": [
   {
    "from": "slider.N",
-   "to": "range.N"
+   "to": "range2.N"
   },
   {
    "from": "slider.N",
-   "to": "range2.N"
+   "to": "range.N"
   },
   {
    "from": "number.N",
@@ -587,11 +622,11 @@
   },
   {
    "from": "number3.N",
-   "to": "multiplica6.A"
+   "to": "multiplica3.A"
   },
   {
    "from": "slider6.N",
-   "to": "multiplica6.B"
+   "to": "multiplica3.B"
   },
   {
    "from": "number4.N",
@@ -602,12 +637,12 @@
    "to": "multiplica4.B"
   },
   {
-   "from": "multiplica6.R",
-   "to": "addition2.A"
+   "from": "multiplica3.R",
+   "to": "addition.A"
   },
   {
    "from": "multiplica4.R",
-   "to": "addition2.B"
+   "to": "addition.B"
   },
   {
    "from": "number3.N",
@@ -619,19 +654,19 @@
   },
   {
    "from": "number4.N",
-   "to": "multiplica3.A"
+   "to": "multiplica6.A"
   },
   {
    "from": "slider3.N",
-   "to": "multiplica3.B"
+   "to": "multiplica6.B"
   },
   {
    "from": "multiplica5.R",
-   "to": "addition.A"
+   "to": "addition2.A"
   },
   {
-   "from": "multiplica3.R",
-   "to": "addition.B"
+   "from": "multiplica6.R",
+   "to": "addition2.B"
   },
   {
    "from": "data.D",
@@ -658,16 +693,39 @@
    "to": "multiplica7.B"
   },
   {
-   "from": "data4.D",
+   "from": "data5.D",
    "to": "rotate.G"
   },
   {
    "from": "multiplica7.R",
-   "to": "rotate.A"
+   "to": "rotate.A",
+   "check": {
+    "side": "in",
+    "prompt": "The twist angle goes into which input of Rotate?",
+    "hint": "G = geometry, A = angle, P = plane (the centre) to rotate around.",
+    "correct": "A is the angle, read in degrees because Degrees is switched on.",
+    "wrong": {
+     "G": "G is the geometry: the outline is already connected.",
+     "P": "P is the rotation plane: the centre point goes there.",
+     "*": "That input isn't the angle."
+    },
+    "draft": true
+   }
   },
   {
-   "from": "data5.D",
-   "to": "rotate.P"
+   "from": "data4.D",
+   "to": "rotate.P",
+   "check": {
+    "side": "in",
+    "prompt": "The centre point goes into which input of Rotate?",
+    "hint": "A rotation needs a centre to turn around.",
+    "correct": "P is the plane to rotate around: a point there means 'turn around this point'.",
+    "wrong": {
+     "A": "A is the angle: that's the twist value.",
+     "*": "That input isn't the centre of rotation."
+    },
+    "draft": true
+   }
   },
   {
    "from": "data6.D",
@@ -690,15 +748,15 @@
    "to": "number.N"
   },
   {
-   "from": "range.R",
+   "from": "range2.R",
    "to": "number2.N"
   },
   {
-   "from": "range2.R",
+   "from": "range.R",
    "to": "number3.N"
   },
   {
-   "from": "range.R",
+   "from": "range2.R",
    "to": "number4.N"
   },
   {
@@ -706,24 +764,24 @@
    "to": "data.D"
   },
   {
-   "from": "addition2.R",
+   "from": "addition.R",
    "to": "data3.D"
   },
   {
-   "from": "addition.R",
+   "from": "addition2.R",
    "to": "data2.D"
   },
   {
-   "from": "range.R",
+   "from": "range2.R",
    "to": "number5.N"
   },
   {
    "from": "polygon.P",
-   "to": "data4.D"
+   "to": "data5.D"
   },
   {
    "from": "constructP.Pt",
-   "to": "data5.D"
+   "to": "data4.D"
   },
   {
    "from": "rotate.G",
@@ -739,9 +797,9 @@
   }
  ],
  "order": [
-  "range",
+  "range2",
   "multiplica",
-  "addition2",
+  "addition",
   "polygon",
   "rotate",
   "loft",

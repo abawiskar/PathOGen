@@ -415,7 +415,7 @@
     {
       "id": "B01",
       "name": "Hopper Hatchling",
-      "description": "Walkthrough: one concept per stage, with full notes and wire checks. Multiplication → Unit Z → Move → Rotate → Loft → Cap Holes → Area.",
+      "description": "Walkthrough: Lift and twist a copy of the floor plate, then skin and close it.",
       "file": "B01.json",
       "guidance": "guided",
       "health": 5,
@@ -433,9 +433,9 @@
     {
       "id": "B02",
       "name": "Shape Scout",
-      "description": "Prompted: lists (Range) make every floor at once. Stage goals only; recall Rotate, Loft and Cap Holes from B01.",
+      "description": "Walkthrough: Use lists: every floor gets its own height, size and twist at once.",
       "file": "B02.json",
-      "guidance": "standard",
+      "guidance": "guided",
       "health": 4,
       "hand": 4,
       "attacks": 0,
@@ -451,9 +451,9 @@
     {
       "id": "B03",
       "name": "Pattern Pouncer",
-      "description": "From memory: stage titles only and several picks per stage. New: Graph Mapper bulge and Sine-eased twist.",
+      "description": "Walkthrough: Add a Graph Mapper bulge and a Sine-eased twist to the per-floor tower.",
       "file": "B03.json",
-      "guidance": "independent",
+      "guidance": "guided",
       "health": 4,
       "hand": 5,
       "attacks": 1,
