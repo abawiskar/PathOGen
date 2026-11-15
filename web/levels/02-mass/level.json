@@ -415,7 +415,7 @@
     {
       "id": "B01",
       "name": "Hopper Hatchling",
-      "description": "Method B01.",
+      "description": "Walkthrough: one concept per stage, with full notes and wire checks. Multiplication → Unit Z → Move → Rotate → Loft → Cap Holes → Area.",
       "file": "B01.json",
       "guidance": "guided",
       "health": 5,
@@ -433,9 +433,9 @@
     {
       "id": "B02",
       "name": "Shape Scout",
-      "description": "Method B02.",
+      "description": "Prompted: lists (Range) make every floor at once. Stage goals only; recall Rotate, Loft and Cap Holes from B01.",
       "file": "B02.json",
-      "guidance": "guided",
+      "guidance": "standard",
       "health": 4,
       "hand": 4,
       "attacks": 0,
@@ -451,9 +451,9 @@
     {
       "id": "B03",
       "name": "Pattern Pouncer",
-      "description": "Method B03.",
+      "description": "From memory: stage titles only and several picks per stage. New: Graph Mapper bulge and Sine-eased twist.",
       "file": "B03.json",
-      "guidance": "standard",
+      "guidance": "independent",
       "health": 4,
       "hand": 5,
       "attacks": 1,
