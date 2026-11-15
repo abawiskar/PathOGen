@@ -354,7 +354,7 @@
     {
       "id": "D01",
       "name": "Hopper Hatchling",
-      "description": "Method D01.",
+      "description": "Walkthrough: Divide the base and top, connect them with lines, and pipe the mullions.",
       "file": "D01.json",
       "guidance": "guided",
       "health": 5,
@@ -372,7 +372,7 @@
     {
       "id": "D02",
       "name": "Shape Scout",
-      "description": "Method D02.",
+      "description": "Walkthrough: Cut the skin into a UV panel grid, open the joints, add floor-line mullions.",
       "file": "D02.json",
       "guidance": "guided",
       "health": 4,
@@ -390,9 +390,9 @@
     {
       "id": "D03",
       "name": "Pattern Pouncer",
-      "description": "Method D03.",
+      "description": "Walkthrough: Panels plus twisting vertical mullions with Divide Curve, Flip Matrix and Interpolate.",
       "file": "D03.json",
-      "guidance": "standard",
+      "guidance": "guided",
       "health": 4,
       "hand": 5,
       "attacks": 1,

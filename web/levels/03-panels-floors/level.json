@@ -334,7 +334,7 @@
     {
       "id": "C01",
       "name": "Hopper Hatchling",
-      "description": "Method C01.",
+      "description": "Walkthrough: Slice the mass into floors with Contour, then give each slab thickness.",
       "file": "C01.json",
       "guidance": "guided",
       "health": 5,
@@ -352,7 +352,7 @@
     {
       "id": "C02",
       "name": "Shape Scout",
-      "description": "Method C02.",
+      "description": "Walkthrough: Set the slab edges back from the facade, then build and measure the slabs.",
       "file": "C02.json",
       "guidance": "guided",
       "health": 4,
@@ -370,9 +370,9 @@
     {
       "id": "C03",
       "name": "Pattern Pouncer",
-      "description": "Method C03.",
+      "description": "Walkthrough: Work floor by floor with a data tree (Graft), then build and measure the slabs.",
       "file": "C03.json",
-      "guidance": "standard",
+      "guidance": "guided",
       "health": 4,
       "hand": 5,
       "attacks": 1,
