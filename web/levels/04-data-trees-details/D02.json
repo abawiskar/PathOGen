@@ -97,25 +97,25 @@
    "comp": "addition",
    "open": false,
    "x": 1344,
-   "y": 12
+   "y": 48
   },
   {
    "id": "addition2",
    "comp": "addition",
    "open": false,
    "x": 1344,
-   "y": 84
+   "y": 188
   },
   {
    "id": "area",
    "comp": "area",
    "open": true,
-   "x": 3731,
+   "x": 3773,
    "y": 40,
    "question": "D02_Q03",
-   "need": "a component that turns Geometry into Area",
-   "hint": "Look in Surface › Analysis.",
-   "correct": "Area is the component this method uses here. Measures area and finds the centroid.",
+   "need": "the centre point of every panel",
+   "hint": "Surface › Analysis. Watch for: Use the C (centroid) output.",
+   "correct": "Area's C output gives every panel's centroid: the point each panel will shrink towards.",
    "distractors": [
     "volume",
     "length",
@@ -131,22 +131,24 @@
     "boxProperties"
    ],
    "draft": true,
-   "stage": "Find the centre of every panel.",
-   "stage_draft": true
+   "stage": "Find each panel's centre: A centre point for every panel. Area also returns each shape's centroid. Here we want the centroid, not the area.",
+   "stage_draft": true,
+   "preview": false
   },
   {
    "id": "capHoles",
    "comp": "capHoles",
    "open": false,
-   "x": 2808,
-   "y": 9
+   "x": 2786,
+   "y": 35,
+   "ghost": true
   },
   {
    "id": "constructP",
    "comp": "constructPoint",
    "open": false,
    "x": 817,
-   "y": 22,
+   "y": 39,
    "set": {
     "X": 0.0,
     "Y": 0.0
@@ -156,23 +158,23 @@
    "id": "data",
    "comp": "dataParam",
    "open": false,
-   "x": 1491,
-   "y": 52,
-   "label": "Value"
+   "x": 1504,
+   "y": 0,
+   "label": "Level centres"
   },
   {
    "id": "data10",
    "comp": "dataParam",
    "open": false,
-   "x": 3365,
+   "x": 3350,
    "y": 52,
-   "label": "Domains"
+   "label": "Panel grid"
   },
   {
    "id": "data11",
    "comp": "dataParam",
    "open": false,
-   "x": 3623,
+   "x": 3665,
    "y": 0,
    "label": "Panels"
   },
@@ -180,7 +182,7 @@
    "id": "data12",
    "comp": "dataParam",
    "open": false,
-   "x": 3879,
+   "x": 4008,
    "y": 0,
    "label": "Panels"
   },
@@ -188,7 +190,7 @@
    "id": "data13",
    "comp": "dataParam",
    "open": false,
-   "x": 3892,
+   "x": 4022,
    "y": 52,
    "label": "Panel centres"
   },
@@ -196,55 +198,55 @@
    "id": "data14",
    "comp": "dataParam",
    "open": false,
-   "x": 4328,
+   "x": 4446,
    "y": 0,
-   "label": "Twisted outlines"
+   "label": "Twist floors"
   },
   {
    "id": "data2",
    "comp": "dataParam",
    "open": false,
-   "x": 1491,
-   "y": 0,
-   "label": "Point"
+   "x": 1506,
+   "y": 104,
+   "label": "Fillet per floor"
   },
   {
    "id": "data3",
    "comp": "dataParam",
    "open": false,
-   "x": 1491,
-   "y": 104,
-   "label": "Value"
+   "x": 1511,
+   "y": 52,
+   "label": "Radius per floor"
   },
   {
    "id": "data4",
    "comp": "dataParam",
    "open": false,
-   "x": 1858,
+   "x": 1871,
    "y": 104,
-   "label": "Point"
+   "label": "Level centres"
   },
   {
    "id": "data5",
    "comp": "dataParam",
    "open": false,
-   "x": 1858,
+   "x": 1872,
    "y": 52,
-   "label": "Outline"
+   "label": "Floor outlines"
   },
   {
    "id": "data6",
    "comp": "dataParam",
    "open": false,
-   "x": 2428,
+   "x": 2416,
    "y": 0,
-   "label": "Twisted outlines"
+   "label": "Twist floors"
   },
   {
    "id": "data7",
    "comp": "dataParam",
    "open": false,
-   "x": 2702,
+   "x": 2679,
    "y": 0,
    "label": "Skin"
   },
@@ -252,7 +254,7 @@
    "id": "data8",
    "comp": "dataParam",
    "open": false,
-   "x": 2955,
+   "x": 2937,
    "y": 0,
    "label": "Skin"
   },
@@ -260,7 +262,7 @@
    "id": "data9",
    "comp": "dataParam",
    "open": false,
-   "x": 3362,
+   "x": 3344,
    "y": 0,
    "label": "Skin"
   },
@@ -268,12 +270,12 @@
    "id": "divideDoma",
    "comp": "divDomain2",
    "open": true,
-   "x": 3214,
-   "y": 22,
+   "x": 3196,
+   "y": 30,
    "question": "D02_Q01",
-   "need": "a component that turns Domain, U Count and V Count into Segments",
-   "hint": "Look in Maths › Domain.",
-   "correct": "Divide Domain² is the component this method uses here. Splits a 2D domain into a U×V grid.",
+   "need": "the surface's UV domain cut into a grid",
+   "hint": "Maths › Domain. Watch for: V = Floors, so each row of panels is one storey.",
+   "correct": "Divide Domain² cuts the loft's UV domain into a grid: panels around × one row per floor.",
    "distractors": [
     "divideDomain",
     "constructDomainUV",
@@ -288,19 +290,19 @@
     "constructDomain"
    ],
    "draft": true,
-   "stage": "Plan the facade grid: split the tower skin into panels around and up.",
+   "stage": "Split the skin into a grid: A grid of UV domains: panels around × floors up. Every surface has its own UV coordinates. Divide Domain² cuts that UV square into U × V cells without touching the geometry yet.",
    "stage_draft": true
   },
   {
    "id": "isotrim",
    "comp": "isotrim",
    "open": true,
-   "x": 3476,
+   "x": 3464,
    "y": 18,
    "question": "D02_Q02",
-   "need": "a component that turns Surface and Domain into Surface",
-   "hint": "Look in Surface › Util.",
-   "correct": "Isotrim is the component this method uses here. Cuts a surface into pieces by UV domains.",
+   "need": "one surface patch per UV cell",
+   "hint": "Surface › Util. Watch for: The panels are slightly warped because the skin twists.",
+   "correct": "Isotrim cuts the loft into one panel per grid cell.",
    "distractors": [
     "divideSurface",
     "surfaceSplit",
@@ -316,14 +318,14 @@
     "deconstructBrep"
    ],
    "draft": true,
-   "stage": "Cut the tower skin into panels along that grid.",
+   "stage": "Cut the panels: One surface patch per grid cell. Isotrim trims the skin to each UV cell, so the panels follow the twisted surface exactly.",
    "stage_draft": true
   },
   {
    "id": "loft",
    "comp": "loft",
    "open": false,
-   "x": 2555,
+   "x": 2532,
    "y": 12,
    "set": {
     "O": false
@@ -334,49 +336,49 @@
    "comp": "multiplication",
    "open": false,
    "x": 586,
-   "y": 12
+   "y": 31
   },
   {
    "id": "multiplica2",
    "comp": "multiplication",
    "open": false,
    "x": 700,
-   "y": 12
+   "y": 40
   },
   {
    "id": "multiplica3",
    "comp": "multiplication",
    "open": false,
    "x": 1228,
-   "y": 12
+   "y": 31
   },
   {
    "id": "multiplica4",
    "comp": "multiplication",
    "open": false,
    "x": 1228,
-   "y": 156
+   "y": 246
   },
   {
    "id": "multiplica5",
    "comp": "multiplication",
    "open": false,
    "x": 1228,
-   "y": 228
+   "y": 138
   },
   {
    "id": "multiplica6",
    "comp": "multiplication",
    "open": false,
    "x": 1228,
-   "y": 84
+   "y": 354
   },
   {
    "id": "multiplica7",
    "comp": "multiplication",
    "open": false,
    "x": 2126,
-   "y": 12
+   "y": 46
   },
   {
    "id": "number",
@@ -417,29 +419,29 @@
    "id": "number6",
    "comp": "numberParam",
    "open": false,
-   "x": 2955,
+   "x": 2937,
    "y": 52
   },
   {
    "id": "pipe",
    "comp": "pipe",
    "open": true,
-   "x": 4584,
+   "x": 4713,
    "y": 58,
    "set": {
     "E": 0.0
    },
    "question": "D02_Q05",
-   "need": "a component that turns Curve, Radius and Caps into Pipe",
-   "hint": "Look in Surface › Freeform.",
-   "correct": "Pipe is the component this method uses here. Gives a curve solid thickness.",
+   "need": "a round tube along every floor outline",
+   "hint": "Surface › Freeform.",
+   "correct": "Pipe wraps every floor outline in a round section: the horizontal mullions.",
    "distractors": [
     "sweep1",
     "sweep2",
     "extrude",
     "loft",
     "offset",
-    "fillet",
+    "filletCtR",
     "rebuildCurve",
     "revolution",
     "railRevolution",
@@ -448,7 +450,7 @@
     "extrudePoint"
    ],
    "draft": true,
-   "stage": "Turn the floor edges into thick horizontal mullions.",
+   "stage": "Floor-line mullions: A horizontal mullion along every floor outline. Pipe works on any curve: here the twisted floor outlines.",
    "stage_draft": true
   },
   {
@@ -456,7 +458,7 @@
    "comp": "polygon",
    "open": false,
    "x": 1710,
-   "y": 32
+   "y": 42
   },
   {
    "id": "range",
@@ -489,19 +491,19 @@
    "comp": "rotate",
    "open": false,
    "x": 2250,
-   "y": 22,
+   "y": 34,
    "degrees": true
   },
   {
    "id": "scale",
    "comp": "scale",
    "open": true,
-   "x": 4160,
+   "x": 4288,
    "y": 54,
    "question": "D02_Q04",
-   "need": "a component that turns Geometry, Centre and Factor into Geometry",
-   "hint": "Look in Transform › Affine.",
-   "correct": "Scale is the component this method uses here. Resizes geometry around a centre point.",
+   "need": "every panel shrunk about its own centre",
+   "hint": "Transform › Affine. Watch for: Scale about each panel's own centre, not the tower's, or the panels will slide.",
+   "correct": "Scale shrinks every panel towards its own centroid, opening an even joint between neighbours.",
    "distractors": [
     "scaleNU",
     "mirror",
@@ -517,7 +519,7 @@
     "linearArray"
    ],
    "draft": true,
-   "stage": "Shrink each panel slightly around its centre to open up the joints between panels.",
+   "stage": "Open the joints: Every panel shrunk slightly about its own centre, leaving a joint. Scale each panel to 0.95 about its own centroid: the gap between neighbours becomes the joint.",
    "stage_draft": true
   },
   {
@@ -533,7 +535,7 @@
    "id": "slider10",
    "comp": "slider",
    "open": false,
-   "x": 3965,
+   "x": 4094,
    "y": 96,
    "param": "s2",
    "label": "Panel scale (joints)"
@@ -542,7 +544,7 @@
    "id": "slider11",
    "comp": "slider",
    "open": false,
-   "x": 4392,
+   "x": 4522,
    "y": 48,
    "param": "s3",
    "label": "Mullion radius (ft)"
@@ -614,7 +616,7 @@
    "id": "slider9",
    "comp": "slider",
    "open": false,
-   "x": 3031,
+   "x": 3013,
    "y": 96,
    "param": "s11",
    "label": "Panels around"
@@ -659,18 +661,18 @@
   },
   {
    "from": "number4.N",
-   "to": "multiplica6.A"
+   "to": "multiplica5.A"
   },
   {
    "from": "slider5.N",
-   "to": "multiplica6.B"
+   "to": "multiplica5.B"
   },
   {
    "from": "multiplica3.R",
    "to": "addition.A"
   },
   {
-   "from": "multiplica6.R",
+   "from": "multiplica5.R",
    "to": "addition.B"
   },
   {
@@ -683,26 +685,26 @@
   },
   {
    "from": "number4.N",
-   "to": "multiplica5.A"
+   "to": "multiplica6.A"
   },
   {
    "from": "slider3.N",
-   "to": "multiplica5.B"
+   "to": "multiplica6.B"
   },
   {
    "from": "multiplica4.R",
    "to": "addition2.A"
   },
   {
-   "from": "multiplica5.R",
+   "from": "multiplica6.R",
    "to": "addition2.B"
   },
   {
-   "from": "data2.D",
+   "from": "data.D",
    "to": "polygon.P"
   },
   {
-   "from": "data.D",
+   "from": "data3.D",
    "to": "polygon.R"
   },
   {
@@ -710,7 +712,7 @@
    "to": "polygon.S"
   },
   {
-   "from": "data3.D",
+   "from": "data2.D",
    "to": "polygon.Rf"
   },
   {
@@ -747,7 +749,18 @@
   },
   {
    "from": "slider9.N",
-   "to": "divideDoma.U"
+   "to": "divideDoma.U",
+   "check": {
+    "side": "in",
+    "prompt": "The Panels around slider goes into which input?",
+    "hint": "I = domain, U = divisions around, V = divisions up.",
+    "correct": "U runs around the tower; V runs up it.",
+    "wrong": {
+     "V": "V runs up the tower: Floors goes there.",
+     "*": "That input isn't the U count."
+    },
+    "draft": true
+   }
   },
   {
    "from": "number6.N",
@@ -775,7 +788,18 @@
   },
   {
    "from": "slider10.N",
-   "to": "scale.F"
+   "to": "scale.F",
+   "check": {
+    "side": "in",
+    "prompt": "The joint slider goes into which input of Scale?",
+    "hint": "G = geometry, C = centre, F = factor.",
+    "correct": "F is the factor: 0.95 shrinks each panel 5%.",
+    "wrong": {
+     "C": "C is the centre: the panel centroids go there.",
+     "*": "That input isn't the factor."
+    },
+    "draft": true
+   }
   },
   {
    "from": "data14.D",
@@ -783,7 +807,17 @@
   },
   {
    "from": "slider11.N",
-   "to": "pipe.R"
+   "to": "pipe.R",
+   "check": {
+    "side": "in",
+    "prompt": "The mullion radius goes into which input of Pipe?",
+    "hint": "C = curve, R = radius, E = end caps.",
+    "correct": "R is the pipe radius.",
+    "wrong": {
+     "*": "That input isn't the radius."
+    },
+    "draft": true
+   }
   },
   {
    "from": "slider.N",
@@ -803,15 +837,15 @@
   },
   {
    "from": "constructP.Pt",
-   "to": "data2.D"
-  },
-  {
-   "from": "addition.R",
    "to": "data.D"
   },
   {
-   "from": "addition2.R",
+   "from": "addition.R",
    "to": "data3.D"
+  },
+  {
+   "from": "addition2.R",
+   "to": "data2.D"
   },
   {
    "from": "range2.R",
