@@ -7,6 +7,8 @@
 A browser game that teaches [Grasshopper](https://www.grasshopper3d.com/) by playing it.
 Made at the **AECTech Hackathon 2026**.
 
+### [▶ Play in your browser: path-o-gen.netlify.app](https://path-o-gen.netlify.app/)
+
 <img src="docs/screenshots/title.jpg" alt="PathOGen title screen" width="820">
 
 </div>
@@ -77,7 +79,11 @@ flowchart LR
 
 Art is painted PNG and WebP images, plus Grasshopper SVG icons for 282 components. Progress is saved locally: in the browser's `localStorage` for the web version, and in a save file for the desktop build.
 
-## Play it locally
+## Play it
+
+### Online
+
+Play right away at **<https://path-o-gen.netlify.app/>**, with nothing to download or install. It works in any modern desktop browser and saves your progress in that browser.
 
 ### On Windows: run the exe
 
@@ -90,9 +96,9 @@ Keep `PathOGen.exe` and `PathOGen.pck` in the same folder, because the `.pck` ho
 
 This is the Godot build of the game. It plays the same levels as the browser version and saves your progress on your computer.
 
-> **Not on Windows, or prefer the browser?** You can also play PathOGen through localhost. See [In a browser](#in-a-browser) below.
+> **Not on Windows, or prefer the browser?** Play [online](https://path-o-gen.netlify.app/), or run it yourself through localhost. See [Running it locally in a browser](#running-it-locally-in-a-browser) below.
 
-### In a browser
+### Running it locally in a browser
 
 The browser version is plain HTML, CSS and JavaScript in [`web/`](web/), with no build step and no dependencies. It loads its levels with `fetch()`, so you need to serve the folder over http rather than open the file directly:
 
